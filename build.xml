@@ -119,7 +119,8 @@
 
 	<target name="phpcpd" description="Find duplicate code using PHPCPD">
 		<exec executable="phpcpd">
-			<arg value="--log-pmd=${output}/logs/pmd-cpd.xml" />
+			<arg value="--log-pmd" />
+			<arg path="${output}/logs/pmd-cpd.xml" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -130,7 +131,8 @@
 
 	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec executable="phpunit" failonerror="true" />
-		<arg value="--configuration ${build}/phpunit.xml" />
+		<arg value="--configuration" />
+		<arg path="${build}/phpunit.xml" />
 	</target>
 
 	<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
