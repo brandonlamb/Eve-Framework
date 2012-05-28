@@ -32,6 +32,7 @@
 		<delete dir="${output}/phpmd" />
 		<delete dir="${output}/pdepend" />
 		<delete dir="${output}/phpdox" />
+		<delete dir="${output}/phpunit" />
 	</target>
 
 	<target name="prepare" depends="clean,phpab" description="Prepare for build">
@@ -44,6 +45,7 @@
 		<mkdir dir="${output}/phpmd" />
 		<mkdir dir="${output}/pdepend" />
 		<mkdir dir="${output}/phpdox" />
+		<mkdir dir="${output}/phpunit" />
 	</target>
 
 	<target name="phpab" description="Generate autoloader scripts">
@@ -137,8 +139,7 @@
 
 	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec executable="phpunit" failonerror="true" />
-		<arg value="--configuration" />
-		<arg path="${build}/phpunit.xml" />
+		<arg value="--configuration ${build}/phpunit.xml" />
 	</target>
 
 	<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
