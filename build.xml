@@ -27,6 +27,7 @@
 		<delete dir="${output}/coverage" />
 		<delete dir="${output}/logs" />
 		<delete dir="${output}/phpcs" />
+		<delete dir="${output}/phpmd" />
 		<delete dir="${output}/pdepend" />
 		<delete dir="${output}/phpdox" />
 	</target>
@@ -38,6 +39,7 @@
 		<mkdir dir="${output}/coverage" />
 		<mkdir dir="${output}/logs" />
 		<mkdir dir="${output}/phpcs" />
+		<mkdir dir="${output}/phpmd" />
 		<mkdir dir="${output}/pdepend" />
 		<mkdir dir="${output}/phpdox" />
 	</target>
