@@ -76,7 +76,8 @@
 
 	<target name="phploc" description="Measure project size using PHPLOC">
 		<exec executable="phploc">
-			<arg value="--log-csv=${output}/logs/phploc.csv" />
+			<arg value="--log-csv" />
+			<arg path="${output}/logs/phploc.csv" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
