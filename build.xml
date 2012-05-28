@@ -108,22 +108,12 @@
 	</target>
 
 	<target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer">
-		<exec executable="phpcs">
-			<arg value="--standard=${build}/phpcs.xml" />
+		<exec executable="phpcs" output="/dev/null">
 			<arg value="--ignore=autoload.php" />
 			<arg value="--report=checkstyle" />
 			<arg value="--report-file=${output}/phpcs/checkstyle.xml" />
-			<arg value="--standard=Zend" />
-			<arg path="${framework}" />
-		</exec>
-	</target>
-
-	<target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer">
-		<exec executable="phpcs" output="/dev/null">
-			<arg value="--report=checkstyle" />
-			<arg value="--report-file=${output}/logs/checkstyle.xml" />
 			<arg value="--standard=${build}/phpcs.xml" />
-			<arg value="--ignore=autoload.php" />
+			<arg value="--standard=Zend" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
