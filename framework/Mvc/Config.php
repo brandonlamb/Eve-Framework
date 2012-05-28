@@ -48,10 +48,9 @@ class Config implements \Countable
 	{
 		if (isset($this->_data[$name])) {
 			return $this->_data[$name];
-		} else {
-			$default = null;
-			return $default;
 		}
+		$default = null;
+		return $default;
 	}
 
 	/**
@@ -93,10 +92,9 @@ class Config implements \Countable
 	{
 		if (isset($this->_data[$name])) {
 			return $this->_data[$name];
-		} else {
-			$default = null;
-			return $default;
 		}
+		$default = null;
+		return $default;
 	}
 
 	/**
