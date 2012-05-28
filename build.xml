@@ -142,7 +142,7 @@
 
 	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec executable="phpunit" failonerror="true" />
-		<arg value="--configuration ${build}/phpunit.xml"
+		<arg value="--configuration ${build}/phpunit.xml" />
 		<arg value="--coverage-clover ${output}/CodeCoverage/clover.xml" />
 		<arg value="--coverage-html ${output}/CodeCoverage/.." />
 	</target>
