@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Eve Framework" default="build" basedir=".">
+<project name="Eve Framework" default="build-parallel" basedir=".">
 	<property name="output" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
 <!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb,phpmd,phpmd-ci" />-->
 	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />
-
 	<target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb" />
 
 	<target name="tools-parallel" description="Run tools in parallel">
