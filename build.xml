@@ -77,16 +77,19 @@
 	<target name="phploc" description="Measure project size using PHPLOC">
 		<exec executable="phploc">
 			<arg value="--log-csv" />
-			<arg value="${output}/logs/phploc.csv" />
+			<arg path="${output}/logs/phploc.csv" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
 
 	<target name="pdepend" description="Calculate software metrics using PHP_Depend">
 		<exec executable="pdepend">
-			<arg value="--jdepend-xml=${output}/logs/jdepend.xml" />
-			<arg value="--jdepend-chart=${output}/pdepend/dependencies.svg" />
-			<arg value="--overview-pyramid=${output}/pdepend/overview-pyramid.svg" />
+			<arg value="--jdepend-xml" />
+			<arg path="${output}/logs/jdepend.xml" />
+			<arg value="--jdepend-chart" />
+			<arg path="${output}/pdepend/dependencies.svg" />
+			<arg value="--overview-pyramid" />
+			<arg path="${output}/pdepend/overview-pyramid.svg" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -95,7 +98,7 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="text" />
-			<arg value="${build}/phpmd.xml" />
+			<arg path="${build}/phpmd.xml" />
 		</exec>
 	</target>
 
@@ -113,8 +116,10 @@
 		<exec executable="phpcs" output="/dev/null">
 			<arg value="--ignore=autoload.php" />
 			<arg value="--report=checkstyle" />
-			<arg value="--report-file=${output}/phpcs/checkstyle.xml" />
-			<arg value="--standard=${build}/phpcs.xml" />
+			<arg value="--report-file" />
+			<arg path="${output}/phpcs/checkstyle.xml" />
+			<arg value="--standard" />
+			<arg path="${build}/phpcs.xml" />
 			<arg value="--standard=Zend" />
 			<arg path="${framework}" />
 		</exec>
