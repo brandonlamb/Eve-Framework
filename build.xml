@@ -84,11 +84,11 @@
 
 	<target name="pdepend" description="Calculate software metrics using PHP_Depend">
 		<exec executable="pdepend">
-			<arg value="--jdepend-xml" />
+			<arg value="--jdepend-xml=" />
 			<arg path="${output}/logs/jdepend.xml" />
-			<arg value="--jdepend-chart" />
+			<arg value="--jdepend-chart=" />
 			<arg path="${output}/pdepend/dependencies.svg" />
-			<arg value="--overview-pyramid" />
+			<arg value="--overview-pyramid=" />
 			<arg path="${output}/pdepend/overview-pyramid.svg" />
 			<arg path="${framework}" />
 		</exec>
