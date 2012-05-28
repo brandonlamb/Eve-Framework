@@ -238,12 +238,18 @@ class PasswordHash
 				$random = $this->_getRandomBytes(3);
 			}
 			$hash = crypt($password, $this->_generateSaltExtended($random));
-			if (strlen($hash) == 20) { return $hash; }
+			if (strlen($hash) == 20) {
+				return $hash;
+			}
 		}
 
-		if (strlen($random) < 6) { $random = $this->_getRandomBytes(6); }
+		if (strlen($random) < 6) {
+			$random = $this->_getRandomBytes(6);
+		}
 		$hash = $this->_crypt($password, $this->_generateSalt($random));
-		if (strlen($hash) == 34) { return $hash; }
+		if (strlen($hash) == 34) {
+			return $hash;
+		}
 
 		// Returning '*' on error is safe here, but would _not_ be safe in a crypt(3)-like function used _both_ for
 		// generating new hashes and for validating passwords against existing hashes.
@@ -253,7 +259,9 @@ class PasswordHash
 	public function checkPassword($password, $storedHash)
 	{
 		$hash = $this->_crypt($password, $storedHash);
-		if ($hash[0] == '*') { $hash = crypt($password, $storedHash); }
+		if ($hash[0] == '*') {
+			$hash = crypt($password, $storedHash);
+		}
 		return $hash == $storedHash;
 	}
 }
