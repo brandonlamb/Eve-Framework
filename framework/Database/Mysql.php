@@ -78,8 +78,10 @@ class Mysql extends \mysqli
 	{
 		// Decrypt the password
 		$this->_password = base64_decode($this->_password);
+
 		// Reconnect
 		parent::__construct($this->_host, $this->_username, $this->_password, $this->_database);
+
 		// Check for errors
 		if (!$this->_noerrors && $this->connect_errno) {
 			throw new Exception('An error occcured reconnecting to the database.');
@@ -96,6 +98,7 @@ class Mysql extends \mysqli
 	{
 		// Run query
 		$res = parent::query($sql);
+
 		// Check result is valid
 		if (!$this->_noerrors && ($res === false || $this->errno != 0)) {
 			throw new Exception('#' . $this->_errno . ' ' . $this->_error . ' occurred in query ' . $sql);

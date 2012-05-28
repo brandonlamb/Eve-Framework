@@ -49,16 +49,6 @@ class File
 	 */
 	public function __construct($path)
 	{
-		// If App object provided, extract config
-		if ($path instanceof App) {
-			// Get file cache config from App object
-			$config = $path->getResource(self::RES_CONFIG);
-			if ($config && null !== $config->filecache && isset($config->filecache['path'])) {
-				$path = $config->filecache['path'];
-			} else {
-				$path = \PATH . $path::PATH_CACHE;
-			}
-		}
 		$this->_path = $path;
 	}
 
@@ -76,18 +66,21 @@ class File
 			if ($file === false) {
 				throw new FileException('Unable to open the input file.');
 			}
+
 			// Read header
 			$header = fgets($file);
 			if (strpos($header, '::') === false) {
 				throw new FileException('Unable to read from the input file, bad header.');
 			}
 			list ($expire, $flag) = explode('::', $header);
+
 			// Read data
 			if (filesize($resourceAbsolutePath) - strlen($header) > 0) {
 				$body = fread($file, filesize($resourceAbsolutePath) - strlen($header));
 			} else {
 				$body = null;
 			}
+
 			switch ($flag) {
 				default:
 				case self::ENC_NONE:
@@ -177,6 +170,7 @@ class File
 				if ($limit && $counter > $limit) {
 					return;
 				}
+
 				// Rough check with mtime
 				if ($file->getMTime() < time() - $expire) {
 					// Open and read header
@@ -189,6 +183,7 @@ class File
 						continue;
 					}
 					list ($expiry, $flag) = explode('::', $header);
+
 					// Unlink if expired
 					if ($expiry < time()) {
 						unlink($file->getPathname());
