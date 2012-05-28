@@ -125,15 +125,21 @@ class PasswordHash
 		$id = substr($setting, 0, 3);
 
 		# We use "$P$", phpBB3 uses "$H$" for the same thing
-		if ($id != '$P$' && $id != '$H$') { return $output; }
+		if ($id != '$P$' && $id != '$H$') {
+			return $output;
+		}
 
 		$countLog2 = strpos($this->_itoa64, $setting[3]);
-		if ($countLog2 < 7 || $countLog2 > 30) { return $output; }
+		if ($countLog2 < 7 || $countLog2 > 30) {
+			return $output;
+		}
 
 		$count = 1 << $countLog2;
 
 		$salt = substr($setting, 4, 8);
-		if (strlen($salt) != 8) { return $output; }
+		if (strlen($salt) != 8) {
+			return $output;
+		}
 
 		// We're kind of forced to use MD5 here since it's the only cryptographic primitive available in all versions
 		// of PHP currently in use. To implement our own low-level crypto in PHP would result in much worse
@@ -141,10 +147,14 @@ class PasswordHash
 		// (by non-PHP code).
 		if (PHP_VERSION >= '5') {
 			$hash = md5($salt . $password, TRUE);
-			do { $hash = md5($hash . $password, TRUE); } while (--$count);
+			do {
+				$hash = md5($hash . $password, TRUE);
+			} while (--$count);
 		} else {
 			$hash = pack('H*', md5($salt . $password));
-			do { $hash = pack('H*', md5($hash . $password)); } while (--$count);
+			do {
+				$hash = pack('H*', md5($hash . $password));
+			} while (--$count);
 		}
 
 		$output = substr($setting, 0, 12);
@@ -218,11 +228,15 @@ class PasswordHash
 		if (CRYPT_BLOWFISH == 1 && !$this->_portableHashes) {
 			$random = $this->_getRandomBytes(16);
 			$hash = crypt($password, $this->_generateSaltBlowfish($random));
-			if (strlen($hash) == 60) { return $hash; }
+			if (strlen($hash) == 60) {
+				return $hash;
+			}
 		}
 
 		if (CRYPT_EXT_DES == 1 && !$this->_portableHashes) {
-			if (strlen($random) < 3) { $random = $this->_getRandomBytes(3); }
+			if (strlen($random) < 3) {
+				$random = $this->_getRandomBytes(3);
+			}
 			$hash = crypt($password, $this->_generateSaltExtended($random));
 			if (strlen($hash) == 20) { return $hash; }
 		}
