@@ -46,12 +46,14 @@
 
 	<target name="phpab" description="Generate autoloader scripts">
 		<exec executable="phpab">
-			<arg value="--output=${framework}/autoload.php" />
+			<arg value="--output" />
+			<arg path="${framework}/autoload.php" />
 			<arg path="${framework}" />
 		</exec>
 
 		<exec executable="phpab">
-			<arg value="--output=${basedir}/tests/autoload.php" />
+			<arg value="--output" />
+			<arg path="${basedir}/tests/autoload.php" />
 			<arg path="${basedir}/tests" />
 		</exec>
 	</target>
