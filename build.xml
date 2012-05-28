@@ -4,7 +4,8 @@
 	<property name="output" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
-	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb,phpmd,phpmd-ci" />
+<!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb,phpmd,phpmd-ci" />-->
+	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />
 
 	<target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb" />
 
@@ -12,12 +13,13 @@
 		<parallel threadCount="2">
 			<sequential>
 				<antcall target="pdepend" />
+				<antcall target="phpmd" />
 				<antcall target="phpmd-ci" />
 			</sequential>
-				<antcall target="phpcpd" />
-				<antcall target="phpcs" />
-				<antcall target="phploc" />
-				<antcall target="phpdox" />
+			<antcall target="phpcpd" />
+			<antcall target="phpcs" />
+			<antcall target="phploc" />
+			<antcall target="phpdox" />
 		</parallel>
 	</target>
 
