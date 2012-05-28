@@ -15,9 +15,9 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
 	{
 		$this->dbConfig = array(
 			'driver'	=> 'Pdo',
-			'dsn'		=> 'mysql:host=localhost;dbname=eve',
-			'username'	=> 'user',
-			'password'	=> 'pass',
+			'dsn'		=> 'mysql:host=localhost;dbname=test',
+			'username'	=> 'test',
+			'password'	=> 'test',
 			'noerrors'	=> false,
 		);
 
