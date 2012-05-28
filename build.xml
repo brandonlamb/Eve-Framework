@@ -101,8 +101,9 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="xml" />
-			<arg value="${build}/phpmd.xml" />
-			<arg value="--reportfile=${output}/phpmd/pmd.xml" />
+			<arg path="${build}/phpmd.xml" />
+			<arg value="--reportfile" />
+			<arg path="${output}/phpmd/pmd.xml" />
 		</exec>
 	</target>
 
