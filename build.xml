@@ -93,7 +93,7 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="text" />
-			<arg value="${output}/phpmd.xml" />
+			<arg value="${build}/phpmd.xml" />
 		</exec>
 	</target>
 
@@ -101,7 +101,7 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="xml" />
-			<arg value="${output}/phpmd.xml" />
+			<arg value="${build}/phpmd.xml" />
 			<arg value="--reportfile" />
 			<arg value="${output}/logs/pmd.xml" />
 		</exec>
@@ -109,7 +109,7 @@
 
 	<target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer">
 		<exec executable="phpcs">
-			<arg value="--standard=${output}/phpcs.xml" />
+			<arg value="--standard=${build}/phpcs.xml" />
 			<arg value="--ignore=autoload.php" />
 			<arg value="--report=checkstyle" />
 			<arg value="--report-file=${output}/phpcs/checkstyle.xml" />
@@ -122,7 +122,7 @@
 		<exec executable="phpcs" output="/dev/null">
 			<arg value="--report=checkstyle" />
 			<arg value="--report-file=${output}/logs/checkstyle.xml" />
-			<arg value="--standard=${output}/phpcs.xml" />
+			<arg value="--standard=${build}/phpcs.xml" />
 			<arg value="--ignore=autoload.php" />
 			<arg path="${framework}" />
 		</exec>
@@ -142,6 +142,7 @@
 
 	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec executable="phpunit" failonerror="true" />
+		<arg value="--configuration ${build}/phpunit.xml"
 		<arg value="--coverage-clover ${output}/CodeCoverage/clover.xml" />
 		<arg value="--coverage-html ${output}/CodeCoverage/.." />
 	</target>
