@@ -203,7 +203,9 @@ class EveBase
 		// If file option is set then attempt including it
 		if (isset($params['file'])) {
 			require $params['file'];
-			if (false === class_exists($class)) { return false; }
+			if (false === class_exists($class)) {
+				return false;
+			}
 		}
 		$obj = (null === $params) ? new $class($this) : new $class($params);
 		$this->setComponent($name, $obj);

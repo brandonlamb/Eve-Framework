@@ -95,7 +95,9 @@ class Flash extends Mvc\Component
 	 */
 	public function init()
 	{
-		if ($this->autoUpdateFlash) { $this->updateFlash(); }
+		if ($this->autoUpdateFlash) {
+			$this->updateFlash();
+		}
 	}
 
 	/**
@@ -175,7 +177,7 @@ class Flash extends Mvc\Component
 	 */
 	public function getState($key,$defaultValue=null)
 	{
-		$key=$this->getStateKeyPrefix().$key;
+		$key = $this->getStateKeyPrefix().$key;
 		return isset($_SESSION[$key]) ? $_SESSION[$key] : $defaultValue;
 	}
 
@@ -225,7 +227,9 @@ class Flash extends Mvc\Component
 		$prefix = $this->getStateKeyPrefix();
 		$n = strlen($prefix);
 		foreach ($keys as $key) {
-			if (!strncmp($key, $prefix, $n)) { unset($_SESSION[$key]); }
+			if (!strncmp($key, $prefix, $n)) {
+				unset($_SESSION[$key]);
+			}
 		}
 	}
 
