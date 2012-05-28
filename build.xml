@@ -144,12 +144,9 @@
 
 	<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
 		<exec executable="phpcb">
-			<arg value="--log" />
-			<arg path="${output}/logs" />
-			<arg value="--source" />
-			<arg path="${framework}" />
-			<arg value="--output" />
-			<arg path="${output}/code-browser" />
+			<arg value="--log=${output}/logs" />
+			<arg value="--source=${framework}" />
+			<arg value="--output=${output}/code-browser" />
 		</exec>
 	</target>
 </project>
