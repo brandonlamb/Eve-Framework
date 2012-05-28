@@ -102,8 +102,7 @@
 			<arg path="${framework}" />
 			<arg value="xml" />
 			<arg value="${build}/phpmd.xml" />
-			<arg value="--reportfile" />
-			<arg value="${output}/logs/pmd.xml" />
+			<arg value="--reportfile=${output}/phpmd/pmd.xml" />
 		</exec>
 	</target>
 
@@ -120,8 +119,7 @@
 
 	<target name="phpcpd" description="Find duplicate code using PHPCPD">
 		<exec executable="phpcpd">
-			<arg value="--log-pmd" />
-			<arg value="${output}/logs/pmd-cpd.xml" />
+			<arg value="--log-pmd=${output}/logs/pmd-cpd.xml" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
