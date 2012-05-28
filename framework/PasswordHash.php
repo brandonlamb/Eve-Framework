@@ -43,13 +43,17 @@ class PasswordHash
 	{
 		$this->_itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
 
-		if ($iterationCountLog2 < 4 || $iterationCountLog2 > 31) { $iterationCountLog2 = 8; }
+		if ($iterationCountLog2 < 4 || $iterationCountLog2 > 31) {
+			$iterationCountLog2 = 8;
+		}
 
 		$this->_iterationCountLog2 = $iterationCountLog2;
 		$this->_portableHashes = $portableHashes;
 		$this->_randomState = microtime();
 
-		if (function_exists('getmypid')) { $this->_randomState .= getmypid(); }
+		if (function_exists('getmypid')) {
+			$this->_randomState .= getmypid();
+		}
 	}
 
 	protected function _getRandomBytes($count)
@@ -62,8 +66,7 @@ class PasswordHash
 
 		if (strlen($output) < $count) {
 			$output = '';
-			for ($i = 0; $i < $count; $i += 16)
-			{
+			for ($i = 0; $i < $count; $i += 16) {
 				$this->_randomState = md5(microtime() . $this->_randomState);
 				$output .= pack('H*', md5($this->_randomState));
 			}
@@ -81,14 +84,22 @@ class PasswordHash
 		do {
 			$value = ord($input[$i++]);
 			$output .= $this->_itoa64[$value & 0x3f];
-			if ($i < $count) { $value |= ord($input[$i]) << 8; }
+			if ($i < $count) {
+				$value |= ord($input[$i]) << 8;
+			}
 
 			$output .= $this->_itoa64[($value >> 6) & 0x3f];
-			if ($i++ >= $count) { break; }
-			if ($i < $count) { $value |= ord($input[$i]) << 16; }
+			if ($i++ >= $count) {
+				break;
+			}
+			if ($i < $count) {
+				$value |= ord($input[$i]) << 16;
+			}
 
 			$output .= $this->_itoa64[($value >> 12) & 0x3f];
-			if ($i++ >= $count) { break; }
+			if ($i++ >= $count) {
+				break;
+			}
 
 			$output .= $this->_itoa64[($value >> 18) & 0x3f];
 		} while ($i < $count);
@@ -107,7 +118,9 @@ class PasswordHash
 	protected function _crypt($password, $setting)
 	{
 		$output = '*0';
-		if (substr($setting, 0, 2) == $output) { $output = '*1'; }
+		if (substr($setting, 0, 2) == $output) {
+			$output = '*1';
+		}
 
 		$id = substr($setting, 0, 3);
 
