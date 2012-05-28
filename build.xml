@@ -51,7 +51,7 @@
 
 		<exec executable="phpab">
 			<arg value="--output" />
-			<arg path="${basedir}/tests/autoload-tests.php" />
+			<arg path="${basedir}/tests/autoload.php" />
 			<arg path="${basedir}/tests" />
 		</exec>
 	</target>
