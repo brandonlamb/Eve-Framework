@@ -79,7 +79,9 @@ abstract class AbstractController extends Component
 		$this->_view = new View($path, $layout, $request->getController() . '/' . $request->getAction());
 
 		// Set exception
-		if (null !== $exception) { $this->_view->set('exception', $exception); }
+		if (null !== $exception) {
+			$this->_view->set('exception', $exception);
+		}
 	}
 
 	/**
