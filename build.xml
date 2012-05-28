@@ -46,14 +46,12 @@
 
 	<target name="phpab" description="Generate autoloader scripts">
 		<exec executable="phpab">
-			<arg value="--output" />
-			<arg path="${framework}/autoload.php" />
+			<arg value="--output=${framework}/autoload.php" />
 			<arg path="${framework}" />
 		</exec>
 
 		<exec executable="phpab">
-			<arg value="--output" />
-			<arg path="${basedir}/tests/autoload.php" />
+			<arg value="--output=${basedir}/tests/autoload.php" />
 			<arg path="${basedir}/tests" />
 		</exec>
 	</target>
@@ -76,8 +74,7 @@
 
 	<target name="phploc" description="Measure project size using PHPLOC">
 		<exec executable="phploc">
-			<arg value="--log-csv" />
-			<arg path="${output}/logs/phploc.csv" />
+			<arg value="--log-csv=${output}/logs/phploc.csv" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -104,8 +101,7 @@
 			<arg path="${framework}" />
 			<arg value="xml" />
 			<arg path="${build}/phpmd.xml" />
-			<arg value="--reportfile" />
-			<arg path="${output}/phpmd/pmd.xml" />
+			<arg value="--reportfile=${output}/phpmd/pmd.xml" />
 		</exec>
 	</target>
 
