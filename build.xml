@@ -127,7 +127,7 @@
 	<target name="phpcpd" description="Find duplicate code using PHPCPD">
 		<exec executable="phpcpd">
 			<arg value="--log-pmd" />
-			<arg path="${output}/logs/pmd-cpd.xml" />
+			<arg path="${output}/logs/pmdcpd.xml" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
