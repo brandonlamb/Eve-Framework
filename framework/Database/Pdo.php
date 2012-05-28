@@ -64,7 +64,9 @@ class Pdo extends \PDO
 			parent::__construct($this->_dsn, $this->_username, $this->_password);
 
 			// Added to mysql connections to prevent weird error
-			if ($this->_type == 'mysql') { \PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true); }
+			if ($this->_type == 'mysql') {
+				\PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+			}
 		} catch (PDOException $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -77,7 +79,9 @@ class Pdo extends \PDO
 	 */
 	public function type($value = null)
 	{
-		if (null === $value) { return $this->_type; }
+		if (null === $value) {
+			return $this->_type;
+		}
 		$this->_type = $value;
 		return $this;
 	}
@@ -98,7 +102,9 @@ class Pdo extends \PDO
 		$stmt = $this->_prepareExecute($query, $parameters);
 
 		$row = $stmt->fetchObject();
-		if (!is_object($row)) { $row = false; }
+		if (!is_object($row)) {
+			$row = false;
+		}
 
 		$stmt->closeCursor();
 		unset($stmt);
