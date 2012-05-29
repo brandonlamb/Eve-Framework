@@ -30,13 +30,13 @@
 		<delete dir="${build}/logs" />
 		<delete dir="${build}/pdepend" />
 		<delete dir="${build}/phpunit" />
-<!--
+
 		<delete dir="${build}/phploc" />
 		<delete dir="${build}/phpcpd" />
 		<delete dir="${build}/phpcs" />
 		<delete dir="${build}/phpmd" />
 		<delete dir="${build}/phpdox" />
--->
+
 	</target>
 
 	<target name="prepare" depends="clean,phpab" description="Prepare for build">
