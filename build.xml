@@ -27,9 +27,11 @@
 		<delete dir="${output}/code-browser" />
 		<delete dir="${output}/coverage" />
 		<delete dir="${output}/logs" />
-		<delete dir="${output}/phpcs" />
-		<delete dir="${output}/phpmd" />
 		<delete dir="${output}/pdepend" />
+		<delete dir="${output}/phpcpd" />
+		<delete dir="${output}/phpcs" />
+		<delete dir="${output}/phploc" />
+		<delete dir="${output}/phpmd" />
 		<delete dir="${output}/phpdox" />
 		<delete dir="${output}/phpunit" />
 	</target>
@@ -41,7 +43,9 @@
 		<mkdir dir="${output}/coverage" />
 		<mkdir dir="${output}/logs" />
 		<mkdir dir="${output}/phpcs" />
+		<mkdir dir="${output}/phploc" />
 		<mkdir dir="${output}/phpmd" />
+		<mkdir dir="${output}/phpcpd" />
 		<mkdir dir="${output}/pdepend" />
 		<mkdir dir="${output}/phpdox" />
 		<mkdir dir="${output}/phpunit" />
@@ -80,7 +84,7 @@
 	<target name="phploc" description="Measure project size using PHPLOC">
 		<exec executable="phploc">
 			<arg value="--log-csv" />
-			<arg path="${output}/logs/phploc.csv" />
+			<arg path="${output}/phploc/phploc.csv" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -96,18 +100,13 @@
 
 	<target name="phpmd" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg path="${framework}" />
-			<arg value="text" />
-			<arg path="${build}/phpmd.xml" />
+			<arg line="${framework} text ${build}/phpmd.xml" />
 		</exec>
 	</target>
 
 	<target name="phpmd-ci" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg path="${framework}" />
-			<arg value="xml" />
-			<arg path="${build}/phpmd.xml" />
-			<arg value="--reportfile=${output}/phpmd/pmd.xml" />
+			<arg line="${framework} xml ${build}/phpmd.xml --reportfile=${output}/phpmd/phpmd.xml" />
 		</exec>
 	</target>
 
@@ -116,7 +115,7 @@
 			<arg value="--ignore=autoload.php" />
 			<arg value="--report=checkstyle" />
 			<arg value="--report-file" />
-			<arg path="${output}/phpcs/checkstyle.xml" />
+			<arg path="${output}/phpcs/phpcs.xml" />
 			<arg value="--standard" />
 			<arg path="${build}/phpcs.xml" />
 			<arg value="--standard=Zend" />
@@ -127,7 +126,7 @@
 	<target name="phpcpd" description="Find duplicate code using PHPCPD">
 		<exec executable="phpcpd">
 			<arg value="--log-pmd" />
-			<arg path="${output}/logs/pmdcpd.xml" />
+			<arg path="${output}/phpcpd/phpcpd.xml" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
