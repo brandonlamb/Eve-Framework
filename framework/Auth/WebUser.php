@@ -717,6 +717,8 @@ class WebUser extends Mvc\Component implements WebUserInterface
 
 	/**
 	 * Retrieves identity states from persistent storage and saves them as an array.
+	 *
+	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 * @return array the identity states
 	 */
 	protected function saveIdentityStates()
