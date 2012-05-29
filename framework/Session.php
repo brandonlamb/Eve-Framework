@@ -369,4 +369,25 @@ class Session extends Mvc\Component
 			);
 		}
 	}
+
+	/**
+	 * Return raw session data array
+	 *
+	 * @return string
+	 */
+	public function getData()
+	{
+		return (string) $this->_session['data'];
+	}
+
+	/**
+	 * Set entire session data array
+	 *
+	 * @param array $value
+	 */
+	public function setData($value)
+	{
+		$this->_session['data'] = $value;
+		return $this;
+	}
 }
