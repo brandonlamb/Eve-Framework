@@ -106,7 +106,7 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="text" />
-			<arg value="${build}/phpmd.xml" />
+			<arg value="${basedir}/phpmd.xml" />
 		</exec>
 	</target>
 
@@ -114,7 +114,7 @@
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="xml" />
-			<arg value="${build}/phpmd.xml" />
+			<arg value="${basedir}/phpmd.xml" />
 			<arg value="--reportfile" />
 			<arg value="${build}/logs/phpmd.xml" />
 		</exec>
@@ -122,7 +122,7 @@
 
 	<target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer">
 		<exec executable="phpcs">
-			<arg value="--standard=${build}/phpcs.xml" />
+			<arg value="--standard=${basedir}/phpcs.xml" />
 			<arg value="--ignore=autoload.php" />
 			<arg path="${framework}" />
 		</exec>
@@ -132,7 +132,7 @@
 		<exec executable="phpcs" output="/dev/null">
 			<arg value="--report=checkstyle" />
 			<arg value="--report-file=${build}/logs/checkstyle.xml" />
-			<arg value="--standard=${build}/phpcs.xml" />
+			<arg value="--standard=${basedir}/phpcs.xml" />
 			<arg value="--ignore=autoload.php" />
 			<arg path="${framework}" />
 		</exec>
