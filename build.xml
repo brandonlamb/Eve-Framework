@@ -4,7 +4,7 @@
 	<property name="build" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
-	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpmd,phpmd-ci,phpunit,phpcb" />
+	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcs-ci,phpcpd,phpdox,phpmd,phpunit,phpcb" />
 <!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />-->
 <!--
 	<target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb" />
