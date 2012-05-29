@@ -29,12 +29,14 @@
 		<delete dir="${build}/coverage" />
 		<delete dir="${build}/logs" />
 		<delete dir="${build}/pdepend" />
+		<delete dir="${build}/phpunit" />
+<!--
+		<delete dir="${build}/phploc" />
 		<delete dir="${build}/phpcpd" />
 		<delete dir="${build}/phpcs" />
-		<delete dir="${build}/phploc" />
 		<delete dir="${build}/phpmd" />
 		<delete dir="${build}/phpdox" />
-		<delete dir="${build}/phpunit" />
+-->
 	</target>
 
 	<target name="prepare" depends="clean,phpab" description="Prepare for build">
@@ -42,13 +44,15 @@
 		<mkdir dir="${build}/code-browser" />
 		<mkdir dir="${build}/coverage" />
 		<mkdir dir="${build}/logs" />
+		<mkdir dir="${build}/pdepend" />
+		<mkdir dir="${build}/phpunit" />
+<!--
 		<mkdir dir="${build}/phpcs" />
 		<mkdir dir="${build}/phploc" />
 		<mkdir dir="${build}/phpmd" />
 		<mkdir dir="${build}/phpcpd" />
-		<mkdir dir="${build}/pdepend" />
 		<mkdir dir="${build}/phpdox" />
-		<mkdir dir="${build}/phpunit" />
+-->
 	</target>
 
 	<target name="phpab" description="Generate autoloader scripts">
