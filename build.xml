@@ -101,13 +101,13 @@
 
 	<target name="phpmd" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg line="${framework} text $ANTFILES_HOME/phpmd.xml" />
+			<arg line="${framework} text ./phpmd.xml" />
 		</exec>
 	</target>
 
 	<target name="phpmd-ci" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg line="${framework} xml $ANTFILES_HOME/phpmd.xml --reportfile=${output}/phpmd/phpmd.xml" />
+			<arg line="${framework} xml ./phpmd.xml --reportfile=${output}/phpmd/phpmd.xml" />
 		</exec>
 	</target>
 
