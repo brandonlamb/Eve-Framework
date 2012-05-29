@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="Eve Framework" default="build-parallel" basedir=".">
-	<property name="output" location="${basedir}/build" />
+<project name="Eve Framework" default="build" basedir=".">
+	<property name="build" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
-<!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb,phpmd,phpmd-ci" />-->
-	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />
+	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpmd,phpmd-ci,phpunit,phpcb" />
+<!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />-->
+<!--
 	<target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb" />
-
 	<target name="tools-parallel" description="Run tools in parallel">
 		<parallel threadCount="2">
 			<sequential>
@@ -21,34 +21,34 @@
 			<antcall target="phpdox" />
 		</parallel>
 	</target>
+-->
 
 	<target name="clean" description="Cleanup build artifacts">
-		<delete dir="${output}/api" />
-		<delete dir="${output}/code-browser" />
-		<delete dir="${output}/coverage" />
-		<delete dir="${output}/logs" />
-		<delete dir="${output}/pdepend" />
-		<delete dir="${output}/phpcpd" />
-		<delete dir="${output}/phpcs" />
-		<delete dir="${output}/phploc" />
-		<delete dir="${output}/phpmd" />
-		<delete dir="${output}/phpdox" />
-		<delete dir="${output}/phpunit" />
+		<delete dir="${build}/api" />
+		<delete dir="${build}/code-browser" />
+		<delete dir="${build}/coverage" />
+		<delete dir="${build}/logs" />
+		<delete dir="${build}/pdepend" />
+		<delete dir="${build}/phpcpd" />
+		<delete dir="${build}/phpcs" />
+		<delete dir="${build}/phploc" />
+		<delete dir="${build}/phpmd" />
+		<delete dir="${build}/phpdox" />
+		<delete dir="${build}/phpunit" />
 	</target>
 
 	<target name="prepare" depends="clean,phpab" description="Prepare for build">
-		<mkdir dir="${output}" />
-		<mkdir dir="${output}/api" />
-		<mkdir dir="${output}/code-browser" />
-		<mkdir dir="${output}/coverage" />
-		<mkdir dir="${output}/logs" />
-		<mkdir dir="${output}/phpcs" />
-		<mkdir dir="${output}/phploc" />
-		<mkdir dir="${output}/phpmd" />
-		<mkdir dir="${output}/phpcpd" />
-		<mkdir dir="${output}/pdepend" />
-		<mkdir dir="${output}/phpdox" />
-		<mkdir dir="${output}/phpunit" />
+		<mkdir dir="${build}/api" />
+		<mkdir dir="${build}/code-browser" />
+		<mkdir dir="${build}/coverage" />
+		<mkdir dir="${build}/logs" />
+		<mkdir dir="${build}/phpcs" />
+		<mkdir dir="${build}/phploc" />
+		<mkdir dir="${build}/phpmd" />
+		<mkdir dir="${build}/phpcpd" />
+		<mkdir dir="${build}/pdepend" />
+		<mkdir dir="${build}/phpdox" />
+		<mkdir dir="${build}/phpunit" />
 	</target>
 
 	<target name="phpab" description="Generate autoloader scripts">
@@ -84,41 +84,50 @@
 	<target name="phploc" description="Measure project size using PHPLOC">
 		<exec executable="phploc">
 			<arg value="--log-csv" />
-			<arg path="${output}/phploc/phploc.csv" />
+			<arg value="${build}/logs/phploc.csv" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
 
 	<target name="pdepend" description="Calculate software metrics using PHP_Depend">
 		<exec executable="pdepend">
-			<arg value="--jdepend-xml=${output}/logs/jdepend.xml" />
-			<arg value="--jdepend-chart=${output}/pdepend/dependencies.svg" />
-			<arg value="--overview-pyramid=${output}/pdepend/overview-pyramid.svg" />
+			<arg value="--jdepend-xml=${build}/logs/jdepend.xml" />
+			<arg value="--jdepend-chart=${build}/pdepend/dependencies.svg" />
+			<arg value="--overview-pyramid=${build}/pdepend/overview-pyramid.svg" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
 
 	<target name="phpmd" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg line="${framework} text ./phpmd.xml" />
+			<arg path="${framework}" />
+			<arg value="text" />
+			<arg value="${build}/phpmd.xml" />
 		</exec>
-	</target>
 
-	<target name="phpmd-ci" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
-			<arg line="${framework} xml ./phpmd.xml --reportfile=${output}/phpmd/phpmd.xml" />
+			<arg path="${framework}" />
+			<arg value="text" />
+			<arg value="${build}/phpmd.xml" />
+			<arg value="--reportfile" />
+			<arg value="${build}/logs/phpmd.xml" />
 		</exec>
 	</target>
 
 	<target name="phpcs" description="Find coding standard violations using PHP_CodeSniffer">
-		<exec executable="phpcs" output="/dev/null">
+		<exec executable="phpcs">
+			<arg value="--standard=${build}/phpcs.xml" />
 			<arg value="--ignore=autoload.php" />
+			<arg path="${framework}" />
+		</exec>
+	</target>
+
+	<target name="phpcs-ci" description="Find coding standard violations using PHP_CodeSniffer">
+		<exec executable="phpcs" output="/dev/null">
 			<arg value="--report=checkstyle" />
-			<arg value="--report-file" />
-			<arg path="${output}/phpcs/phpcs.xml" />
-			<arg value="--standard" />
-			<arg path="${build}/phpcs.xml" />
-			<arg value="--standard=Zend" />
+			<arg value="--report-file=${build}/logs/checkstyle.xml" />
+			<arg value="--standard=${build}/phpcs.xml" />
+			<arg value="--ignore=autoload.php" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -126,7 +135,7 @@
 	<target name="phpcpd" description="Find duplicate code using PHPCPD">
 		<exec executable="phpcpd">
 			<arg value="--log-pmd" />
-			<arg path="${output}/phpcpd/phpcpd.xml" />
+			<arg value="${build}/logs/phpcpd.xml" />
 			<arg path="${framework}" />
 		</exec>
 	</target>
@@ -143,9 +152,9 @@
 
 	<target name="phpcb" description="Aggregate tool output with PHP_CodeBrowser">
 		<exec executable="phpcb">
-			<arg value="--log=${output}/logs" />
+			<arg value="--log=${build}/logs" />
 			<arg value="--source=${framework}" />
-			<arg value="--output=${output}/code-browser" />
+			<arg value="--output=${build}/code-browser" />
 		</exec>
 	</target>
 </project>
