@@ -21,10 +21,10 @@
 		<log type="coverage-html" target="build/coverage" title="Eve Framework" charset="UTF-8"
 			yui="true" highlight="true" lowUpperBound="35" highLowerBound="70"/>
 		<log type="coverage-clover" target="build/logs/clover.xml"/>
-		<log type="junit" target="build/phpunit/junit.xml" logIncompleteSkipped="false"/>
-		<log type="metrics-xml" target="build/phpunit/metrics.xml"/>
-		<log type="pmd-xml" target="build/phpunit/pmd.xml" cpdMinLines="5" cpdMinMatches="70"/>
-		<log type="testdox-html" target="build/phpunit/testdox.html"/>
+		<log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false"/>
+		<log type="metrics-xml" target="build/logs/metrics.xml"/>
+		<log type="pmd-xml" target="build/logs/pmd.xml" cpdMinLines="5" cpdMinMatches="70"/>
+		<log type="testdox-html" target="build/logs/testdox.html"/>
 
 		<pmd>
 			<rule class="PHPUnit_Util_Log_PMD_Rule_Project_CRAP" threshold="5,30"/>
