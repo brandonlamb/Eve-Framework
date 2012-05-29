@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- <project name="Eve Framework" default="build-parallel" basedir="."> -->
-<project name="Eve Framework" default="build-parallel">
+<project name="Eve Framework" default="build-parallel" basedir=".">
 	<property name="output" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
