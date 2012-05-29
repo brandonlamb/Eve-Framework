@@ -232,6 +232,7 @@ class View
 	 * @param array $data view template data
 	 * @param bool $replace whether to replace view data
 	 * @return string
+	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
 	public function render($viewScript = null, $data = null, $replace = false)
 	{

@@ -56,8 +56,8 @@ class File
 	 * Get a value from file cache
 	 *
 	 * @param string $key
-	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 * @return bool
+	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
 	public function get($key)
 	{
