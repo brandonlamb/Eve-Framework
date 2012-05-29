@@ -4,7 +4,7 @@
 	<property name="build" location="${basedir}/build" />
 	<property name="framework" location="${basedir}/framework" />
 
-	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcs-ci,phpcpd,phpdox,phpmd,phpunit,phpcb" />
+	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcs-ci,phpcpd,phpdox,phpmd,phpmd-ci,phpunit,phpcb" />
 <!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />-->
 <!--
 	<target name="build-parallel" depends="prepare,lint,tools-parallel,phpunit,phpcb" />
@@ -104,7 +104,9 @@
 			<arg value="text" />
 			<arg value="${build}/phpmd.xml" />
 		</exec>
+	</target>
 
+	<target name="phpmd-ci" description="Perform project mess detection using PHPMD">
 		<exec executable="phpmd">
 			<arg path="${framework}" />
 			<arg value="text" />
@@ -146,7 +148,7 @@
 
 	<target name="phpunit" description="Run unit tests with PHPUnit">
 		<exec executable="phpunit" dir="${basedir}" failonerror="true">
-			<arg line="--configuration ./phpunit.xml" />
+			<arg line="--configuration ${build}/phpunit.xml" />
 		</exec>
 	</target>
 
