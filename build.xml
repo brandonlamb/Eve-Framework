@@ -148,7 +148,6 @@
 
 	<target name="phpdox" description="Generate API documentation using phpDox">
 		<exec executable="phpdox">
-			<arg value="--useconfig=${build}/phpdox.xml" />
 		</exec>
 	</target>
 
