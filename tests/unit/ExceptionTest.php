@@ -6,10 +6,11 @@
 class ExceptionTest extends PHPUnit_Framework_TestCase
 {
 	/**
-	 * @covers Eve\Exception
+	 * @covers Eve\Exception::__construct
 	 */
-	public function testException()
+	public function testCreate()
 	{
-		$this->assertTrue(true);
+		$exception = new \Eve\Exception();
+		$this->assertInstanceOf('\Eve\Exception', $exception);
 	}
 }
