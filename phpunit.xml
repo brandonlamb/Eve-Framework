@@ -8,8 +8,9 @@
 		 timeoutForSmallTests="5"
 		 printsummary="true"
 		 codecoverage="true">
-<!--<phpunit>-->
+
 	<formatter todir="reports" type="xml" outfile="coverage/coverage.xml" />
+
 	<testsuites>
 		<testsuite name="Eve Framework">
 			<directory suffix="Test.php">tests/unit</directory>
@@ -44,9 +45,10 @@
 
 	<filter>
 		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">src</directory>
+			<directory suffix=".php">framework</directory>
 			<exclude>
 				<file>framework/autoload.php</file>
+				<file>*Exception.php</file>
 			</exclude>
 		</whitelist>
 	</filter>
