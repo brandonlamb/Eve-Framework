@@ -47,8 +47,8 @@
 		<whitelist addUncoveredFilesFromWhitelist="true">
 			<directory suffix=".php">framework</directory>
 			<exclude>
+				<group>exceptions</group>
 				<file>framework/autoload.php</file>
-				<file>*Exception.php</file>
 			</exclude>
 		</whitelist>
 	</filter>

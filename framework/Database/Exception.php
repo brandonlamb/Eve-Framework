@@ -7,6 +7,7 @@
  * @license Creative Commons Attribution-Share Alike 2.0 UK: England & Wales License
  * @package Eve\Database
  * @version 0.1.0
+ * @group exceptions
  */
 namespace Eve\Database;
 
