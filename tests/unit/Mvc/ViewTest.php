@@ -76,6 +76,6 @@ class ViewTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('abc', $this->view->getView());
 
 		$this->view->setView(array(1, 2, 3));
-		$this->view->assertEquals('abc', $this->view->getView());
+		$this->assertEquals('abc', $this->view->getView());
 	}
 }
