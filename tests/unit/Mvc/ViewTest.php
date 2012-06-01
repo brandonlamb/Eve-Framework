@@ -31,12 +31,22 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	/**
 	 * @covers Eve\Mvc\View::__set
 	 * @covers Eve\Mvc\View::__get
+	 * @covers Eve\Mvc\View::__isset
+	 * @covers Eve\Mvc\View::__unset
 	 */
-	public function testMagicSetGet()
+	public function testMagicMethods()
 	{
 		$this->view->testProperty = 'testValue';
 		$this->assertEquals('testValue', $this->view->testProperty);
 		$this->assertNull($this->view->nonExistentProperty);
+
+		$this->assertFalse(isset($this->view->nonExistentProperty));
+		$this->assertTrue(isset($this->view->testProperty));
+
+		$this->view->test1 = 'My Value';
+		$this->assertEquals('My Value', $this->view->test1);
+		unset($this->view->test1);
+		$this->assertFalse(isset($this->view->test1));
 	}
 
 	/**
@@ -52,5 +62,20 @@ class ViewTest extends PHPUnit_Framework_TestCase
 
 		$this->view->set('testProperty', 'newTestValue');
 		$this->assertEquals('newTestValue', $this->view->get('testProperty'));
+	}
+
+	/**
+	 * @covers Eve\Mvc\View::setView
+	 * @covers Eve\Mvc\View::getView
+	 */
+	public function testGetSetView()
+	{
+		$this->assertEquals('index', $this->view->getView());
+
+		$this->view->setView('abc');
+		$this->assertEquals('abc', $this->view->getView());
+
+		$this->view->setView(array(1, 2, 3));
+		$this->view->assertEquals('abc', $this->view->getView());
 	}
 }

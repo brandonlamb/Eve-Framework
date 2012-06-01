@@ -167,7 +167,7 @@ class View
 	 */
 	public function setView($file)
 	{
-		$this->_view = $file;
+		$this->_view = (string) $file;
 		return $this;
 	}
 
