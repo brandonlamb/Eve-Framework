@@ -27,4 +27,30 @@ class ViewTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('testLayout', $view->getLayout());
 		$this->assertEquals('testView', $view->getView());
 	}
+
+	/**
+	 * @covers Eve\Mvc\View::__set
+	 * @covers Eve\Mvc\View::__get
+	 */
+	public function testMagicSetGet()
+	{
+		$this->view->testProperty = 'testValue';
+		$this->assertEquals('testValue', $this->view->testProperty);
+		$this->assertNull($this->view->nonExistentProperty);
+	}
+
+	/**
+	 * @covers Eve\Mvc\View::set
+	 * @covers Eve\Mvc\View::get
+	 */
+	public function testSetGet()
+	{
+		$this->assertNull($this->view->get('nonExistentProperty'));
+
+		$this->view->set('testProperty', 'testValue');
+		$this->assertEquals('testValue', $this->view->get('testProperty'));
+
+		$this->view->set('testProperty', 'newTestValue');
+		$this->assertEquals('newTestValue', $this->view->get('testProperty'));
+	}
 }
