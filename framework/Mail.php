@@ -1,4 +1,7 @@
 <?php
+/**
+ * @group exceptions
+ */
 namespace Eve;
 
 // Include phpmailer class which will then be extended
