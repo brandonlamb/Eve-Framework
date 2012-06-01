@@ -162,12 +162,15 @@ class View
 	/**
 	 * Set view file
 	 *
-	 * @param string $file
+	 * @param string $value
 	 * @return View
 	 */
-	public function setView($file)
+	public function setView($value)
 	{
-		$this->_view = (string) $file;
+		if (!is_string($value)) {
+			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+		}
+		$this->_view = (string) $value;
 		return $this;
 	}
 
@@ -178,7 +181,7 @@ class View
 	 */
 	public function getView()
 	{
-		return $this->_view;
+		return (string) $this->_view;
 	}
 
 	/**
@@ -189,6 +192,9 @@ class View
 	 */
 	public function setPath($value)
 	{
+		if (!is_string($value)) {
+			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+		}
 		$this->_path = (string) $value;
 		return $this;
 	}
@@ -211,6 +217,9 @@ class View
 	 */
 	public function setLayout($value)
 	{
+		if (!is_string($value)) {
+			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+		}
 		$this->_layout = (string) $value;
 		return $this;
 	}

@@ -65,6 +65,21 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @covers Eve\Mvc\View::setPath
+	 * @covers Eve\Mvc\View::getPath
+	 */
+	public function testGetSetPath()
+	{
+		$this->assertNull($this->view->getPath());
+
+		$this->view->setPath('abc');
+		$this->assertEquals('abc', $this->view->getPath());
+
+		$this->view->setPath(array(1, 2, 3));
+		$this->assertEquals('abc', $this->view->getPath());
+	}
+
+	/**
 	 * @covers Eve\Mvc\View::setView
 	 * @covers Eve\Mvc\View::getView
 	 */
