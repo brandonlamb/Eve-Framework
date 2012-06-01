@@ -2,7 +2,7 @@
 namespace Eve;
 
 // Include phpmailer class which will then be extended
-include_once 'Eve/Mail/phpmailer.php';
+#include_once 'Eve/Mail/phpmailer.php';
 
 class Mail extends \PHPMailer
 {
