@@ -27,7 +27,7 @@ namespace Eve\Auth;
 // Namespace aliases
 use \Eve\Mvc;
 
-abstract class AbstractBaseUserIdentity extends Mvc\Component implements UserIdentityInterface
+abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentityInterface
 {
 	const ERROR_NONE = 0;
 	const ERROR_USERNAME_INVALID = 1;

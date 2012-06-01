@@ -13,7 +13,7 @@
  */
 namespace Eve\Auth;
 
-interface IUserIdentity
+interface UserIdentityInterface
 {
 	/**
 	 * Authenticates the user.

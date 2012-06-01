@@ -18,7 +18,7 @@
  */
 namespace Eve\Auth;
 
-class UserIdentity extends AbstractBaseUserIdentity
+class UserIdentity extends AbstractUserIdentity
 {
 	/**
 	 * @var string username
