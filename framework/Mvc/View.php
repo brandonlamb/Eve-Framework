@@ -168,7 +168,7 @@ class View
 	public function setView($value)
 	{
 		if (!is_string($value)) {
-			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+			throw new Exception(__METHOD__ . ' expects a string');
 		}
 		$this->_view = (string) $value;
 		return $this;
@@ -193,7 +193,7 @@ class View
 	public function setPath($value)
 	{
 		if (!is_string($value)) {
-			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+			throw new Exception(__METHOD__ . ' expects a string');
 		}
 		$this->_path = (string) $value;
 		return $this;
@@ -218,7 +218,7 @@ class View
 	public function setLayout($value)
 	{
 		if (!is_string($value)) {
-			throw new Mvc\Exception(__METHOD__ . ' expects a string');
+			throw new Exception(__METHOD__ . ' expects a string');
 		}
 		$this->_layout = (string) $value;
 		return $this;

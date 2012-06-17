@@ -10,4 +10,4 @@
  */
 namespace Eve\Mvc;
 
-class Exception extends \ErrorException {}
+class Exception extends ErrorException {}
