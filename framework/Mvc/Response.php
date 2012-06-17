@@ -155,7 +155,7 @@ class Response extends Component
 
 		if (!headers_sent()) { $this->sendHeaders(); }
 
-		echo $this->_body;
+		echo $this->getBody();
 	}
 
 	/**
@@ -252,7 +252,7 @@ class Response extends Component
 	public static function redirect($url = '', $method = 'location', $code = 302)
 	{
 		$response = new static();
-		$response->getStatus($code);
+		$response->setStatus($code);
 
 		if ($method == 'location') {
 			$response->setHeader('Location', $url);
@@ -264,8 +264,7 @@ class Response extends Component
 
 #		\Event::shutdown();
 
-		$response->send();
-		exit;
+		exit($response->send());
 	}
 
 	/**
