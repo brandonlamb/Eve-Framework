@@ -252,13 +252,13 @@ class Response extends Component
 	public static function redirect($url = '', $method = 'location', $code = 302)
 	{
 		$response = new static();
-		$response->status($code);
+		$response->getStatus($code);
 
 		if ($method == 'location')
 		{
-			$response->header('Location', $url);
+			$response->setHeader('Location', $url);
 		} else if ($method == 'refresh') {
-			$response->header('Refresh', '0;url=' . $url);
+			$response->setHeader('Refresh', '0;url=' . $url);
 		} else {
 			return;
 		}
