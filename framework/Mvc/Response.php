@@ -254,8 +254,7 @@ class Response extends Component
 		$response = new static();
 		$response->getStatus($code);
 
-		if ($method == 'location')
-		{
+		if ($method == 'location') {
 			$response->setHeader('Location', $url);
 		} else if ($method == 'refresh') {
 			$response->setHeader('Refresh', '0;url=' . $url);

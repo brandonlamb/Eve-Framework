@@ -11,4 +11,4 @@
  */
 namespace Eve\Mvc;
 
-class ErrorException extends Eve\Exception {}
+class ErrorException extends \Eve\Exception {}
