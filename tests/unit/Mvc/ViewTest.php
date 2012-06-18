@@ -70,7 +70,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testGetSetPath()
 	{
-		$this->assertNull($this->view->getPath());
+		$this->assertEmpty($this->view->getPath());
 
 		$this->view->setPath('abc');
 		$this->assertEquals('abc', $this->view->getPath());
