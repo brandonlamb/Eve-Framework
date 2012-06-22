@@ -99,29 +99,51 @@ class Pdo extends \PDO
 		return $this;
 	}
 
+	/**
+	 * Run prepared statement, return multiple rowsets
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return array
+	 */
 	public function fetchAll($query, $parameters = array())
 	{
 		$stmt = $this->_prepareExecute($query, $parameters);
 
+		// Fetch rows as associative array
 		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-		$stmt->closeCursor();
 
+		// Close cursor and delete $stmt variable
+		$stmt->closeCursor();
 		unset($stmt);
+
+		// Return rows array
 		return $rows;
 	}
 
+	/**
+	 * Run prepared statement, return single rowset
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return array
+	 */
 	public function fetchOne($query, $parameters = array())
 	{
 		$stmt = $this->_prepareExecute($query, $parameters);
 
+		// Fetch rows as associative array
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
-		if (!is_object($row)) {
+		if (!is_array($row)) {
 			$row = false;
 		}
 
+		// Close cursor and delete $stmt variable
 		$stmt->closeCursor();
 		unset($stmt);
-		return($row);
+
+		// Return rows array
+		return $row;
 	}
 
 	public function fetchColumn($query, $parameters = array(), $column = 0)
