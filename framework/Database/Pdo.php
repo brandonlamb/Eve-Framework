@@ -41,11 +41,18 @@ class Pdo extends \PDO
 		// Verify dsn type
 		$type = substr($dsn, 0, strpos($dsn, ':'));
 		switch ($type) {
-			case 'mysql': break;
-			case 'mssql': break;
-			case 'dblib': break;
-			case 'sqlsrv': break;
-			default: $type = 'mysql';
+			case 'mysql':
+				break;
+			case 'mssql':
+				break;
+			case 'dblib':
+				break;
+			case 'sqlsrv':
+				break;
+			case 'ibm':
+				break;
+			default:
+				$type = 'mysql';
 		}
 		$this->_type = $type;
 
@@ -64,9 +71,15 @@ class Pdo extends \PDO
 			parent::__construct($this->_dsn, $this->_username, $this->_password);
 
 			// Added to mysql connections to prevent weird error
-			if ($this->_type == 'mysql') {
-				\PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-			}
+			switch ($this->_type) {
+				case 'mysql':
+					\PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+					break;
+				case 'ibm':
+					\PDO::setAttribute(\PDO::ATTR_PERSISTENT, true);
+					\PDO::setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+					break;
+				default:
 		} catch (PDOException $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -90,7 +103,7 @@ class Pdo extends \PDO
 	{
 		$stmt = $this->_prepareExecute($query, $parameters);
 
-		$rows = $stmt->fetchAll(\PDO::FETCH_CLASS);
+		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		$stmt->closeCursor();
 
 		unset($stmt);
@@ -101,7 +114,7 @@ class Pdo extends \PDO
 	{
 		$stmt = $this->_prepareExecute($query, $parameters);
 
-		$row = $stmt->fetchObject();
+		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
 		if (!is_object($row)) {
 			$row = false;
 		}
