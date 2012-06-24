@@ -14,15 +14,8 @@ namespace Eve\Cache;
 use Eve\App as App;
 use Eve\Cache\Memcache as Memcache;
 
-class Memcache extends \Memcache
+class Memcache extends \Memcache implements \Eve\ResourceInterface
 {
-	/**
-	 * Resource names
-	 *
-	 * @var string
-	 */
-	const RES_CONFIG = 'config';
-
 	/**
 	 * Constructor
 	 *
@@ -64,5 +57,4 @@ class Memcache extends \Memcache
 		}
 		return $res;
 	}
-
 }

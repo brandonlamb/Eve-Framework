@@ -14,13 +14,6 @@ use Eve\Mvc as Mvc;
 
 class Simple extends AbstractRouter
 {
-	/**
-	 * Resources
-	 *
-	 * @var string
-	 */
-	const RES_CONFIG = 'config';
-
 	public function route(Mvc\Request $request)
 	{
 		// Get request config options

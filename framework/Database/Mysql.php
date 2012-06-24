@@ -12,7 +12,6 @@ namespace Eve\Database;
 
 class Mysql extends \mysqli
 {
-
 	/**
 	 * Connection settings
 	 *
@@ -24,13 +23,6 @@ class Mysql extends \mysqli
 	private $_database;
 
 	/**
-	 * Suppress error messages (mainly for sessions)
-	 *
-	 * @var bool
-	 */
-	private $_noerrors;
-
-	/**
 	 * Constructor
 	 *
 	 * @param string $host
@@ -39,16 +31,16 @@ class Mysql extends \mysqli
 	 * @param string $database
 	 * @return void
 	 */
-	public function __construct($host, $username, $password, $database, $noerrors)
+	public function __construct($host, $username, $password, $database)
 	{
-		// Set error setting
-		$this->_noerrors = $noerrors;
 		// Connect
 		parent::__construct($host, $username, $password, $database);
+
 		// Check for errors
-		if (!$this->_noerrors && $this->connect_errno) {
+		if ($this->connect_errno) {
 			throw new Exception('An error occcured connecting to the database.');
 		}
+
 		// Save settings
 		$this->_host = $host;
 		$this->_username = $username;
@@ -66,7 +58,7 @@ class Mysql extends \mysqli
 		// Encrypt the password, not great but better than plain text
 		$this->_password = base64_encode($this->_password);
 		// Return array of params to save
-		return array('_host', '_username', '_password', '_database', '_noerrors');
+		return array('_host', '_username', '_password', '_database');
 	}
 
 	/**
@@ -83,7 +75,7 @@ class Mysql extends \mysqli
 		parent::__construct($this->_host, $this->_username, $this->_password, $this->_database);
 
 		// Check for errors
-		if (!$this->_noerrors && $this->connect_errno) {
+		if ($this->connect_errno) {
 			throw new Exception('An error occcured reconnecting to the database.');
 		}
 	}
@@ -100,10 +92,9 @@ class Mysql extends \mysqli
 		$res = parent::query($sql);
 
 		// Check result is valid
-		if (!$this->_noerrors && ($res === false || $this->errno != 0)) {
+		if ($res === false || $this->errno != 0) {
 			throw new Exception('#' . $this->_errno . ' ' . $this->_error . ' occurred in query ' . $sql);
 		}
 		return $res;
 	}
-
 }

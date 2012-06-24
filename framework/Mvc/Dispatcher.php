@@ -13,7 +13,7 @@ namespace Eve\Mvc;
 // Namespace aliases
 use Eve\Mvc\Router as Router;
 
-class Dispatcher extends Component
+class Dispatcher extends Component implements \Eve\ResourceInterface
 {
 	/**
 	 * Array of routers
@@ -33,13 +33,6 @@ class Dispatcher extends Component
 	const CONF_NA			= 'notAllowed';
 	const CONF_NOTFOUND		= 'notFound';
 	const CONF_EXCEPTION	= 'exception';
-
-	/**
-	 * Resources
-	 *
-	 * @var string
-	 */
-	const RES_CONFIG = 'config';
 
 	/**
 	 * Constructor, parse config and add routers

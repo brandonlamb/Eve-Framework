@@ -11,34 +11,22 @@
 namespace Eve\Cache;
 
 // Namespace aliases
-use Eve\App as App;
-use Eve\Cache\File as File;
+use Eve\App;
 
-class File
+class File implements \Eve\ResourceInterface
 {
 	/**
-	 * Cache path
-	 *
-	 * @var string
+	 * @var string, cache path
 	 */
 	private $_path;
 
 	/**
-	 * Encoding flags
-	 *
-	 * @var int
+	 * @var int, encoding flags
 	 */
 	const ENC_NONE = 0;
 	const ENC_SERIALIZE = 1;
 	const ENC_JSON_ARRAY = 2;
 	const ENC_JSON_OBJECT = 3;
-
-	/**
-	 * Resource names
-	 *
-	 * @var string
-	 */
-	const RES_CONFIG = 'config';
 
 	/**
 	 * Constructor
