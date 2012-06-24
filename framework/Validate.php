@@ -67,7 +67,9 @@ class Validate
 	public static function emailDomain($email)
 	{
 		// If we can't prove the domain is invalid, consider it valid. Note: checkdnsrr() is not implemented on Windows platforms
-		if (!function_exists('checkdnsrr')) { return true; }
+		if (!function_exists('checkdnsrr')) {
+			return true;
+		}
 
 		// Check if the email domain has a valid MX record
 		return (bool) checkdnsrr(preg_replace('/^[^@]+@/', '', $email), 'MX');
@@ -120,8 +122,15 @@ class Validate
 	{
 		// By default do not allow private and reserved range IPs
 		$flags = FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
-		if ($allowPrivate === true) { $flags = FILTER_FLAG_NO_RES_RANGE; }
-		if ($ipv6 === true) { return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags); }
+
+		if ($allowPrivate === true) {
+			$flags = FILTER_FLAG_NO_RES_RANGE;
+		}
+
+		if ($ipv6 === true) {
+			return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags);
+		}
+
 		return (bool) filter_var($ip, FILTER_VALIDATE_IP, $flags | FILTER_FLAG_IPV4);
 	}
 
@@ -135,7 +144,9 @@ class Validate
 	public static function creditCard($number, $type = null)
 	{
 		// Remove all non-digit characters from the number
-		if (($number = preg_replace('/\D+/', '', $number)) === '') { return false; }
+		if (($number = preg_replace('/\D+/', '', $number)) === '') {
+			return false;
+		}
 
 		if ($type == null) {
 			// Use the default type
@@ -143,7 +154,9 @@ class Validate
 		} else if (is_array($type)) {
 			foreach ($type as $t) {
 				// Test each type for validity
-				if (self::creditCard($number, $t)) { return true; }
+				if (self::creditCard($number, $t)) {
+					return true;
+				}
 			}
 
 			return false;
@@ -196,19 +209,27 @@ class Validate
 		// Check card type
 		$type = strtolower($type);
 
-		if (!isset($cards[$type])) { return false; }
+		if (!isset($cards[$type])) {
+			return false;
+		}
 
 		// Check card number length
 		$length = strlen($number);
 
 		// Validate the card length by the card type
-		if (!in_array($length, preg_split('/\D+/', $cards[$type]['length']))) { return false; }
+		if (!in_array($length, preg_split('/\D+/', $cards[$type]['length']))) {
+			return false;
+		}
 
 		// Check card number prefix
-		if (!preg_match('/^' . $cards[$type]['prefix'] . '/', $number)) { return false; }
+		if (!preg_match('/^' . $cards[$type]['prefix'] . '/', $number)) {
+			return false;
+		}
 
 		// No Luhn check required
-		if ($cards[$type]['luhn'] == false) { return true; }
+		if ($cards[$type]['luhn'] == false) {
+			return true;
+		}
 
 		// Checksum of the card number
 		$checksum = 0;
@@ -239,7 +260,9 @@ class Validate
 	 */
 	public static function phone($number, $lengths = null)
 	{
-		if (!is_array($lengths)) { $lengths = array(7, 10, 11); }
+		if (!is_array($lengths)) {
+			$lengths = array(7, 10, 11);
+		}
 
 		// Remove all non-digit characters from the number
 		$number = preg_replace('/\D+/', '', $number);
@@ -456,7 +479,9 @@ class Validate
 	 */
 	public static function postcode($postcode, $territory = 'wa')
 	{
-		if (!is_string($postcode) && !is_int($postcode)) { return false; }
+		if (!is_string($postcode) && !is_int($postcode)) {
+			return false;
+		}
 
 		// Known postal codes for various territories.
 		// See http://www.iso.org/iso/english_country_names_and_code_elements for territory codes
@@ -621,7 +646,9 @@ class Validate
 			'yt' => '976\d{2}'
 		);
 
-		if (!preg_match('/' . $formats[$territory] . '/', $postcode)) { return false; }
+		if (!preg_match('/' . $formats[$territory] . '/', $postcode)) {
+			return false;
+		}
 
 		return true;
 	}
@@ -722,7 +749,9 @@ class Validate
 								// From Unicode 3.2, surrogate characters are illegal
 								(($mUcs4 & 0xFFFFF800) == 0xD800) ||
 								// Codepoints outside the Unicode range are illegal
-								($mUcs4 > 0x10FFFF)) { return false; }
+								($mUcs4 > 0x10FFFF)) {
+							return false;
+						}
 
 						//initialize UTF8 cache
 						$mState = 0;
@@ -761,7 +790,10 @@ class Validate
 	 */
 	public function compliant_utf8($str)
 	{
-		if (strlen($str) == 0) { return true; }
+		if (strlen($str) == 0) {
+			return true;
+		}
+
 		// If even just the first character can be matched, when the /u
 		// modifier is used, then it's valid UTF-8. If the UTF-8 is somehow
 		// invalid, nothing at all will match, even if the string contains
