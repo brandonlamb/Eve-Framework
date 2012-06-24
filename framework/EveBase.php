@@ -10,7 +10,7 @@
 namespace Eve;
 
 // Required for EveBase to implement
-require_once \PATH . '/protected/vendors/Eve/ResourceInterface.php';
+require_once 'ResourceInterface.php';
 
 class EveBase implements \Eve\ResourceInterface
 {
