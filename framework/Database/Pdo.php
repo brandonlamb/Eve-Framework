@@ -8,17 +8,10 @@ class Pdo extends \PDO
 	 *
 	 * @var string
 	 */
-	protected $_type;
-	protected $_dsn;
-	protected $_username;
-	protected $_password;
-
-	/**
-	 * Suppress error messages (mainly for sessions)
-	 *
-	 * @var bool
-	 */
-	private $_noerrors;
+	protected $type;
+	protected $dsn;
+	protected $username;
+	protected $password;
 
 	/**
 	 * Constructor
@@ -30,13 +23,12 @@ class Pdo extends \PDO
 	 * @param bool $noerrors
 	 * @return void
 	 */
-	public function __construct($dsn, $username, $password, $noerrors)
+	public function __construct($dsn, $username, $password)
 	{
 		// Set error setting
-		$this->_dsn			= $dsn;
-		$this->_username	= $username;
-		$this->_password	= $password;
-		$this->_noerrors	= $noerrors;
+		$this->dsn			= $dsn;
+		$this->username	= $username;
+		$this->password	= $password;
 
 		// Verify dsn type
 		$type = substr($dsn, 0, strpos($dsn, ':'));
@@ -54,9 +46,9 @@ class Pdo extends \PDO
 			default:
 				$type = 'mysql';
 		}
-		$this->_type = $type;
+		$this->type = $type;
 
-		$this->_connect();
+		$this->connect();
 	}
 
 	/**
@@ -65,13 +57,13 @@ class Pdo extends \PDO
 	 * @throws Exception
 	 * @return void
 	 */
-	protected function _connect()
+	protected function connect()
 	{
 		try {
-			parent::__construct($this->_dsn, $this->_username, $this->_password);
+			parent::__construct($this->dsn, $this->username, $this->password);
 
 			// Added to mysql connections to prevent weird error
-			switch ($this->_type) {
+			switch ($this->type) {
 				case 'mysql':
 					\PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 					break;
@@ -80,6 +72,7 @@ class Pdo extends \PDO
 					\PDO::setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 					break;
 				default:
+			}
 		} catch (PDOException $e) {
 			throw new Exception($e->getMessage());
 		}
@@ -93,9 +86,9 @@ class Pdo extends \PDO
 	public function type($value = null)
 	{
 		if (null === $value) {
-			return $this->_type;
+			return $this->type;
 		}
-		$this->_type = $value;
+		$this->type = $value;
 		return $this;
 	}
 
@@ -108,7 +101,7 @@ class Pdo extends \PDO
 	 */
 	public function fetchAll($query, $parameters = array())
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->query($query, $parameters);
 
 		// Fetch rows as associative array
 		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -130,7 +123,7 @@ class Pdo extends \PDO
 	 */
 	public function fetchOne($query, $parameters = array())
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->query($query, $parameters);
 
 		// Fetch rows as associative array
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -150,21 +143,22 @@ class Pdo extends \PDO
 	{
 		$column = abs((int) $column);
 
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->query($query, $parameters);
 		$fetchedColumn = $stmt->fetchColumn($column);
 
 		$stmt->closeCursor();
 		unset($stmt);
-		return($fetchedColumn);
+
+		return $fetchedColumn;
 	}
 
 	public function modify($query, $parameters)
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
-		return($stmt->rowCount());
+		$stmt = $this->query($query, $parameters);
+		return $stmt->rowCount();
 	}
 
-	protected function _prepareExecute($query, $parameters = array())
+	protected function query($query, $parameters = array())
 	{
 		$stmt = $this->prepare($query);
 		$stmt->execute($parameters);
