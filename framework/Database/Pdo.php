@@ -97,7 +97,7 @@ class Pdo extends \PDO
 	 */
 	public function fetchAll($query, array $parameters = array())
 	{
-		$stmt = $this->query($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 
 		// Fetch rows as associative array
 		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -119,7 +119,7 @@ class Pdo extends \PDO
 	 */
 	public function fetchOne($query, array $parameters = array())
 	{
-		$stmt = $this->query($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 
 		// Fetch rows as associative array
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -147,7 +147,7 @@ class Pdo extends \PDO
 	{
 		$column = abs((int) $column);
 
-		$stmt = $this->query($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 		$fetchedColumn = $stmt->fetchColumn($column);
 
 		$stmt->closeCursor();
@@ -165,7 +165,7 @@ class Pdo extends \PDO
 	 */
 	public function modify($query, array $parameters = array())
 	{
-		$stmt = $this->query($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 		return $stmt->rowCount();
 	}
 
@@ -176,7 +176,7 @@ class Pdo extends \PDO
 	 * @param array $parameters
 	 * @return PDO::Statement
 	 */
-	protected function query($query, $parameters = array())
+	protected function prepareExecute($query, $parameters = array())
 	{
 		$stmt = $this->prepare($query);
 		$stmt->execute($parameters);

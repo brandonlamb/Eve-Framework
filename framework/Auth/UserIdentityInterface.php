@@ -17,32 +17,36 @@ interface UserIdentityInterface
 {
 	/**
 	 * Authenticates the user.
-	 * The information needed to authenticate the user
-	 * are usually provided in the constructor.
+	 * The information needed to authenticate the user are usually provided in the constructor.
+	 *
 	 * @return boolean whether authentication succeeds.
 	 */
 	public function authenticate();
 
 	/**
 	 * Returns a value indicating whether the identity is authenticated.
+	 *
 	 * @return boolean whether the identity is valid.
 	 */
 	public function getIsAuthenticated();
 
 	/**
 	 * Returns a value that uniquely represents the identity.
+	 *
 	 * @return mixed a value that uniquely represents the identity (e.g. primary key value).
 	 */
 	public function getId();
 
 	/**
 	 * Returns the display name for the identity (e.g. username).
+	 *
 	 * @return string the display name for the identity.
 	 */
 	public function getName();
 
 	/**
 	 * Returns the additional identity information that needs to be persistent during the user session.
+	 *
 	 * @return array additional identity information that needs to be persistent during the user session (excluding {@link id}).
 	 */
 	public function getPersistentStates();
