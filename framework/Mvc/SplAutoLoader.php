@@ -36,6 +36,7 @@ interface SplAutoloader
      * Define the autoloader work mode.
      *
      * @param integer $mode Autoloader work mode.
+     * @return SplAutoLoader
      */
     public function setMode($mode);
 
@@ -64,7 +65,6 @@ interface SplAutoloader
 
     /**
      * Unregister this autoloader instance.
-     *
      */
     public function unregister();
 }

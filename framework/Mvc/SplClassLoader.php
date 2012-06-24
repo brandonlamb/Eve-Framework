@@ -146,18 +146,20 @@ class SplClassLoader implements Mvc\SplAutoloader
 				sprintf('Cannot have %s working normally and silently at the same time!', __CLASS__)
 			);
 		}
-
 		$this->_mode = $mode;
+		return $this;
 	}
 
 	/**
 	 * Define the file extension of resource files in the path of this class loader.
 	 *
 	 * @param string $fileExtension
+	 * @return SplClassLoader
 	 */
 	public function setFileExtension($fileExtension)
 	{
 		$this->_fileExtension = $fileExtension;
+		return $this;
 	}
 
 	/**
@@ -174,10 +176,12 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 * Turns on searching the include for class files. Allows easy loading installed PEAR packages.
 	 *
 	 * @param boolean $includePathLookup
+	 * @return SplClassLoader
 	 */
 	public function setIncludePathLookup($includePathLookup)
 	{
 		$this->_includePathLookup = $includePathLookup;
+		return $this;
 	}
 
 	/**
@@ -228,7 +232,6 @@ class SplClassLoader implements Mvc\SplAutoloader
 
 		switch ($this->_mode) {
 			case self::MODE_SILENT:
-echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 				if ($resourceAbsolutePath === false) {
 					return false;
 				}
@@ -246,7 +249,9 @@ echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 
 			case self::MODE_NORMAL:
 			default:
-
+				if ($resourceAbsolutePath === false) {
+					return false;
+				}
 				require $resourceAbsolutePath;
 				break;
 		}
@@ -264,7 +269,7 @@ echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 	 * Transform resource name into its absolute resource path representation.
 	 *
 	 * @param string $resourceName
-	 * @return string Resource absolute path.
+	 * @return string|bool Resource absolute path.
 	 */
 	private function getResourceAbsolutePath($resourceName)
 	{
