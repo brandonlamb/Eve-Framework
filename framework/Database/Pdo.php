@@ -26,7 +26,7 @@ class Pdo extends \PDO
 	public function __construct($dsn, $username, $password)
 	{
 		// Set error setting
-		$this->dsn			= $dsn;
+		$this->dsn		= $dsn;
 		$this->username	= $username;
 		$this->password	= $password;
 
@@ -79,17 +79,13 @@ class Pdo extends \PDO
 	}
 
 	/**
-	 * Getter/setter for database type
-	 * @param string $value
+	 * Getter for database type
+	 *
 	 * @return string
 	 */
-	public function type($value = null)
+	public function getType()
 	{
-		if (null === $value) {
-			return $this->type;
-		}
-		$this->type = $value;
-		return $this;
+		return $this->type;
 	}
 
 	/**
@@ -99,7 +95,7 @@ class Pdo extends \PDO
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function fetchAll($query, $parameters = array())
+	public function fetchAll($query, array $parameters = array())
 	{
 		$stmt = $this->query($query, $parameters);
 
@@ -119,9 +115,9 @@ class Pdo extends \PDO
 	 *
 	 * @param string $query
 	 * @param array $parameters
-	 * @return array
+	 * @return array|bool
 	 */
-	public function fetchOne($query, $parameters = array())
+	public function fetchOne($query, array $parameters = array())
 	{
 		$stmt = $this->query($query, $parameters);
 
@@ -139,7 +135,15 @@ class Pdo extends \PDO
 		return $row;
 	}
 
-	public function fetchColumn($query, $parameters = array(), $column = 0)
+	/**
+	 * Fetch a single result column
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @param int $column
+	 * @return mixed
+	 */
+	public function fetchColumn($query, array $parameters = array(), $column = 0)
 	{
 		$column = abs((int) $column);
 
@@ -152,12 +156,26 @@ class Pdo extends \PDO
 		return $fetchedColumn;
 	}
 
-	public function modify($query, $parameters)
+	/**
+	 * Execute an INSERT/UPDATE/DELETE statement
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return int
+	 */
+	public function modify($query, array $parameters = array())
 	{
 		$stmt = $this->query($query, $parameters);
 		return $stmt->rowCount();
 	}
 
+	/**
+	 * Prepare and execute prepared statement
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return PDO::Statement
+	 */
 	protected function query($query, $parameters = array())
 	{
 		$stmt = $this->prepare($query);
