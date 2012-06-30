@@ -216,7 +216,7 @@ class Request extends Component
 	 * @param string $value
 	 * @return void
 	 */
-	protected function setBaseUri($value)
+	protected function DEPRECATED_setBaseUri($value)
 	{
 		$scriptFilename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : null;
 		$ext = 'php';
