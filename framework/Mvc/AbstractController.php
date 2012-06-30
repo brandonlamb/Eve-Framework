@@ -62,10 +62,6 @@ abstract class AbstractController extends Component
 		$this->_request = $request;
 		$this->_dispatcher = $dispatcher;
 
-		// Get "Module" name and full path to the module directory
-		$module = ucfirst($request->getModule());
-		$path = \Eve::app()->getComponent('config')->get('modulesPath') . '/' . $module . '/views';
-
 		// Figure out whether to use class configured layout file or default from config
 		if (null !== static::LAYOUT) {
 			$layout = static::LAYOUT;
@@ -76,7 +72,7 @@ abstract class AbstractController extends Component
 		}
 
 		// Create view object and set initial path, layout and view
-		$this->_view = new View($path, $layout, $request->getController() . '/' . $request->getAction());
+		$this->_view = new View($request, $layout);
 
 		// Set exception
 		if (null !== $exception) {

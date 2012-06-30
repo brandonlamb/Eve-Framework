@@ -17,28 +17,42 @@ class View
 	 *
 	 * @var string
 	 */
-	protected $_path;
+	protected $path;
+
+	/**
+	 * Module name
+	 *
+	 * @var string
+	 */
+	protected $module;
+
+	/**
+	 * Controller name
+	 *
+	 * @var string
+	 */
+	protected $controller;
 
 	/**
 	 * View layout file
 	 *
 	 * @var string
 	 */
-	 protected $_layout = 'default';
+	 protected $layout = 'default';
 
 	/**
 	 * View script file for action
 	 *
 	 * @var string
 	 */
-	protected $_view = 'index';
+	protected $view = 'index';
 
 	/**
 	 * Page data
 	 *
 	 * @var array
 	 */
-	protected $_data = array();
+	protected $data = array();
 
 	/**
 	 * @const string
@@ -52,11 +66,15 @@ class View
 	 * @param string $layout the layout view file
 	 * @param string $view the view file
 	 */
-	public function __construct($path = null, $layout = null, $view = null)
+	public function __construct(Request $request = null, $layout = null)
 	{
-		null !== $path && $this->setPath($path);
+		// Get "Module" name and full path to the module directory
+		$this->setModule(ucfirst($request->getModule()));
+		$this->setController($request->getController());
+		$this->setView($request->getController() . '/' . $request->getAction());
+		$this->setPath(\Eve::app()->getComponent('config')->get('modulesPath'));
+
 		null !== $layout && $this->setLayout($layout);
-		null !== $view && $this->setView($view);
 	}
 
 	/**
@@ -72,7 +90,7 @@ class View
 	 */
 	public function &__get($key)
 	{
-		if (isset($this->_data[$key])) { return $this->_data[$key]; }
+		if (isset($this->data[$key])) { return $this->data[$key]; }
 		$default = null;
 		return $default;
 	}
@@ -93,7 +111,7 @@ class View
 	 */
 	public function __set($key, $value)
 	{
-		$this->_data[$key] = $value;
+		$this->data[$key] = $value;
 		return $this;
 	}
 
@@ -107,7 +125,7 @@ class View
 	 */
 	public function __isset($key)
 	{
-		return isset($this->_data[$key]);
+		return isset($this->data[$key]);
 	}
 
 	/**
@@ -117,7 +135,7 @@ class View
 	 */
 	public function __unset($key)
 	{
-		unset($this->_data[$key]);
+		unset($this->data[$key]);
 	}
 
 	/**
@@ -140,9 +158,9 @@ class View
 	public function set($key, $value = null)
 	{
 		if (!is_array($key)) {
-			$this->_data[$key] = $value;
+			$this->data[$key] = $value;
 		} else {
-			$this->_data = array_merge($this->_data, $key);
+			$this->data = array_merge($this->data, $key);
 		}
 		return $this;
 	}
@@ -154,9 +172,59 @@ class View
 	 */
 	public function &get($key)
 	{
-		if (isset($this->_data[$key])) { return $this->_data[$key]; }
+		if (isset($this->data[$key])) { return $this->data[$key]; }
 		$default = null;
 		return $default;
+	}
+
+	/**
+	 * Set module name
+	 *
+	 * @param string $value
+	 * @return View
+	 */
+	public function setModule($value)
+	{
+		if (!is_string($value)) {
+			throw new Exception(__METHOD__ . ' expects a string');
+		}
+		$this->module = (string) $value;
+		return $this;
+	}
+
+	/**
+	 * Get module name
+	 *
+	 * @return string
+	 */
+	public function getModule()
+	{
+		return (string) $this->module;
+	}
+
+	/**
+	 * Set controller name
+	 *
+	 * @param string $value
+	 * @return View
+	 */
+	public function setController($value)
+	{
+		if (!is_string($value)) {
+			throw new Exception(__METHOD__ . ' expects a string');
+		}
+		$this->controller = (string) $value;
+		return $this;
+	}
+
+	/**
+	 * Get controller name
+	 *
+	 * @return string
+	 */
+	public function getController()
+	{
+		return (string) $this->controller;
 	}
 
 	/**
@@ -170,7 +238,11 @@ class View
 		if (!is_string($value)) {
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
-		$this->_view = (string) $value;
+
+		// Detect module definition
+		$path = (($pos = strpos($value, ':')) !== false) ? $this->getPath(substr($value, 0, $pos)) : $this->getPath();
+		$this->view = $path . '/views/' . substr($value, $pos) . '.php';
+
 		return $this;
 	}
 
@@ -181,7 +253,7 @@ class View
 	 */
 	public function getView()
 	{
-		return (string) $this->_view;
+		return (string) $this->view;
 	}
 
 	/**
@@ -195,22 +267,25 @@ class View
 		if (!is_string($value)) {
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
-		$this->_path = (string) $value;
+		$this->path = (string) $value;
 		return $this;
 	}
 
 	/**
 	 * Getter for the view path
+	 * Passing a module value will return a path based on that module name, otherwise the view module value is used
 	 *
+	 * @param string $module
 	 * @return string
 	 */
-	public function getPath()
+	public function getPath($module = null)
 	{
-		return (string) $this->_path;
+		return (string) $this->path . '/' . (null !== $module ? $module : $this->module) . '/views'
 	}
 
 	/**
-	 * Setter for the view layout
+	 * Setter for the view layout.
+	 * You may pass a format of module:path/to/layout in addition to just layout or sub/layout
 	 *
 	 * @param string $value
 	 * @return mixed
@@ -220,7 +295,11 @@ class View
 		if (!is_string($value)) {
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
-		$this->_layout = (string) $value;
+
+		// Detect module definition
+		$path = (($pos = strpos($value, ':')) !== false) ? $this->getPath(substr($value, 0, $pos)) : $this->getPath();
+		$this->layout = $path . '/layouts/' . substr($value, $pos) . '.php';
+
 		return $this;
 	}
 
@@ -231,7 +310,7 @@ class View
 	 */
 	public function getLayout()
 	{
-		return (string) $this->_layout;
+		return (string) $this->layout;
 	}
 
 	/**
@@ -245,21 +324,22 @@ class View
 	 */
 	public function render($viewScript = null, $data = null, $replace = false)
 	{
-		$view = null === $viewScript ? $this->_view : $viewScript;
-		$view = $this->_path . '/' . $view . '.php';
-		$layout = $this->_path . '/layouts/' . $this->_layout . '.php';
+		// Set view script if one was passed
+		if (null !== $view) {
+			$this->setView($view);
+		}
 
 		if (null !== $data && is_array($data)) {
-			$this->_data = $replace === false ? array_merge($this->_data, $data) : $data;
+			$this->data = $replace === false ? array_merge($this->data, $data) : $data;
 		}
 
 		// Catchy any exceptions/errors that happen inside a view
 		try {
 			// Extract data to local variables
-			extract($this->_data);
+			extract($this->data);
 
 			// Throw exception if view file not resolved
-			if ($viewAbsolutePath = stream_resolve_include_path($view)) {
+			if ($viewAbsolutePath = stream_resolve_includepath($this->view)) {
 				// Start output buffering for content
 				ob_start();
 
@@ -271,7 +351,7 @@ class View
 			}
 
 			// Throw exception if layout file not resolved
-			if (!$layoutAbsolutePath = stream_resolve_include_path($layout)) {
+			if (!$layoutAbsolutePath = stream_resolve_includepath($this->layout)) {
 				throw new \RuntimeException('Layout file ' . $layoutAbsolutePath . ' not found');
 			}
 
@@ -298,12 +378,12 @@ class View
 	 */
 	public function partial($viewScript, array $data = array())
 	{
-		$view = $this->_path . '/partials/' . $viewScript . '.php';
+		$view = $this->getPath() . '/partials/' . $viewScript . '.php';
 
-		// Catchy any exceptions/errors that happen inside a view
+		// Catch any exceptions/errors that happen inside a view
 		try {
 			// Render page
-			if (!$resourceAbsolutePath = stream_resolve_include_path($view)) {
+			if (!$resourceAbsolutePath = stream_resolve_includepath($view)) {
 				throw new \RuntimeException('View file ' . $view . ' not found');
 			}
 
