@@ -388,7 +388,7 @@ class View implements \Eve\ResourceInterface
 			extract($this->data);
 
 			// Throw exception if view file not resolved
-			if ($viewAbsolutePath = stream_resolve_includepath($this->view)) {
+			if ($viewAbsolutePath = stream_resolve_include_path($this->view)) {
 				// Start output buffering for content
 				ob_start();
 
@@ -400,7 +400,7 @@ class View implements \Eve\ResourceInterface
 			}
 
 			// Throw exception if layout file not resolved
-			if (!$layoutAbsolutePath = stream_resolve_includepath($this->layout)) {
+			if (!$layoutAbsolutePath = stream_resolve_include_path($this->layout)) {
 				throw new \RuntimeException('Layout file ' . $layoutAbsolutePath . ' not found');
 			}
 
@@ -432,7 +432,7 @@ class View implements \Eve\ResourceInterface
 		// Catch any exceptions/errors that happen inside a view
 		try {
 			// Render page
-			if (!$resourceAbsolutePath = stream_resolve_includepath($view)) {
+			if (!$resourceAbsolutePath = stream_resolve_include_path($view)) {
 				throw new \RuntimeException('View file ' . $view . ' not found');
 			}
 
