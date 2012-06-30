@@ -74,7 +74,7 @@ class View implements \Eve\ResourceInterface
 
 		// Set module and view from request object
 		$this->setModule($request->getModule());
-		$this->setView($request->getController() . '/' . $request->getAction());
+		$this->setView($request->getAction());
 	}
 
 	/**
