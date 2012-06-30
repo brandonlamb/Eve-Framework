@@ -16,21 +16,21 @@ class Request extends Component
 	/**
 	 * @var Request\Method
 	 */
-	protected $_method;
+	protected $method;
 
-	protected $_body;
-	protected $_query;
-	protected $_fragment;
-	protected $_module;
-	protected $_controller;
-	protected $_action;
-	protected $_baseUri;
-	protected $_uri;
-	protected $_params;
-	protected $_language;
-	protected $_exception;
-	protected $_dispatched;
-	protected $_routed;
+	protected $body;
+	protected $query;
+	protected $fragment;
+	protected $module;
+	protected $controller;
+	protected $action;
+	protected $baseUri;
+	protected $uri;
+	protected $params;
+	protected $language;
+	protected $exception;
+	protected $dispatched;
+	protected $routed;
 
 	/**
 	 * Constructor
@@ -41,7 +41,7 @@ class Request extends Component
 	{
 		parent::__construct($config);
 
-		$this->_body = @file_get_contents('php://input');
+		$this->body = @file_get_contents('php://input');
 		$uri = null;
 
 		do {
@@ -83,11 +83,11 @@ class Request extends Component
 
 		// Set the uri and base uri
 		if (null !== $uri) {
-			$this->_uri = preg_replace(self::URI_REGEX, '', parse_url($uri, PHP_URL_PATH));
+			$this->uri = preg_replace(self::URI_REGEX, '', parse_url($uri, PHP_URL_PATH));
 			$parsedUri = parse_url($uri);
-			$this->_query = (isset($parsedUri['query'])) ? $parsedUri['query'] : null;
-			$this->_fragment = (isset($parsedUri['fragment'])) ? $parsedUri['fragment'] : null;
-			$this->_setBaseUri($this->_uri);
+			$this->query = (isset($parsedUri['query'])) ? $parsedUri['query'] : null;
+			$this->fragment = (isset($parsedUri['fragment'])) ? $parsedUri['fragment'] : null;
+			$this->setBaseUri($this->uri);
 		}
 	}
 
@@ -98,7 +98,7 @@ class Request extends Component
 	 */
 	public function getBody()
 	{
-		return $this->_body;
+		return $this->body;
 	}
 
 	/**
@@ -109,7 +109,9 @@ class Request extends Component
 	 */
 	public function setQuery($value = null)
 	{
-		if (null !== $value && is_string($value)) { $this->_query = $value; }
+		if (null !== $value && is_string($value)) {
+			$this->query = $value;
+		}
 		return $this;
 	}
 
@@ -120,7 +122,7 @@ class Request extends Component
 	 */
 	public function getQueryString()
 	{
-		return $this->_query;
+		return $this->query;
 	}
 
 	/**
@@ -131,7 +133,9 @@ class Request extends Component
 	 */
 	public function setFragment($value = null)
 	{
-		if (null !== $value && is_string($value)) {	$this->_fragment = $value; }
+		if (null !== $value && is_string($value)) {
+			$this->fragment = $value;
+		}
 		return $this;
 	}
 
@@ -142,7 +146,7 @@ class Request extends Component
 	 */
 	public function getFragment()
 	{
-		return $this->_fragment;
+		return $this->fragment;
 	}
 
 	/**
@@ -212,18 +216,22 @@ class Request extends Component
 	 * @param string $value
 	 * @return void
 	 */
-	protected function _setBaseUri($value)
+	protected function setBaseUri($value)
 	{
 		$scriptFilename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : null;
 		$ext = 'php';
 
 		do {
-			if (!is_string($scriptFilename)) { break; }
+			if (!is_string($scriptFilename)) {
+				break;
+			}
 
 			$scriptFilename = basename($scriptFilename, $ext);
 			$scriptName = (isset($_SERVER['SCRIPT_NAME'])) ? $_SERVER['SCRIPT_NAME'] : null;
 
-			if (is_string($scriptName)) { $scriptFilename = basename($scriptName); }
+			if (is_string($scriptName)) {
+				$scriptFilename = basename($scriptName);
+			}
 		} while (0);
 	}
 
@@ -235,7 +243,9 @@ class Request extends Component
 	 */
 	public function setModule($value = null)
 	{
-		if (null !== $value) { $this->_module = (string) $value; }
+		if (null !== $value) {
+			$this->module = (string) $value;
+		}
 		return $this;
 	}
 
@@ -246,7 +256,7 @@ class Request extends Component
 	 */
 	public function getModule()
 	{
-		return $this->_module;
+		return $this->module;
 	}
 
 	/**
@@ -257,7 +267,9 @@ class Request extends Component
 	 */
 	public function setController($value = null)
 	{
-		if (null !== $value) { $this->_controller = (string) $value; }
+		if (null !== $value) {
+			$this->controller = (string) $value;
+		}
 		return $this;
 	}
 
@@ -268,7 +280,7 @@ class Request extends Component
 	 */
 	public function getController()
 	{
-		return $this->_controller;
+		return $this->controller;
 	}
 
 	/**
@@ -279,7 +291,9 @@ class Request extends Component
 	 */
 	public function setAction($value = null)
 	{
-		if (null !== $value) { $this->_action = (string) $value; }
+		if (null !== $value) {
+			$this->action = (string) $value;
+		}
 		return $this;
 	}
 
@@ -290,7 +304,7 @@ class Request extends Component
 	 */
 	public function getAction()
 	{
-		return $this->_action;
+		return $this->action;
 	}
 
 	/**
@@ -301,7 +315,9 @@ class Request extends Component
 	 */
 	public function setBaseUri($value = null)
 	{
-		if (null !== $value && strlen($value)) { $this->_baseUri = (string) $value; }
+		if (null !== $value && strlen($value)) {
+			$this->baseUri = (string) $value;
+		}
 		return $this;
 	}
 
@@ -312,7 +328,7 @@ class Request extends Component
 	 */
 	public function getBaseUri()
 	{
-		return $this->_baseUri;
+		return $this->baseUri;
 	}
 
 	/**
@@ -323,7 +339,9 @@ class Request extends Component
 	 */
 	public function setUri($value = null)
 	{
-		if (null !== $value) { $this->_uri = (string) $value; }
+		if (null !== $value) {
+			$this->uri = (string) $value;
+		}
 		return $this;
 	}
 
@@ -334,7 +352,7 @@ class Request extends Component
 	 */
 	public function getUri()
 	{
-		return $this->_uri;
+		return $this->uri;
 	}
 
 	/**
@@ -346,7 +364,9 @@ class Request extends Component
 	 */
 	public function setParam($key, $value = null)
 	{
-		if (null !== $value) { $this->_params[$key] = (string) $value; }
+		if (null !== $value) {
+			$this->params[$key] = (string) $value;
+		}
 		return $this;
 	}
 
@@ -359,7 +379,7 @@ class Request extends Component
 	 */
 	public function getParam($key, $default = null)
 	{
-		return (isset($this->_params[$key])) ? $this->_params[$key] : $default;
+		return (isset($this->params[$key])) ? $this->params[$key] : $default;
 	}
 
 	/**
@@ -370,7 +390,7 @@ class Request extends Component
 	 */
 	public function setDispatched($value)
 	{
-		$this->_dispatched = (bool) $value;
+		$this->dispatched = (bool) $value;
 		return $this;
 	}
 
@@ -381,7 +401,7 @@ class Request extends Component
 	 */
 	public function isDispatched()
 	{
-		return (bool) $this->_dispatched;
+		return (bool) $this->dispatched;
 	}
 
 	/**
@@ -392,7 +412,7 @@ class Request extends Component
 	 */
 	public function setRouted($value)
 	{
-		$this->_routed = (bool) $value;
+		$this->routed = (bool) $value;
 		return $this;
 	}
 
@@ -403,7 +423,7 @@ class Request extends Component
 	 */
 	public function isRouted()
 	{
-		return (bool) $this->_routed;
+		return (bool) $this->routed;
 	}
 
 	/**
@@ -414,7 +434,7 @@ class Request extends Component
 	 */
 	public function setException(\Exception $exception = null)
 	{
-		if (null !== $exception) { $this->_exception = $exception; }
+		if (null !== $exception) { $this->exception = $exception; }
 		return $this;
 	}
 
@@ -425,7 +445,7 @@ class Request extends Component
 	 */
 	public function getException()
 	{
-		return (is_object($this->_exception)) ? $this->_exception : null;
+		return (is_object($this->exception)) ? $this->exception : null;
 	}
 
 	/**
@@ -436,7 +456,9 @@ class Request extends Component
 	 */
 	public function setParams($value = null)
 	{
-		if (null !== $value && is_array($value)) { $this->_params = $value; }
+		if (null !== $value && is_array($value)) {
+			$this->params = $value;
+		}
 		return $this;
 	}
 
@@ -447,7 +469,7 @@ class Request extends Component
 	 */
 	public function getParams()
 	{
-		return $this->_params;
+		return $this->params;
 	}
 
 	/**
@@ -458,7 +480,9 @@ class Request extends Component
 	 */
 	public function setLanguage($value = null)
 	{
-		if (null !== $value) { $this->_language = (string) $value; }
+		if (null !== $value) {
+			$this->language = (string) $value;
+		}
 		return $this;
 	}
 
@@ -469,7 +493,7 @@ class Request extends Component
 	 */
 	public function getLanguage()
 	{
-		return (string) $this->_language;
+		return (string) $this->language;
 	}
 
 	/**
@@ -491,9 +515,9 @@ class Request extends Component
 	 */
 	public function getMethod()
 	{
-		if (null === $this->_method) {
-			$this->_method = new Request\Method();
+		if (null === $this->method) {
+			$this->method = new Request\Method();
 		}
-		return $this->_method;
+		return $this->method;
 	}
 }
