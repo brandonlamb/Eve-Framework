@@ -4,16 +4,16 @@
  *
  * CWebUser is used as an application component whose ID is 'user'.
  * Therefore, at any place one can access the user state via
- * <code>Yii::app()->user</code>.
+ * <code>\Eve::app()->user</code>.
  *
- * CWebUser should be used together with an {@link IUserIdentity identity}
+ * CWebUser should be used together with an {@link UserIdentityInterface identity}
  * which implements the actual authentication algorithm.
  *
  * A typical authentication process using CWebUser is as follows:
  * <ol>
  * <li>The user provides information needed for authentication.</li>
- * <li>An {@link IUserIdentity identity instance} is created with the user-provided information.</li>
- * <li>Call {@link IUserIdentity::authenticate} to check if the identity is valid.</li>
+ * <li>An {@link UserIdentityInterface identity instance} is created with the user-provided information.</li>
+ * <li>Call {@link UserIdentityInterface::authenticate} to check if the identity is valid.</li>
  * <li>If valid, call {@link CWebUser::login} to login the user, and
  *     Redirect the user browser to {@link returnUrl}.</li>
  * <li>If not valid, retrieve the error code or message from the identity
@@ -25,7 +25,7 @@
  * the latter is for display purpose (e.g. username). The {@link id} property
  * is a unique identifier for a user that is persistent
  * during the whole user session. It can be a username, or something else,
- * depending on the implementation of the {@link IUserIdentity identity class}.
+ * depending on the implementation of the {@link UserIdentityInterface identity class}.
  *
  * Both {@link id} and {@link name} are persistent during the user session.
  * Besides, an identity may have additional persistent data which can
@@ -54,8 +54,8 @@ use \Eve\Mvc;
 
 class WebUser extends Mvc\Component implements WebUserInterface
 {
-	const FLASH_KEY_PREFIX	= 'Eve.WebUser.flash.';
-	const FLASH_COUNTERS	= 'Eve.WebUser.flashcounters';
+	const FLASH_KEY_PREFIX	= 'Eve.Auth.WebUser.flash.';
+	const FLASH_COUNTERS	= 'Eve.Auth.WebUser.flashcounters';
 	const STATES_VAR		= '__states';
 	const AUTH_TIMEOUT_VAR	= '__timeout';
 
@@ -126,8 +126,8 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public $loginRequiredAjaxResponse;
 
-	private $_keyPrefix;
-	private $_access = array();
+	private $keyPrefix;
+	private $access = array();
 
 	/**
 	 * PHP magic method.
@@ -218,7 +218,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 * Note, you have to set {@link allowAutoLogin} to true
 	 * if you want to allow user to be authenticated based on the cookie information.
 	 *
-	 * @param IUserIdentity $identity the user identity (which should already be authenticated)
+	 * @param UserIdentityInterface $identity the user identity (which should already be authenticated)
 	 * @param integer $duration number of seconds that the user can remain in logged-in status. Defaults to 0, meaning login till the user closes the browser.
 	 * If greater than 0, cookie-based login will be used. In this case, {@link allowAutoLogin}
 	 * must be set true, otherwise an exception will be thrown.
@@ -249,6 +249,8 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 * Logs out the current user.
 	 * This will remove authentication-related session data.
 	 * If the parameter is true, the whole session will be destroyed as well.
+	 *
+	 * @todo implement the getCookies()
 	 * @param boolean $destroySession whether to destroy the whole session. Defaults to true. If false,
 	 * then {@link clearStates} will be called, which removes only the data stored via {@link setState}.
 	 */
@@ -256,17 +258,17 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	{
 		if ($this->beforeLogout()) {
 			if ($this->allowAutoLogin) {
-				Yii::app()->getRequest()->getCookies()->remove($this->getStateKeyPrefix());
+				\Eve::app()->getRequest()->getCookies()->remove($this->getStateKeyPrefix());
 				if ($this->identityCookie !== null) {
 					$cookie = $this->createIdentityCookie($this->getStateKeyPrefix());
 					$cookie->value = null;
 					$cookie->expire = 0;
-					Yii::app()->getRequest()->getCookies()->add($cookie->name, $cookie);
+					\Eve::app()->getRequest()->getCookies()->add($cookie->name, $cookie);
 				}
 			}
 
 			if ($destroySession) {
-				Yii::app()->getSession()->destroy();
+				\Eve::app()->getSession()->destroy();
 			} else {
 				$this->clearStates();
 			}
@@ -324,6 +326,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 * Returns the URL that the user should be redirected to after successful login.
 	 * This property is usually used by the login action. If the login is successful,
 	 * the action should read this property and use it to redirect the user browser.
+	 *
 	 * @param string $defaultUrl the default return URL in case it was not set previously. If this is null,
 	 * the application entry URL will be considered as the default return URL.
 	 * @return string the URL that the user should be redirected to after login.
@@ -332,7 +335,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	public function getReturnUrl($defaultUrl=null)
 	{
 		return $this->getState('__returnUrl', $defaultUrl === null ?
-			Yii::app()->getRequest()->getScriptUrl() : CHtml::normalizeUrl($defaultUrl));
+			\Eve::app()->getRequest()->getScriptUrl() : CHtml::normalizeUrl($defaultUrl));
 	}
 
 	/**
@@ -354,18 +357,18 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public function loginRequired()
 	{
-		$app = Yii::app();
+		$app = \Eve::app();
 		$request = $app->getRequest();
 
 		if (!$request->getIsAjaxRequest()) {
 			$this->setReturnUrl($request->getUrl());
 		} else if (isset($this->loginRequiredAjaxResponse)) {
 			echo $this->loginRequiredAjaxResponse;
-			Yii::app()->end();
+			\Eve::app()->end();
 		}
 
 		if (($url = $this->loginUrl) === null) {
-			throw new CHttpException(403, Yii::t('yii', 'Login Required'));
+			throw new CHttpException(403, \Eve::t('yii', 'Login Required'));
 		}
 
 		if (is_array($url)) {
@@ -439,11 +442,11 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	protected function restoreFromCookie()
 	{
-		$app = Yii::app();
+		$app = \Eve::app();
 		$request = $app->getRequest();
 		$cookie = $request->getCookies()->itemAt($this->getStateKeyPrefix());
 		if ($cookie && !empty($cookie->value)
-			&& ($data=$app->getSecurityManager()->validateData($cookie->value)) !== false) {
+			&& ($data = $app->getSecurityManager()->validateData($cookie->value)) !== false) {
 			$data = @unserialize($data);
 
 			if (is_array($data) && isset($data[0], $data[1], $data[2], $data[3])) {
@@ -469,11 +472,11 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	protected function renewCookie()
 	{
-		$request = Yii::app()->getRequest();
+		$request = \Eve::app()->getRequest();
 		$cookies = $request->getCookies();
 		$cookie = $cookies->itemAt($this->getStateKeyPrefix());
 		if ($cookie && !empty($cookie->value)
-			&& ($data=Yii::app()->getSecurityManager()->validateData($cookie->value)) !== false) {
+			&& ($data=\Eve::app()->getSecurityManager()->validateData($cookie->value)) !== false) {
 			$data = @unserialize($data);
 
 			if (is_array($data) && isset($data[0], $data[1], $data[2], $data[3])) {
@@ -493,7 +496,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	protected function saveToCookie($duration)
 	{
-		$app = Yii::app();
+		$app = \Eve::app();
 		$cookie = $this->createIdentityCookie($this->getStateKeyPrefix());
 		$cookie->expire = time() + $duration;
 		$data = array(
@@ -516,7 +519,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 		$cookie = new CHttpCookie($name, '');
 		if (is_array($this->identityCookie)) {
 			foreach ($this->identityCookie as $name => $value) {
-				$cookie->$name=$value;
+				$cookie->$name = $value;
 			}
 		}
 		return $cookie;
@@ -527,10 +530,10 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public function getStateKeyPrefix()
 	{
-		if ($this->_keyPrefix !== null) {
-			return $this->_keyPrefix;
+		if ($this->keyPrefix !== null) {
+			return $this->keyPrefix;
 		} else {
-			return $this->_keyPrefix = md5('Yii.' . get_class($this) . '.' . Yii::app()->getId());
+			return $this->keyPrefix = md5('Eve.Auth.' . get_class($this) . '.' . \Eve::app()->getId());
 		}
 	}
 
@@ -539,7 +542,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public function setStateKeyPrefix($value)
 	{
-		$this->_keyPrefix = $value;
+		$this->keyPrefix = $value;
 	}
 
 	/**
@@ -640,7 +643,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 		}
 
 		if ($delete) {
-			$this->setState(self::FLASH_COUNTERS,array());
+			$this->setState(self::FLASH_COUNTERS, array());
 		}
 		return $flashes;
 	}
@@ -658,7 +661,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	{
 		$value = $this->getState(self::FLASH_KEY_PREFIX . $key, $defaultValue);
 		if ($delete) {
-			$this->setFlash($key,null);
+			$this->setFlash($key, null);
 		}
 		return $value;
 	}
@@ -678,7 +681,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 		if ($value === $defaultValue) {
 			unset($counters[$key]);
 		} else {
-			$counters[$key]=0;
+			$counters[$key] = 0;
 		}
 		$this->setState(self::FLASH_COUNTERS, $counters, array());
 	}
@@ -705,7 +708,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	protected function changeIdentity($id, $name, $states)
 	{
-		Yii::app()->getSession()->regenerateID();
+		\Eve::app()->getSession()->regenerateID();
 		$this->setId($id);
 		$this->setName($name);
 		$this->loadIdentityStates($states);
@@ -721,7 +724,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	{
 		$states = array();
 		foreach ($this->getState(self::STATES_VAR, array()) as $name => $dummy) {
-			$states[$name]=$this->getState($name);
+			$states[$name] = $this->getState($name);
 		}
 		return $states;
 	}
@@ -799,10 +802,10 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public function checkAccess($operation, $params = array(), $allowCaching=true)
 	{
-		if ($allowCaching && $params === array() && isset($this->_access[$operation])) {
-			return $this->_access[$operation];
+		if ($allowCaching && $params === array() && isset($this->access[$operation])) {
+			return $this->access[$operation];
 		} else {
-			return $this->_access[$operation] = Yii::app()->getAuthManager()->checkAccess($operation, $this->getId(), $params);
+			return $this->access[$operation] = \Eve::app()->getAuthManager()->checkAccess($operation, $this->getId(), $params);
 		}
 	}
 }

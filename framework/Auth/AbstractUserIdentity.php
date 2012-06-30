@@ -45,7 +45,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public $errorMessage = '';
 
-	private $_state = array();
+	private $state = array();
 
 	/**
 	 * Returns a value that uniquely represents the identity.
@@ -77,7 +77,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public function getPersistentStates()
 	{
-		return $this->_state;
+		return $this->state;
 	}
 
 	/**
@@ -87,7 +87,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public function setPersistentStates($states)
 	{
-		$this->_state = $states;
+		$this->state = $states;
 	}
 
 	/**
@@ -110,7 +110,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public function getState($name, $defaultValue = null)
 	{
-		return isset($this->_state[$name]) ? $this->_state[$name] : $defaultValue;
+		return isset($this->state[$name]) ? $this->state[$name] : $defaultValue;
 	}
 
 	/**
@@ -121,7 +121,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public function setState($name, $value)
 	{
-		$this->_state[$name] = $value;
+		$this->state[$name] = $value;
 	}
 
 	/**
@@ -130,6 +130,6 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 	 */
 	public function clearState($name)
 	{
-		unset($this->_state[$name]);
+		unset($this->state[$name]);
 	}
 }
