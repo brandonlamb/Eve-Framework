@@ -15,10 +15,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function setUp()
 	{
-		global $_SERVER;
-		$_SERVER = array(
-			'PATH_INFO' => '/modulex/controllerx/actionx',
-		);
+		$_SERVER['PATH_INFO'] = '/modulex/controllerx/actionx';
 
 		$this->request = new \Eve\Mvc\Request();
 		$this->view = new Mvc\View('/test', $request);
