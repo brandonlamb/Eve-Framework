@@ -17,7 +17,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	{
 		$_SERVER['PATH_INFO'] = '/modulex/controllerx/actionx';
 
-		$this->request = new \Eve\Mvc\Request();
+		$this->request = new \Eve\Mvc\Request(array());
 		$this->view = new Mvc\View('/test', $request);
 	}
 
@@ -92,7 +92,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('index', $this->view->getView());
 
 		$this->view->setView('abc');
-		$this->assertEquals('abc', $this->view->getView());
+		$this->assertEquals('/test/Modulex/controllerx/abc.php', $this->view->getView());
 
 #		$this->view->setView(array(1, 2, 3));
 #		$this->assertEquals('abc', $this->view->getView());
