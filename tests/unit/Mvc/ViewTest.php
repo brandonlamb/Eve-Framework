@@ -30,7 +30,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testConstruct()
 	{
-		$view = new Mvc\View('testPath', $this->request);
+		$view = new Mvc\View('/testPath', $this->request);
 		$this->assertEquals('/testPath/Modulex', $view->getPath());
 	}
 
@@ -78,8 +78,8 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	{
 		$this->assertEquals('/test/Modulex', $this->view->getPath());
 
-		$this->view->setPath('abc');
-		$this->assertEquals('abc', $this->view->getPath());
+		$this->view->setPath('/abc');
+		$this->assertEquals('/abc/Modulex', $this->view->getPath());
 
 #		$this->view->setPath(array(1, 2, 3));
 #		$this->assertEquals('abc', $this->view->getPath());
@@ -91,10 +91,10 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testGetSetView()
 	{
-		$this->assertEquals('index', $this->view->getView());
+		$this->assertEquals('/test/Modulex/views/controllerx/actionx.php', $this->view->getView());
 
 		$this->view->setView('abc');
-		$this->assertEquals('/test/Modulex/views/controllerx/actionx.php', $this->view->getView());
+		$this->assertEquals('/test/Modulex/views/controllerx/abc.php', $this->view->getView());
 
 #		$this->view->setView(array(1, 2, 3));
 #		$this->assertEquals('abc', $this->view->getView());
