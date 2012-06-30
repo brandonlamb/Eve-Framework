@@ -10,7 +10,7 @@
  */
 namespace Eve\Mvc;
 
-abstract class AbstractController extends Component
+abstract class AbstractController extends Component implements \Eve\ResourceInterface
 {
 	/**
 	 * Request object
@@ -39,14 +39,6 @@ abstract class AbstractController extends Component
 	 * @var string
 	 */
 	const LAYOUT = null;
-
-	/**
-	 * Resource names
-	 *
-	 * @var string
-	 */
-	const RES_CONFIG = 'config';
-	const RES_RESPONSE	= 'response';
 
 	/**
 	 * Constructor
