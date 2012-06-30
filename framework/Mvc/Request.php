@@ -84,7 +84,7 @@ class Request extends Component
 		// Set the uri and base uri
 		if (null !== $uri) {
 			$this->_uri = preg_replace(self::URI_REGEX, '', parse_url($uri, PHP_URL_PATH));
-			$parsedUri = parse_url($_SERVER['REQUEST_URI']);
+			$parsedUri = parse_url($uri);
 			$this->_query = (isset($parsedUri['query'])) ? $parsedUri['query'] : null;
 			$this->_fragment = (isset($parsedUri['fragment'])) ? $parsedUri['fragment'] : null;
 			$this->_setBaseUri($this->_uri);
