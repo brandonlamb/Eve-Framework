@@ -75,65 +75,65 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 * @var array
 	 */
 	private static $_class = array(
-		'Eve\Util\File'					=> '/Eve/Util/File.php',
-		'Eve\Util\Strings'				=> '/Eve/Util/Strings.php',
-		'Eve\Util\Mobile'				=> '/Eve/Util/Mobile.php',
-		'Eve\Util\Arrays'				=> '/Eve/Util/Arrays.php',
-		'Eve\Util\Map'					=> '/Eve/Util/Map.php',
-		'Eve\Util\Date'					=> '/Eve/Util/Date.php',
-		'Eve\Util\Input'				=> '/Eve/Util/Input.php',
-		'Eve\Util\Upload'				=> '/Eve/Util/Upload.php',
-		'Eve\Filter\Strings'			=> '/Eve/Filter/Strings.php',
-		'Eve\Session\Apc'				=> '/Eve/Session/Apc.php',
-		'Eve\Session\File'				=> '/Eve/Session/File.php',
-		'Eve\Session\Db'				=> '/Eve/Session/Db.php',
-		'Eve\Session\DriverInterface'	=> '/Eve/Session/DriverInterface.php',
-		'Eve\Session\Memcache'			=> '/Eve/Session/Memcache.php',
-		'Eve\Session\Cookie'			=> '/Eve/Session/Cookie.php',
-		'Eve\Session\SweeperInterface'	=> '/Eve/Session/SweeperInterface.php',
-		'Eve\Cache\File'				=> '/Eve/Cache/File.php',
-		'Eve\Cache\File\Exception'		=> '/Eve/Cache/File/Exception.php',
-		'Eve\Cache\Memcache\Exception'	=> '/Eve/Cache/Memcache/Exception.php',
-		'Eve\Cache\Memcache'			=> '/Eve/Cache/Memcache.php',
-		'Eve\Curl\Json'					=> '/Eve/Curl/Json.php',
-		'Eve\Database\Mysql'			=> '/Eve/Database/Mysql.php',
-		'Eve\Database\Pdo'				=> '/Eve/Database/Pdo.php',
-		'Eve\Database\Exception'		=> '/Eve/Database/Exception.php',
-		'Eve\Mvc\ControllerException'	=> '/Eve/Mvc/ControllerException.php',
-		'Eve\Mvc\Component'				=> '/Eve/Mvc/Component.php',
-		'Eve\Mvc\AbstractController'	=> '/Eve/Mvc/AbstractController.php',
-		'Eve\Mvc\Autoloader'			=> '/Eve/Mvc/Autoloader.php',
-		'Eve\Mvc\SplClassLoader'		=> '/Eve/Mvc/SplClassLoader.php',
-		'Eve\Mvc\DispatcherException'	=> '/Eve/Mvc/DispatcherException.php',
-		'Eve\Mvc\Event'					=> '/Eve/Mvc/Event.php',
-		'Eve\Mvc\View'					=> '/Eve/Mvc/View.php',
-		'Eve\Mvc\Request'				=> '/Eve/Mvc/Request.php',
-		'Eve\Mvc\Request\Method'		=> '/Eve/Mvc/Request/Method.php',
-		'Eve\Mvc\Config'				=> '/Eve/Mvc/Config.php',
-		'Eve\Mvc\ViewException'			=> '/Eve/Mvc/ViewException.php',
-		'Eve\Mvc\Error'					=> '/Eve/Mvc/Error.php',
-		'Eve\Mvc\Response'				=> '/Eve/Mvc/Response.php',
-		'Eve\Mvc\Dispatcher'			=> '/Eve/Mvc/Dispatcher.php',
-		'Eve\Mvc\Router\AbstractRouter'	=> '/Eve/Mvc/Router/AbstractRouter.php',
-		'Eve\Mvc\Router\Simple'			=> '/Eve/Mvc/Router/Simple.php',
-		'Eve\Mvc\Router\RouterInterface'=> '/Eve/Mvc/Router/RouterInterface.php',
-		'Eve\Mvc\RequestException'		=> '/Eve/Mvc/RequestException.php',
-		'Eve\Mvc\SplAutoLoader'			=> '/Eve/Mvc/SplAutoLoader.php',
-		'Eve\Mvc\Exception'				=> '/Eve/Mvc/Exception.php',
-		'Eve\Mvc\ErrorException'		=> '/Eve/Mvc/ErrorException.php',
-		'Eve\Benchmark'					=> '/Eve/Benchmark.php',
-		'Eve\Crypter'					=> '/Eve/Crypter.php',
-		'Eve\Database'					=> '/Eve/Database.php',
-		'Eve\EveBase'					=> '/Eve/EveBase.php',
-		'Eve\Eve'						=> '/Eve/Eve.php',
-		'Eve\Exception'					=> '/Eve/Exception.php',
-		'Eve\Filter'					=> '/Eve/Filter.php',
-		'Eve\Flash'						=> '/Eve/Flash.php',
-		'Eve\Logger'					=> '/Eve/Logger.php',
-		'Eve\Mail'						=> '/Eve/Mail.php',
-		'Eve\PasswordHash'				=> '/Eve/PasswordHash.php',
-		'Eve\Session'					=> '/Eve/Session.php',
-		'Eve\Validate'					=> '/Eve/Validate.php',
+		'Eve\Util\File'					=> '/Eve/framework/Util/File.php',
+		'Eve\Util\Strings'				=> '/Eve/framework/Util/Strings.php',
+		'Eve\Util\Mobile'				=> '/Eve/framework/Util/Mobile.php',
+		'Eve\Util\Arrays'				=> '/Eve/framework/Util/Arrays.php',
+		'Eve\Util\Map'					=> '/Eve/framework/Util/Map.php',
+		'Eve\Util\Date'					=> '/Eve/framework/Util/Date.php',
+		'Eve\Util\Input'				=> '/Eve/framework/Util/Input.php',
+		'Eve\Util\Upload'				=> '/Eve/framework/Util/Upload.php',
+		'Eve\Filter\Strings'			=> '/Eve/framework/Filter/Strings.php',
+		'Eve\Session\Apc'				=> '/Eve/framework/Session/Apc.php',
+		'Eve\Session\File'				=> '/Eve/framework/Session/File.php',
+		'Eve\Session\Db'				=> '/Eve/framework/Session/Db.php',
+		'Eve\Session\DriverInterface'	=> '/Eve/framework/Session/DriverInterface.php',
+		'Eve\Session\Memcache'			=> '/Eve/framework/Session/Memcache.php',
+		'Eve\Session\Cookie'			=> '/Eve/framework/Session/Cookie.php',
+		'Eve\Session\SweeperInterface'	=> '/Eve/framework/Session/SweeperInterface.php',
+		'Eve\Cache\File'				=> '/Eve/framework/Cache/File.php',
+		'Eve\Cache\File\Exception'		=> '/Eve/framework/Cache/File/Exception.php',
+		'Eve\Cache\Memcache\Exception'	=> '/Eve/framework/Cache/Memcache/Exception.php',
+		'Eve\Cache\Memcache'			=> '/Eve/framework/Cache/Memcache.php',
+		'Eve\Curl\Json'					=> '/Eve/framework/Curl/Json.php',
+		'Eve\Database\Mysql'			=> '/Eve/framework/Database/Mysql.php',
+		'Eve\Database\Pdo'				=> '/Eve/framework/Database/Pdo.php',
+		'Eve\Database\Exception'		=> '/Eve/framework/Database/Exception.php',
+		'Eve\Mvc\ControllerException'	=> '/Eve/framework/Mvc/ControllerException.php',
+		'Eve\Mvc\Component'				=> '/Eve/framework/Mvc/Component.php',
+		'Eve\Mvc\AbstractController'	=> '/Eve/framework/Mvc/AbstractController.php',
+		'Eve\Mvc\Autoloader'			=> '/Eve/framework/Mvc/Autoloader.php',
+		'Eve\Mvc\SplClassLoader'		=> '/Eve/framework/Mvc/SplClassLoader.php',
+		'Eve\Mvc\DispatcherException'	=> '/Eve/framework/Mvc/DispatcherException.php',
+		'Eve\Mvc\Event'					=> '/Eve/framework/Mvc/Event.php',
+		'Eve\Mvc\View'					=> '/Eve/framework/Mvc/View.php',
+		'Eve\Mvc\Request'				=> '/Eve/framework/Mvc/Request.php',
+		'Eve\Mvc\Request\Method'		=> '/Eve/framework/Mvc/Request/Method.php',
+		'Eve\Mvc\Config'				=> '/Eve/framework/Mvc/Config.php',
+		'Eve\Mvc\ViewException'			=> '/Eve/framework/Mvc/ViewException.php',
+		'Eve\Mvc\Error'					=> '/Eve/framework/Mvc/Error.php',
+		'Eve\Mvc\Response'				=> '/Eve/framework/Mvc/Response.php',
+		'Eve\Mvc\Dispatcher'			=> '/Eve/framework/Mvc/Dispatcher.php',
+		'Eve\Mvc\Router\AbstractRouter'	=> '/Eve/framework/Mvc/Router/AbstractRouter.php',
+		'Eve\Mvc\Router\Simple'			=> '/Eve/framework/Mvc/Router/Simple.php',
+		'Eve\Mvc\Router\RouterInterface'=> '/Eve/framework/Mvc/Router/RouterInterface.php',
+		'Eve\Mvc\RequestException'		=> '/Eve/framework/Mvc/RequestException.php',
+		'Eve\Mvc\SplAutoLoader'			=> '/Eve/framework/Mvc/SplAutoLoader.php',
+		'Eve\Mvc\Exception'				=> '/Eve/framework/Mvc/Exception.php',
+		'Eve\Mvc\ErrorException'		=> '/Eve/framework/Mvc/ErrorException.php',
+		'Eve\Benchmark'					=> '/Eve/framework/Benchmark.php',
+		'Eve\Crypter'					=> '/Eve/framework/Crypter.php',
+		'Eve\Database'					=> '/Eve/framework/Database.php',
+		'Eve\EveBase'					=> '/Eve/framework/EveBase.php',
+		'Eve\Eve'						=> '/Eve/framework/Eve.php',
+		'Eve\Exception'					=> '/Eve/framework/Exception.php',
+		'Eve\Filter'					=> '/Eve/framework/Filter.php',
+		'Eve\Flash'						=> '/Eve/framework/Flash.php',
+		'Eve\Logger'					=> '/Eve/framework/Logger.php',
+		'Eve\Mail'						=> '/Eve/framework/Mail.php',
+		'Eve\PasswordHash'				=> '/Eve/framework/PasswordHash.php',
+		'Eve\Session'					=> '/Eve/framework/Session.php',
+		'Eve\Validate'					=> '/Eve/framework/Validate.php',
 	);
 
 	/**
@@ -146,18 +146,20 @@ class SplClassLoader implements Mvc\SplAutoloader
 				sprintf('Cannot have %s working normally and silently at the same time!', __CLASS__)
 			);
 		}
-
 		$this->_mode = $mode;
+		return $this;
 	}
 
 	/**
 	 * Define the file extension of resource files in the path of this class loader.
 	 *
 	 * @param string $fileExtension
+	 * @return SplClassLoader
 	 */
 	public function setFileExtension($fileExtension)
 	{
 		$this->_fileExtension = $fileExtension;
+		return $this;
 	}
 
 	/**
@@ -174,10 +176,12 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 * Turns on searching the include for class files. Allows easy loading installed PEAR packages.
 	 *
 	 * @param boolean $includePathLookup
+	 * @return SplClassLoader
 	 */
 	public function setIncludePathLookup($includePathLookup)
 	{
 		$this->_includePathLookup = $includePathLookup;
+		return $this;
 	}
 
 	/**
@@ -220,6 +224,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	public function load($resourceName)
 	{
 		if (isset(static::$_class[$resourceName])) {
+#			d(\Eve::app()->getComponent('config')->get('vendorsPath') . static::$_class[$resourceName]);
 			require \Eve::app()->getComponent('config')->get('vendorsPath') . static::$_class[$resourceName];
 			return true;
 		}
@@ -228,7 +233,6 @@ class SplClassLoader implements Mvc\SplAutoloader
 
 		switch ($this->_mode) {
 			case self::MODE_SILENT:
-echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 				if ($resourceAbsolutePath === false) {
 					return false;
 				}
@@ -246,7 +250,9 @@ echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 
 			case self::MODE_NORMAL:
 			default:
-
+				if ($resourceAbsolutePath === false) {
+					return false;
+				}
 				require $resourceAbsolutePath;
 				break;
 		}
@@ -264,21 +270,20 @@ echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 	 * Transform resource name into its absolute resource path representation.
 	 *
 	 * @param string $resourceName
-	 * @return string Resource absolute path.
+	 * @return string|bool Resource absolute path.
 	 */
 	private function getResourceAbsolutePath($resourceName)
 	{
-		$resourceRelativePath = $this->getResourceRelativePath($resourceName);
-
 		foreach ($this->_resources as $resource => $resourcesPath) {
 			if (strpos($resourceName, $resource) !== 0) {
 				continue;
 			}
 
 			foreach ($resourcesPath as $resourcePath) {
+				$resourceRelativePath = $this->getResourceRelativePath($resourceName);
 				$resourceAbsolutePath = $resourcePath . DIRECTORY_SEPARATOR . $resourceRelativePath;
 
-				if (is_file($resourceAbsolutePath)) {
+				if (($resourceAbsolutePath = stream_resolve_include_path($resourceAbsolutePath)) !== false) {
 					return $resourceAbsolutePath;
 				}
 			}
@@ -303,14 +308,14 @@ echo "LOAD: $resourceName / $resourceAbsolutePath\n";
 		$resourceName = ltrim($resourceName, '\\');
 		$resourcePath = '';
 
-		if (($lastNamespacePosition = strrpos($resourceName, '\\')) !== false) {
+		if (($lastNamespacePosition = strpos($resourceName, '\\')) !== false) {
 			// Namespaced resource name
 			$resourceNamespace = substr($resourceName, 0, $lastNamespacePosition);
 			$resourceName = substr($resourceName, $lastNamespacePosition + 1);
-			$resourcePath =  str_replace('\\', DIRECTORY_SEPARATOR, $resourceNamespace) . DIRECTORY_SEPARATOR;
+			$resourcePath =  str_replace('\\', DIRECTORY_SEPARATOR, $resourceName);
 		}
 
-		return $resourcePath . str_replace('_', DIRECTORY_SEPARATOR, $resourceName) . $this->_fileExtension;
+		return str_replace('_', DIRECTORY_SEPARATOR, $resourcePath) . $this->_fileExtension;
 	}
 
 	/**

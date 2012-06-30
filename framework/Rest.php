@@ -10,7 +10,8 @@
  */
 namespace Eve;
 
-class Rest extends Resource
+#class Rest extends Resource
+class Rest
 {
 	/**
 	 * Base URL of the REST server
@@ -64,7 +65,7 @@ class Rest extends Resource
 	 *
 	 * @var array
 	 */
-	protected headers = array(
+	protected $headers = array(
 		'Accept'			=> '*/*',
 		'Accept-Language'	=> 'en-gb,en;q=0.5',
 		'Accept-Charset'	=> 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
@@ -95,7 +96,7 @@ class Rest extends Resource
 	 *
 	 * @param string $url
 	 */
-	public function __construct($baseUrl, Rest\ParserInterface $parser = null)
+	public function __construct($baseUrl = null, Rest\ParserInterface $parser = null)
 	{
 		$this->baseUrl = $baseUrl;
 		$this->parser = $parser;
@@ -135,6 +136,7 @@ class Rest extends Resource
 	{
 		$options = array(CURLOPT_POST => true);
 		if (null !== $data) {
+#			$options[CURLOPT_POSTFIELDS] = http_build_query($data);
 			$options[CURLOPT_POSTFIELDS] = $data;
 		}
 		return $this->request($this->baseUrl . $path, $options);
@@ -218,7 +220,8 @@ class Rest extends Resource
 				$retry--;
 			}
 		} else {
-			$this->_response = curl_exec($this->_curl);
+			$this->response = curl_exec($curl);
+			$meta = curl_getinfo($curl);
 		}
 
 		curl_close($curl);
@@ -228,7 +231,7 @@ class Rest extends Resource
 
 		// Return parsed response if a parser was specified, otherwise send the raw response
 		if ($this->parser instanceof Rest\ParserInterface) {
-			return $this->parser->parse($this->response)
+			return $this->parser->parse($this->response);
 		} else {
 			return $this->response;
 		}
@@ -292,6 +295,28 @@ class Rest extends Resource
 	public function getRetry()
 	{
 		return (int) $this->retry;
+	}
+
+	/**
+	 * Set base URL
+	 *
+	 * @param string
+	 * @return Rest
+	 */
+	public function setBaseUrl($value)
+	{
+		$this->baseUrl = (string) $value;
+		return $this;
+	}
+
+	/**
+	 * Get base URL
+	 *
+	 * @return string
+	 */
+	public function getBaseUrl()
+	{
+		return (string) $this->baseUrl;
 	}
 
 	/**

@@ -10,7 +10,7 @@
  */
 namespace Eve\Mvc;
 
-class View
+class View implements \Eve\ResourceInterface
 {
 	/**
 	 * Path to views directory
@@ -53,11 +53,6 @@ class View
 	 * @var array
 	 */
 	protected $data = array();
-
-	/**
-	 * @const string
-	 */
-	const RES_CONFIG = 'config';
 
 	/**
 	 * Returns a new view object for the given view.

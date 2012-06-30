@@ -138,11 +138,7 @@ class WebUser extends Mvc\Component implements WebUserInterface
 	 */
 	public function __get($name)
 	{
-		if ($this->hasState($name)) {
-			return $this->getState($name);
-		} else {
-			return parent::__get($name);
-		}
+		return $this->hasState($name) ? $this->getState($name) : parent::__get($name);
 	}
 
 	/**

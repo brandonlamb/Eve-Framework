@@ -12,4 +12,4 @@ namespace Eve\Mvc\Router;
 // Namespace aliases
 use Eve\Mvc as Mvc;
 
-abstract class AbstractRouter extends Mvc\Component implements RouterInterface {}
+abstract class AbstractRouter extends Mvc\Component implements RouterInterface, \Eve\ResourceInterface {}

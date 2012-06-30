@@ -250,7 +250,9 @@ class Flash extends Mvc\Component
 		foreach ($keys as $key) {
 			if (!strncmp($key, $prefix, $n)) {
 				$flashes[substr($key, $n)] = $_SESSION[$key];
-				if ($delete) { unset($_SESSION[$key]); }
+				if ($delete) {
+					unset($_SESSION[$key]);
+				}
 			}
 		}
 
@@ -344,7 +346,9 @@ class Flash extends Mvc\Component
 	protected function updateFlash()
 	{
 		$counters=$this->getState(self::FLASH_COUNTERS);
-		if (!is_array($counters)) { return; }
+		if (!is_array($counters)) {
+			return;
+		}
 		foreach ($counters as $key => $count) {
 			if ($count) {
 				unset($counters[$key]);

@@ -43,8 +43,13 @@ class Crypter extends Mvc\Component
 	public function encrypt($value)
 	{
 		$cryptIv = mcrypt_create_iv($this->_ivSize(), static::getRandomizer());
-		return base64_encode($cryptIv . mcrypt_encrypt($this->_config['cipher'],
-			$this->_config['key'], $value, $this->_config['mode'], $cryptIv));
+		return base64_encode(
+			$cryptIv . mcrypt_encrypt($this->_config['cipher'],
+			$this->_config['key'],
+			$value,
+			$this->_config['mode'],
+			$cryptIv
+		));
 	}
 
 	/**

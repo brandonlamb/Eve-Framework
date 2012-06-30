@@ -46,7 +46,6 @@ class Method
 				break;
 			default:
 				throw new \Eve\Mvc\RequestException('Invalid method type ' . $value);
-
 		}
 	}
 

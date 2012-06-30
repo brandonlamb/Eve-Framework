@@ -8,17 +8,10 @@ class Pdo extends \PDO
 	 *
 	 * @var string
 	 */
-	protected $_type;
-	protected $_dsn;
-	protected $_username;
-	protected $_password;
-
-	/**
-	 * Suppress error messages (mainly for sessions)
-	 *
-	 * @var bool
-	 */
-	private $_noerrors;
+	protected $type;
+	protected $dsn;
+	protected $username;
+	protected $password;
 
 	/**
 	 * Constructor
@@ -30,13 +23,12 @@ class Pdo extends \PDO
 	 * @param bool $noerrors
 	 * @return void
 	 */
-	public function __construct($dsn, $username, $password, $noerrors)
+	public function __construct($dsn, $username, $password)
 	{
 		// Set error setting
-		$this->_dsn			= $dsn;
-		$this->_username	= $username;
-		$this->_password	= $password;
-		$this->_noerrors	= $noerrors;
+		$this->dsn		= $dsn;
+		$this->username	= $username;
+		$this->password	= $password;
 
 		// Verify dsn type
 		$type = substr($dsn, 0, strpos($dsn, ':'));
@@ -54,9 +46,9 @@ class Pdo extends \PDO
 			default:
 				$type = 'mysql';
 		}
-		$this->_type = $type;
+		$this->type = $type;
 
-		$this->_connect();
+		$this->connect();
 	}
 
 	/**
@@ -65,13 +57,13 @@ class Pdo extends \PDO
 	 * @throws Exception
 	 * @return void
 	 */
-	protected function _connect()
+	protected function connect()
 	{
 		try {
-			parent::__construct($this->_dsn, $this->_username, $this->_password);
+			parent::__construct($this->dsn, $this->username, $this->password);
 
 			// Added to mysql connections to prevent weird error
-			switch ($this->_type) {
+			switch ($this->type) {
 				case 'mysql':
 					\PDO::setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
 					break;
@@ -80,23 +72,20 @@ class Pdo extends \PDO
 					\PDO::setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 					break;
 				default:
+			}
 		} catch (PDOException $e) {
 			throw new Exception($e->getMessage());
 		}
 	}
 
 	/**
-	 * Getter/setter for database type
-	 * @param string $value
+	 * Getter for database type
+	 *
 	 * @return string
 	 */
-	public function type($value = null)
+	public function getType()
 	{
-		if (null === $value) {
-			return $this->_type;
-		}
-		$this->_type = $value;
-		return $this;
+		return $this->type;
 	}
 
 	/**
@@ -106,9 +95,9 @@ class Pdo extends \PDO
 	 * @param array $parameters
 	 * @return array
 	 */
-	public function fetchAll($query, $parameters = array())
+	public function fetchAll($query, array $parameters = array())
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 
 		// Fetch rows as associative array
 		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -126,11 +115,11 @@ class Pdo extends \PDO
 	 *
 	 * @param string $query
 	 * @param array $parameters
-	 * @return array
+	 * @return array|bool
 	 */
-	public function fetchOne($query, $parameters = array())
+	public function fetchOne($query, array $parameters = array())
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 
 		// Fetch rows as associative array
 		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -146,25 +135,48 @@ class Pdo extends \PDO
 		return $row;
 	}
 
-	public function fetchColumn($query, $parameters = array(), $column = 0)
+	/**
+	 * Fetch a single result column
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @param int $column
+	 * @return mixed
+	 */
+	public function fetchColumn($query, array $parameters = array(), $column = 0)
 	{
 		$column = abs((int) $column);
 
-		$stmt = $this->_prepareExecute($query, $parameters);
+		$stmt = $this->prepareExecute($query, $parameters);
 		$fetchedColumn = $stmt->fetchColumn($column);
 
 		$stmt->closeCursor();
 		unset($stmt);
-		return($fetchedColumn);
+
+		return $fetchedColumn;
 	}
 
-	public function modify($query, $parameters)
+	/**
+	 * Execute an INSERT/UPDATE/DELETE statement
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return int
+	 */
+	public function modify($query, array $parameters = array())
 	{
-		$stmt = $this->_prepareExecute($query, $parameters);
-		return($stmt->rowCount());
+		$stmt = $this->prepareExecute($query, $parameters);
+		return $stmt->rowCount();
 	}
 
-	protected function _prepareExecute($query, $parameters = array())
+	/**
+	 * Prepare and execute prepared statement
+	 *
+	 * @param string $query
+	 * @param array $parameters
+	 * @return PDO::Statement
+	 */
+	protected function prepareExecute($query, $parameters = array())
 	{
 		$stmt = $this->prepare($query);
 		$stmt->execute($parameters);
