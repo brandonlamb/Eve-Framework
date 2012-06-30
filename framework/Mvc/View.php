@@ -54,6 +54,10 @@ class View implements \Eve\ResourceInterface
 	 */
 	protected $data = array();
 
+	const PATH_VIEWS = '/views/';
+	const PATH_LAYOUTS = '/views/layouts/';
+	const PATH_PARTIALS = '/views/partials/';
+
 	/**
 	 * Returns a new view object for the given view.
 	 *
@@ -227,7 +231,7 @@ class View implements \Eve\ResourceInterface
 
 		// $value contains no '/', just use defaults
 		if ($value{0} !== '/') {
-			$this->view = $this->getPath() . '/views/' . $this->request->getController() . '/' . $value . '.php';
+			$this->view = $this->getPath() . static::PATH_VIEWS . $this->request->getController() . '/' . $value . '.php';
 			return $this;
 		}
 
@@ -246,7 +250,7 @@ class View implements \Eve\ResourceInterface
 		}
 
 		// Set the view by re-combining parts
-		$this->view = $this->getPath() . '/views/' . implode('/', $parts) . '.php' . "\n";
+		$this->view = $this->getPath() . static::PATH_VIEWS . implode('/', $parts) . '.php' . "\n";
 
 		return $this;
 	}
@@ -304,7 +308,7 @@ class View implements \Eve\ResourceInterface
 
 		// $value contains no '/', just use defaults
 		if ($value{0} !== '/') {
-			$this->layout = $this->getPath() . '/layouts/' . $value . '.php';
+			$this->layout = $this->getPath() . static::PATH_LAYOUTS . $value . '.php';
 			return $this;
 		}
 
@@ -321,7 +325,7 @@ class View implements \Eve\ResourceInterface
 		$module = ($value{1} === '/') ? array_shift($parts) : $this->getModule();
 
 		// Set the view by re-combining parts
-		$this->layout = $this->getPath($module) . '/layouts/' . implode('/', $parts) . '.php' . "\n";
+		$this->layout = $this->getPath($module) . static::PATH_LAYOUTS . implode('/', $parts) . '.php' . "\n";
 
 		return $this;
 	}
@@ -343,7 +347,7 @@ class View implements \Eve\ResourceInterface
 	{
 		// $value contains no '/', just use defaults
 		if ($value{0} !== '/') {
-			return $this->getPath() . '/layouts/' . $value . '.php';
+			return $this->getPath() . static::PATH_PARTIALS . $value . '.php';
 		}
 
 		// Split $value into an array
@@ -359,7 +363,7 @@ class View implements \Eve\ResourceInterface
 		$module = ($value{1} === '/') ? array_shift($parts) : $this->getModule();
 
 		// Set the view by re-combining parts
-		return $this->getPath($module) . '/partials/' . implode('/', $parts) . '.php' . "\n";
+		return $this->getPath($module) . static::PATH_PARTIALS . implode('/', $parts) . '.php' . "\n";
 	}
 
 	/**
