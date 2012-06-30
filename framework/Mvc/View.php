@@ -63,10 +63,10 @@ class View implements \Eve\ResourceInterface
 	 *
 	 * @param Request $request
 	 */
-	public function __construct(Request $request = null)
+	public function __construct($path, Request $request = null)
 	{
 		// Set path from config
-		$this->setPath(\Eve::app()->getComponent('config')->get('modulesPath'));
+		$this->setPath($path);
 
 		// If no request object was passed then just return
 		if (null === $request) {

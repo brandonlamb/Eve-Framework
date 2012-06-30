@@ -64,7 +64,7 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 		}
 
 		// Create view object and set initial path, layout and view
-		$this->view = new View($request);
+		$this->view = new View(\Eve::app()->getComponent('config')->get('modulesPath'), $request);
 		$this->view->setLayout($layout);
 
 		// Set exception
