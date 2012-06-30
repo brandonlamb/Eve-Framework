@@ -7,6 +7,7 @@ use Eve\Mvc;
  */
 class ViewTest extends PHPUnit_Framework_TestCase
 {
+	private $request;
 	private $view;
 
 	/**
@@ -14,7 +15,13 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function setUp()
 	{
-		$this->view = new Mvc\View();
+		global $_SERVER;
+		$_SERVER = array(
+			'PATH_INFO' => '/modulex/controllerx/actionx',
+		);
+
+		$this->request = new \Eve\Mvc\Request();
+		$this->view = new Mvc\View('/test', $request);
 	}
 
 	/**
