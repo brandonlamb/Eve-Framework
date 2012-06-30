@@ -30,10 +30,8 @@ class ViewTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testConstruct()
 	{
-		$view = new Mvc\View('testPath', 'testView');
-		$this->assertEquals('testPath', $view->getPath());
-		$this->assertEquals('testLayout', $view->getLayout());
-		$this->assertEquals('testView', $view->getView());
+		$view = new Mvc\View('testPath', $this->request);
+		$this->assertEquals('/testPath/Modulex', $view->getPath());
 	}
 
 	/**
