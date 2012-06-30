@@ -18,7 +18,7 @@ class ViewTest extends PHPUnit_Framework_TestCase
 		$_SERVER['PATH_INFO'] = '/modulex/controllerx/actionx';
 
 		$this->request = new \Eve\Mvc\Request(array());
-		$this->view = new Mvc\View('/test', $request);
+		$this->view = new Mvc\View('/test', $this->request);
 	}
 
 	/**

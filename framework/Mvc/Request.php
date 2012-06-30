@@ -73,7 +73,7 @@ class Request extends Component
 				break;
 			}
 
-			// Use PATH_INFO
+			// Use ORIG_PATH_INFO
 			if (isset($_SERVER['ORIG_PATH_INFO']) && null !== $_SERVER['ORIG_PATH_INFO'])
 			{
 				$uri = $_SERVER['ORIG_PATH_INFO'];
