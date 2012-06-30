@@ -1,13 +1,13 @@
 <?php
 /**
- * AbstractBaseUserIdentity is a base class implementing {@link IUserIdentity}.
+ * AbstractBaseUserIdentity is a base class implementing {@link UserIdentityInterface}.
  *
  * AbstractBaseUserIdentity implements the scheme for representing identity
  * information that needs to be persisted. It also provides the way
  * to represent the authentication errors.
  *
- * Derived classes should implement {@link IUserIdentity::authenticate}
- * and {@link IUserIdentity::getId} that are required by the {@link IUserIdentity}
+ * Derived classes should implement {@link UserIdentityInterface::authenticate}
+ * and {@link UserIdentityInterface::getId} that are required by the {@link UserIdentityInterface}
  * interface.
  *
  * @property mixed $id A value that uniquely represents the identity (e.g. primary key value).
@@ -71,7 +71,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 
 	/**
 	 * Returns the identity states that should be persisted.
-	 * This method is required by {@link IUserIdentity}.
+	 * This method is required by {@link UserIdentityInterface}.
 	 *
 	 * @return array the identity states that should be persisted.
 	 */
@@ -92,7 +92,7 @@ abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentit
 
 	/**
 	 * Returns a value indicating whether the identity is authenticated.
-	 * This method is required by {@link IUserIdentity}.
+	 * This method is required by {@link UserIdentityInterface}.
 	 *
 	 * @return whether the authentication is successful.
 	 */

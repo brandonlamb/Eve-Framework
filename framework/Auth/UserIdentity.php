@@ -51,7 +51,7 @@ class UserIdentity extends AbstractUserIdentity
 	 */
 	public function authenticate()
 	{
-		throw new \Eve\Exception(get_class($this) . '::authenticate() must be implemented.');
+		throw new Exception(get_class($this) . '::authenticate() must be implemented.');
 	}
 
 	/**
