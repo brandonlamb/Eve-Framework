@@ -13,6 +13,13 @@ namespace Eve\Mvc;
 class View implements \Eve\ResourceInterface
 {
 	/**
+	 * Request object passed to constructor
+	 *
+	 * @var Request
+	 */
+	protected $request;
+
+	/**
 	 * Path to views directory
 	 *
 	 * @var string
@@ -25,13 +32,6 @@ class View implements \Eve\ResourceInterface
 	 * @var string
 	 */
 	protected $module;
-
-	/**
-	 * Controller name
-	 *
-	 * @var string
-	 */
-	protected $controller;
 
 	/**
 	 * View layout file
@@ -57,19 +57,24 @@ class View implements \Eve\ResourceInterface
 	/**
 	 * Returns a new view object for the given view.
 	 *
-	 * @param string $path the path to views directory
-	 * @param string $layout the layout view file
-	 * @param string $view the view file
+	 * @param Request $request
 	 */
-	public function __construct(Request $request = null, $layout = null)
+	public function __construct(Request $request = null)
 	{
-		// Get "Module" name and full path to the module directory
-		$this->setModule(ucfirst($request->getModule()));
-		$this->setController($request->getController());
-		$this->setView($request->getController() . '/' . $request->getAction());
+		// Set path from config
 		$this->setPath(\Eve::app()->getComponent('config')->get('modulesPath'));
 
-		null !== $layout && $this->setLayout($layout);
+		// If no request object was passed then just return
+		if (null === $request) {
+			return;
+		}
+
+		// Save reference to Request object
+		$this->request = $request;
+
+		// Set module and view from request object
+		$this->setModule($request->getModule());
+		$this->setView($request->getController() . '/' . $request->getAction());
 	}
 
 	/**
@@ -174,6 +179,7 @@ class View implements \Eve\ResourceInterface
 
 	/**
 	 * Set module name
+	 * The first letter of the module name will be capitalized to conform to namespace format
 	 *
 	 * @param string $value
 	 * @return View
@@ -183,7 +189,7 @@ class View implements \Eve\ResourceInterface
 		if (!is_string($value)) {
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
-		$this->module = (string) $value;
+		$this->module = (string) ucwords($value);
 		return $this;
 	}
 
@@ -198,32 +204,17 @@ class View implements \Eve\ResourceInterface
 	}
 
 	/**
-	 * Set controller name
-	 *
-	 * @param string $value
-	 * @return View
-	 */
-	public function setController($value)
-	{
-		if (!is_string($value)) {
-			throw new Exception(__METHOD__ . ' expects a string');
-		}
-		$this->controller = (string) $value;
-		return $this;
-	}
-
-	/**
-	 * Get controller name
-	 *
-	 * @return string
-	 */
-	public function getController()
-	{
-		return (string) $this->controller;
-	}
-
-	/**
 	 * Set view file
+	 * Accepts multiple formats to resolve module/controller/view paths.
+	 * Two leading slashes denote specifying a full module/controller path:
+	 *   //module/controller/view
+	 * You can also specify sub directories for the view inside a controller directory:
+	 *   //module/controller/something/view
+	 * To specify a view in the current module, but different controller, use a single leading slash:
+	 *   /controller/view
+	 * No leading slashes assumes current module, current controller and relative view path:
+	 *   view
+	 *   sub/view
 	 *
 	 * @param string $value
 	 * @return View
@@ -234,9 +225,28 @@ class View implements \Eve\ResourceInterface
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
 
+		// $value contains no '/', just use defaults
+		if ($value{0} !== '/') {
+			$this->view = $this->getPath() . '/views/' . $this->request->getController() . '/' . $value . '.php';
+			return $this;
+		}
+
+		// Split $value into an array
+		$parts = explode('/', trim($value, '/'));
+		$numParts = count($parts);
+
+		// Verify we have the minimum number required to parsed
+		if (($value{1} === '/' && $numParts < 3) || $numParts < 2) {
+			throw new Exception('Invalid view path ' . $value);
+		}
+
 		// Detect module definition
-		$path = (($pos = strpos($value, ':')) !== false) ? $this->getPath(substr($value, 0, $pos)) : $this->getPath();
-		$this->view = $path . '/views/' . substr($value, $pos) . '.php';
+		if ($value{1} === '/') {
+			$this->setModule(array_shift($parts));
+		}
+
+		// Set the view by re-combining parts
+		$this->view = $this->getPath() . '/views/' . implode('/', $parts) . '.php' . "\n";
 
 		return $this;
 	}
@@ -255,7 +265,7 @@ class View implements \Eve\ResourceInterface
 	 * Setter for the view path
 	 *
 	 * @param string $value
-	 * @return mixed
+	 * @return View
 	 */
 	public function setPath($value)
 	{
@@ -275,15 +285,16 @@ class View implements \Eve\ResourceInterface
 	 */
 	public function getPath($module = null)
 	{
-		return (string) $this->path . '/' . (null !== $module ? $module : $this->module) . '/views';
+		return (string) $this->path . '/' . (null !== $module ? ucfirst($module) : $this->module);
 	}
 
 	/**
 	 * Setter for the view layout.
-	 * You may pass a format of module:path/to/layout in addition to just layout or sub/layout
+	 * You may pass a format of //module/path/to/layout in addition to just layout or sub/layout
 	 *
+	 * @see View::setView
 	 * @param string $value
-	 * @return mixed
+	 * @return View
 	 */
 	public function setLayout($value)
 	{
@@ -291,9 +302,26 @@ class View implements \Eve\ResourceInterface
 			throw new Exception(__METHOD__ . ' expects a string');
 		}
 
+		// $value contains no '/', just use defaults
+		if ($value{0} !== '/') {
+			$this->layout = $this->getPath() . '/layouts/' . $value . '.php';
+			return $this;
+		}
+
+		// Split $value into an array
+		$parts = explode('/', trim($value, '/'));
+		$numParts = count($parts);
+
+		// Verify we have the minimum number required to parsed
+		if ($numParts < 2) {
+			throw new Exception('Invalid layout path ' . $value);
+		}
+
 		// Detect module definition
-		$path = (($pos = strpos($value, ':')) !== false) ? $this->getPath(substr($value, 0, $pos)) : $this->getPath();
-		$this->layout = $path . '/layouts/' . substr($value, $pos) . '.php';
+		$module = ($value{1} === '/') ? array_shift($parts) : $this->getModule();
+
+		// Set the view by re-combining parts
+		$this->layout = $this->getPath($module) . '/layouts/' . implode('/', $parts) . '.php' . "\n";
 
 		return $this;
 	}
@@ -309,15 +337,41 @@ class View implements \Eve\ResourceInterface
 	}
 
 	/**
+	 *
+	 */
+	protected function getPartial($value)
+	{
+		// $value contains no '/', just use defaults
+		if ($value{0} !== '/') {
+			return $this->getPath() . '/layouts/' . $value . '.php';
+		}
+
+		// Split $value into an array
+		$parts = explode('/', trim($value, '/'));
+		$numParts = count($parts);
+
+		// Verify we have the minimum number required to parsed
+		if ($numParts < 2) {
+			throw new Exception('Invalid layout path ' . $value);
+		}
+
+		// Detect module definition
+		$module = ($value{1} === '/') ? array_shift($parts) : $this->getModule();
+
+		// Set the view by re-combining parts
+		return $this->getPath($module) . '/partials/' . implode('/', $parts) . '.php' . "\n";
+	}
+
+	/**
 	 * Render the page and layout
 	 *
-	 * @param string $viewScript, view file to use
+	 * @param string $view, view file to use
 	 * @param array $data view template data
 	 * @param bool $replace whether to replace view data
 	 * @return string
 	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
-	public function render($viewScript = null, $data = null, $replace = false)
+	public function render($view = null, $data = null, $replace = false)
 	{
 		// Set view script if one was passed
 		if (null !== $view) {
@@ -367,13 +421,13 @@ class View implements \Eve\ResourceInterface
 	/**
 	 * Render a partial view
 	 *
-	 * @param string $viewScript, the partial view file
+	 * @param string $view, the partial view file
 	 * @param array $data, local array of view variables
 	 * @return string
 	 */
-	public function partial($viewScript, array $data = array())
+	public function partial($view, array $data = array())
 	{
-		$view = $this->getPath() . '/partials/' . $viewScript . '.php';
+		$view = $this->getpartial($view);
 
 		// Catch any exceptions/errors that happen inside a view
 		try {

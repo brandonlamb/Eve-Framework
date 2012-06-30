@@ -17,21 +17,21 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 	 *
 	 * @var Request
 	 */
-	protected $_request;
+	protected $request;
 
 	/**
 	 * Dispatcher object
 	 *
 	 * @var Dispatcher
 	 */
-	protected $_dispatcher;
+	protected $dispatcher;
 
 	/**
 	 * Layout view object
 	 *
 	 * @var View
 	 */
-	protected $_view;
+	protected $view;
 
 	/**
 	 * Layout template file
@@ -51,8 +51,8 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 	public function __construct($request, $dispatcher, $exception = null)
 	{
 		// Store reference to request and dispatcher objects in controller
-		$this->_request = $request;
-		$this->_dispatcher = $dispatcher;
+		$this->request = $request;
+		$this->dispatcher = $dispatcher;
 
 		// Figure out whether to use class configured layout file or default from config
 		if (null !== static::LAYOUT) {
@@ -64,11 +64,12 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 		}
 
 		// Create view object and set initial path, layout and view
-		$this->_view = new View($request, $layout);
+		$this->view = new View($request);
+		$this->view->setLayout($layout);
 
 		// Set exception
 		if (null !== $exception) {
-			$this->_view->set('exception', $exception);
+			$this->view->set('exception', $exception);
 		}
 	}
 
@@ -79,29 +80,31 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 	 */
 	public function getView()
 	{
-		return $this->_view;
+		return $this->view;
 	}
 
 	/**
 	 * Set layout file
+	 * Helper method to pass request through to view method
 	 *
 	 * @param string $file
 	 * @return Controller
 	 */
 	public function setLayout($file)
 	{
-		$this->_view->setView($file);
+		$this->view->setLayout($file);
 		return $this;
 	}
 
 	/**
 	 * Get layout file
+	 * Helper method to pass request through to view method
 	 *
 	 * @return string
 	 */
 	public function getLayout()
 	{
-		return $this->_view->getView();
+		return $this->view->getLayout();
 	}
 
 	/**
@@ -114,6 +117,6 @@ abstract class AbstractController extends Component implements \Eve\ResourceInte
 	public function afterAction()
 	{
 		// Pass rendered page to response
-		\Eve::app()->getComponent(self::RES_RESPONSE)->setBody($this->_view->render());
+		\Eve::app()->getComponent(self::RES_RESPONSE)->setBody($this->view->render());
 	}
 }
