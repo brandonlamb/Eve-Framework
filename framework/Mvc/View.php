@@ -275,7 +275,7 @@ class View implements \Eve\ResourceInterface
 	 */
 	public function getPath($module = null)
 	{
-		return (string) $this->path . '/' . (null !== $module ? $module : $this->module) . '/views'
+		return (string) $this->path . '/' . (null !== $module ? $module : $this->module) . '/views';
 	}
 
 	/**
