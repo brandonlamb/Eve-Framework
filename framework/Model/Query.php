@@ -272,9 +272,10 @@ class Query
 	 * ORDER BY columns
 	 *
 	 * @param array $fields Array of field names to use for sorting
+	 * @param string $sort, sort order for single selection
 	 * @return Query
 	 */
-	public function order($fields = array())
+	public function order($fields = array(), $sort = null)
 	{
 		$defaultSort = 'ASC';
 		if (is_array($fields)) {
@@ -288,7 +289,7 @@ class Query
 				$this->order[] = trim($field . ' ' . strtoupper($sort));
 			}
 		} else {
-			$this->order[] = trim($fields . ' ' . $defaultSort);
+			$this->order[] = trim($fields . ' ' . (null === $sort ? $defaultSort : $sort));
 		}
 		return $this;
 	}
@@ -341,8 +342,12 @@ class Query
 	 */
 	public function limit($limit = 20, $offset = null)
 	{
-		$this->limit = $limit;
-		$this->offset = $offset;
+		$this->limit = null === $limit ? null : (int) $limit;
+
+		// Only set offset if a value is passed so we dont inadvertently overwrite a value that was set
+		if (null !== $offset) {
+			$this->offset($offset);
+		}
 		return $this;
 	}
 
@@ -361,11 +366,22 @@ class Query
 	 * Implemented at adapter-level for databases that support it
 	 *
 	 * @param int $offset Record to start at for limited result set
+	 * @return Query
 	 */
 	public function offset($offset = 0)
 	{
-		$this->offset = $offset;
+		$this->offset = null === $offset ? null : (int) $offset;
 		return $this;
+	}
+
+	/**
+	 * Return the built OFFSET section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getOffset()
+	{
+		return null === $this->offset ? null :  'OFFSET ' . (int) $this->offset . ' ';
 	}
 
 
