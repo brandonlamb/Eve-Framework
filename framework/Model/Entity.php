@@ -1,0 +1,321 @@
+<?php
+namespace Eve\Model;
+
+/**
+* Entity object
+* @package Eve\Model
+*/
+abstract class Entity
+{
+	protected static $datasource;
+	protected static $datasourceOptions = array();
+	protected static $connection;
+
+	// Entity data storage
+	protected $data = array();
+	protected $dataModified = array();
+
+	// Entity error messages (may be present after save attempt)
+	protected $errors = array();
+
+	/**
+	 * Constructor - allows setting of object properties with array on construct
+	 *
+	 * @param array $data, populate entity from array of data
+	 */
+	public function __construct(array $data = array())
+	{
+		$this->initFields();
+
+		// Set given data
+		if ($data) {
+			$this->data($data, false);
+		}
+	}
+
+	/**
+	 * Set all field values to their defualts or null
+	 */
+	protected function initFields()
+	{
+		$fields = static::fields();
+		foreach ($fields as $field => $opts) {
+			if (!isset($this->data[$field])) {
+				$this->data[$field] = isset($opts['default']) ? $opts['default'] : null;
+			}
+		}
+	}
+
+	/**
+	 * Datasource getter/setter
+	 *
+	 * @param mixed $ds
+	 * @return mixed
+	 */
+	public static function datasource($ds = null)
+	{
+		if (null !== $ds) {
+			static::$datasource = $ds;
+			return $this;
+		}
+		return static::$datasource;
+	}
+
+	/**
+	 * Datasource options getter/setter
+	 *
+	 * @param array $dsOpts
+	 * @return array
+	 */
+	public static function datasourceOptions($dsOpts = null)
+	{
+		if (null !== $dsOpts) {
+			static::$datasourceOptions = $dsOpts;
+			return $this;
+		}
+		return static::$datasourceOptions;
+	}
+
+	/**
+	 * Named connection getter/setter
+	 */
+	public static function connection($connection = null)
+	{
+		if (null !== $connection) {
+			static::$connection = $connection;
+			return $this;
+		}
+		return static::$connection;
+	}
+
+	/**
+	 * Return defined fields of the entity
+	 *
+	 * @return array
+	 */
+	public static function fields()
+	{
+		return array();
+	}
+
+	/**
+	 * Return defined fields of the entity
+	 *
+	 * @return array
+	 */
+	public static function relations()
+	{
+		return array();
+	}
+
+	/**
+	 * Gets and sets data on the current entity
+	 */
+	public function data($data = null, $modified = true)
+	{
+		// GET
+		if (null === $data || !$data) {
+			return array_merge($this->data, $this->dataModified);
+		}
+
+		// SET
+		if (is_object($data) || is_array($data)) {
+			$fields = $this->fields();
+			foreach ($data as $k => $v) {
+				// Ensure value is set with type handler if Entity field type
+				if (isset($fields[$k])) {
+					$typeHandler = Config::typeHandler($fields[$k]['type']);
+					$v = $typeHandler::set($this, $v);
+				}
+
+				if (true === $modified) {
+					$this->dataModified[$k] = $v;
+				} else {
+					$this->data[$k] = $v;
+				}
+			}
+			return $this;
+		} else {
+			throw new \InvalidArgumentException(__METHOD__ . ' Expected array or object input - ' . gettype($data) . ' given');
+		}
+	}
+
+	/**
+	 * Return array of field data with data from the field names listed removed
+	 *
+	 * @param array List of field names to exclude in data list returned
+	 */
+	public function dataExcept(array $except)
+	{
+		return array_diff_key($this->data(), array_flip($except));
+	}
+
+	/**
+	 * Gets data that has been modified since object construct,
+	 * optionally allowing for selecting a single field
+	 */
+	public function dataModified($field = null)
+	{
+		if (null !== $field) {
+			return isset($this->dataModified[$field]) ? $this->dataModified[$field] : null;
+		}
+		return $this->dataModified;
+	}
+
+	/**
+	 * Gets data that has not been modified since object construct,
+	 * optionally allowing for selecting a single field
+	 */
+	public function dataUnmodified($field = null)
+	{
+		if (null !== $field) {
+			return isset($this->data[$field]) ? $this->data[$field] : null;
+		}
+		return $this->data;
+	}
+
+	/**
+	 * Returns true if a field has been modified.
+	 * If no field name is passed in, return whether any fields have been changed
+	 */
+	public function isModified($field = null)
+	{
+		if (null !== $field) {
+			if (isset($this->dataModified[$field])) {
+				return $this->dataModified[$field] != $this->data[$field];
+			} else if (isset($this->data[$field])) {
+				return false;
+			} else {
+				return null;
+			}
+		}
+		return count($this->dataModified) > 0;
+	}
+
+	/**
+	 * Alias of self::data()
+	 *
+	 * @return array
+	 */
+	public function toArray()
+	{
+		return $this->data();
+	}
+
+	/**
+	 * Check if any errors exist
+	 *
+	 * @param string $field OPTIONAL field name
+	 * @return boolean
+	 */
+	public function hasErrors($field = null)
+	{
+		if (null !== $field) {
+			return isset($this->errors[$field]) ? count($this->errors[$field]) > 0 : false;
+		}
+		return count($this->errors) > 0;
+	}
+
+	/**
+	 * Error message getter/setter
+	 *
+	 * @param $field string|array String return errors with field key, array sets errors
+	 * @return self|array|boolean Setter return self, getter returns array or boolean if key given and not found
+	 */
+	public function errors($msgs = null)
+	{
+		if (is_string($msgs)) {
+			// Return errors for given field
+			return isset($this->errors[$msgs]) ? $this->errors[$msgs] : array();
+		} elseif (is_array($msgs)) {
+			// Set error messages from given array
+			$this->errors = $msgs;
+		}
+		return $this->errors;
+	}
+
+	/**
+	 * Add an error to error messages array
+	 *
+	 * @param string $field Field name that error message relates to
+	 * @param mixed $msg Error message text - String or array of messages
+	 */
+	public function error($field, $msg)
+	{
+		if (is_array($msg)) {
+			// Add array of error messages about field
+			foreach ($msg as $msgx) {
+				$this->errors[$field][] = $msgx;
+			}
+		} else {
+			// Add to error array
+			$this->errors[$field][] = $msg;
+		}
+	}
+
+	/**
+	 * Enable isset() for object properties
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function __isset($key)
+	{
+		return isset($this->data[$key]) || isset($this->dataModified[$key]);
+	}
+
+	/**
+	 * Getter for field properties
+	 *
+	 * @param string $key
+	 * @return mixed
+	 */
+	public function __get($field)
+	{
+		$v = null;
+
+		if (isset($this->dataModified[$field])) {
+			$v =  $this->dataModified[$field];
+		} elseif (isset($this->data[$field])) {
+			$v = $this->data[$field];
+		}
+
+		if (null !== $v) {
+			$fields = $this->fields();
+			if (isset($fields[$field])) {
+				// Ensure value is get with type handler
+				$typeHandler = Config::typeHandler($fields[$field]['type']);
+				$v = $typeHandler::get($this, $v);
+			}
+		}
+
+		return $v;
+	}
+
+	/**
+	 * Setter for field properties
+	 *
+	 * @param string $field
+	 * @param mixed $value
+	 */
+	public function __set($field, $value)
+	{
+		$fields = $this->fields();
+		if (isset($fields[$field])) {
+			// Ensure value is set with type handler
+			$typeHandler = Config::typeHandler($fields[$field]['type']);
+			$value = $typeHandler::set($this, $value);
+		}
+		$this->dataModified[$field] = $value;
+	}
+
+	/**
+	 * String representation of the class
+	 *
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return __CLASS__;
+	}
+}
