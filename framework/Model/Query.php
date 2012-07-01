@@ -5,17 +5,15 @@ namespace Eve\Model;
 class Query
 {
 	// Storage for query properties
-	protected $select		= array();
-	protected $from			= array();
-	protected $join			= array();
-	protected $where		= array();
-	protected $having		= array();
-	protected $group		= array();
-	protected $order		= array();
-	protected $search		= array();
-	protected $params		= array();
-	protected $limit;
-	protected $offset;
+	public $select	= array();
+	public $from	= array();
+	public $join	= array();
+	public $where	= array();
+	public $having	= array();
+	public $group	= array();
+	public $order	= array();
+	public $limit;
+	public $offset;
 
 	/**
 	 * Returns the static model of the specified AR class.
@@ -24,9 +22,29 @@ class Query
 	 * @param string $className active record class name.
 	 * @return Query
 	 */
-	public static function model($className = __CLASS__)
+	public static function factory($className = __CLASS__)
 	{
 		return new $className();
+	}
+
+	/**
+	 * Reset object
+	 *
+	 * @return Query
+	 */
+	public function reset()
+	{
+		$this->select	= array();
+		$this->from		= array();
+		$this->join		= array();
+		$this->where	= array();
+		$this->having	= array();
+		$this->group	= array();
+		$this->order	= array();
+		$this->limit	= null;
+		$this->offset	= null;
+
+		return $this;
 	}
 
 	/**
@@ -55,16 +73,6 @@ class Query
 	}
 
 	/**
-	 * Return the built SELECT section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getSelect()
-	{
-		return 'SELECT ' . (count($this->select) == 0 ? '*' : implode($this->select, ', ')) . ' ';
-	}
-
-	/**
 	 * Add to FROM tables array
 	 * null:	reset the from tables array.
 	 * string:	"table1" OR "table1", "alias" OR "table1, table2 t2, table3"
@@ -90,16 +98,6 @@ class Query
 	}
 
 	/**
-	 * Return the built FROM section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getFrom()
-	{
-		return 'FROM ' . implode($this->from, ', ') . ' ';
-	}
-
-	/**
 	 * WHERE conditions
 	 *
 	 * @param array $conditions Array of conditions for this clause
@@ -119,6 +117,12 @@ class Query
 		}
 		return $this;
 	}
+
+	public function whereRaw($condition, $type = 'AND')
+	{
+		return $this->where(array($condition), $type);
+	}
+
 	public function orWhere(array $conditions = array(), $type = 'AND')
 	{
 		return $this->where($conditions, $type, 'OR');
@@ -127,6 +131,172 @@ class Query
 	public function andWhere(array $conditions = array(), $type = 'AND')
 	{
 		return $this->where($conditions, $type, 'AND');
+	}
+
+	/**
+	 * WHERE = condition
+	 *
+	 * @param array $column
+	 * @param mixed $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereEqual($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '=', $value), $type);
+	}
+
+	/**
+	 * WHERE != condition
+	 *
+	 * @param array $column
+	 * @param mixed $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereNotEqual($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '!=', $value), $type);
+	}
+
+	/**
+	 * WHERE LIKE condition
+	 *
+	 * @param array $column
+	 * @param mixed $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereLike($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, 'LIKE', $value), $type);
+	}
+
+	/**
+	 * WHERE NOT LIKE condition
+	 * @param array $column
+	 * @param mixed $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereNotLike($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, 'NOT LIKE', $value), $type);
+	}
+
+	/**
+	 * WHERE > condition
+	 *
+	 * @param array $column
+	 * @param string|int $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereGt($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '>', $value), $type);
+	}
+
+	/**
+	 * WHERE >= condition
+	 *
+	 * @param array $column
+	 * @param string|int $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereGte($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '>=', $value), $type);
+	}
+
+	/**
+	 * WHERE < condition
+	 *
+	 * @param array $column
+	 * @param string|int $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereLt($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '<', $value), $type);
+	}
+
+	/**
+	 * WHERE <= condition
+	 *
+	 * @param array $column
+	 * @param string|int $value
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereLte($column, $value, $type = 'AND')
+	{
+		return $this->where(array($column, '<=', $value), $type);
+	}
+
+	/**
+	 * WHERE IN condition
+	 *
+	 * @param array $column
+	 * @param array $values
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereIn($column, $values, $type = 'AND')
+	{
+		return $this->where(array($column, 'IN', $values), $type);
+	}
+
+	/**
+	 * WHERE NOT INcondition
+	 *
+	 * @param array $column
+	 * @param array $values
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereNotIn($column, $values, $type = 'AND')
+	{
+		return $this->where(array($column, 'NOT IN', $values), $type);
+	}
+
+	/**
+	 * WHERE NULL condition
+	 *
+	 * @param array $column
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereNull($column, $type = 'AND')
+	{
+		return $this->where(array($column, 'IS NULL'), $type);
+	}
+
+	/**
+	 * WHERE NOT NULL condition
+	 *
+	 * @param array $column
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereNotNull($column, $type = 'AND')
+	{
+		return $this->where(array($column, 'IS NOT NULL'), $type);
+	}
+
+	/**
+	 * WHERE BETWEEN condition
+	 *
+	 * @param array $column
+	 * @param array $values
+	 * @param string $type
+	 * @return Query
+	 */
+	public function whereBetween($column, $values, $type = 'AND')
+	{
+		return $this->where(array($column, 'BETWEEN', $values), $type);
 	}
 
 	/**
@@ -237,16 +407,6 @@ class Query
 	}
 
 	/**
-	 * Return the built JOIN sections of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getJoin()
-	{
-		return (count($this->join) == 0 ? null : implode($this->join, ', ')) . ' ';
-	}
-
-	/**
 	 * Add a HAVING clause
 	 *
 	 * @todo This can have multiple predicates
@@ -263,10 +423,6 @@ class Query
 		$this->having[] = array($condition, $params, $type);
 		return $this;
 	}
-
-
-
-
 
 	/**
 	 * ORDER BY columns
@@ -295,16 +451,6 @@ class Query
 	}
 
 	/**
-	 * Return the built ORDER BY section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getOrder()
-	{
-		return count($this->order) == 0 ? null : 'ORDER BY ' . implode($this->order, ', ') . ' ';
-	}
-
-	/**
 	 * GROUP BY clause
 	 *
 	 * @param mixed $fields, string or array of field names to use for grouping
@@ -320,16 +466,6 @@ class Query
 			$this->group[] = trim($fields);
 		}
 		return $this;
-	}
-
-	/**
-	 * Return the built GROUP BY section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getGroup()
-	{
-		return count($this->group) == 0 ? null :  'GROUP BY ' . implode($this->group, ', ') . ' ';
 	}
 
 	/**
@@ -352,16 +488,6 @@ class Query
 	}
 
 	/**
-	 * Return the built LIMIT section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getLimit()
-	{
-		return null === $this->limit ? null :  'LIMIT ' . (int) $this->limit . ' ';
-	}
-
-	/**
 	 * Offset executed query to skip specified amount of records
 	 * Implemented at adapter-level for databases that support it
 	 *
@@ -374,21 +500,7 @@ class Query
 		return $this;
 	}
 
-	/**
-	 * Return the built OFFSET section of the SQL statement
-	 *
-	 * @return string
-	 */
-	public function getOffset()
-	{
-		return null === $this->offset ? null :  'OFFSET ' . (int) $this->offset . ' ';
-	}
-
-
-
-
-
-
+/********************/
 
 	/**
 	 * SPL Countable function
@@ -431,7 +543,3 @@ class Query
 		return ($result !== false) ? $result : array();
 	}
 }
-
-
-#$query = new Query();
-#$query->from(array('User u'));
