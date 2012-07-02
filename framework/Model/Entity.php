@@ -3,6 +3,7 @@ namespace Eve\Model;
 
 /**
 * Entity object
+*
 * @package Eve\Model
 */
 abstract class Entity
@@ -10,6 +11,27 @@ abstract class Entity
 	protected static $datasource;
 	protected static $datasourceOptions = array();
 	protected static $connection;
+	protected static $typeHandlers = array(
+		'string' => '\Eve\Model\Type\String',
+		'text' => '\Eve\Model\Type\String',
+
+		'int' => '\Eve\Model\Type\Integer',
+		'integer' => '\Eve\Model\Type\Integer',
+
+		'float' => '\Eve\Model\Type\Float',
+		'double' => '\Eve\Model\Type\Float',
+		'decimal' => '\Eve\Model\Type\Float',
+
+		'bool' => '\Eve\Model\Type\Boolean',
+		'boolean' => '\Eve\Model\Type\Boolean',
+
+		'datetime' => '\Eve\Model\Type\Datetime',
+		'date' => '\Eve\Model\Type\Datetime',
+		'timestamp' => '\Eve\Model\Type\Integer',
+		'year' => '\Eve\Model\Type\Integer',
+		'month' => '\Eve\Model\Type\Integer',
+		'day' => '\Eve\Model\Type\Integer',
+	);
 
 	// Entity data storage
 	protected $data = array();
@@ -17,6 +39,9 @@ abstract class Entity
 
 	// Entity error messages (may be present after save attempt)
 	protected $errors = array();
+
+	// Query object
+	protected $query;
 
 	/**
 	 * Constructor - allows setting of object properties with array on construct
@@ -47,33 +72,30 @@ abstract class Entity
 	}
 
 	/**
-	 * Datasource getter/setter
+	 * Return query builder
 	 *
-	 * @param mixed $ds
-	 * @return mixed
+	 * @param string $className
+	 * @return Query
 	 */
-	public static function datasource($ds = null)
+	public static function model($className = __CLASS__)
 	{
-		if (null !== $ds) {
-			static::$datasource = $ds;
-			return $this;
-		}
-		return static::$datasource;
+		$query = new \Eve\Model\Query($className);
+		$query->from($className::$tableName);
+		return $query;
 	}
 
 	/**
-	 * Datasource options getter/setter
+	 * Table name getter/setter
 	 *
-	 * @param array $dsOpts
-	 * @return array
+	 * @param string $value
+	 * @return string
 	 */
-	public static function datasourceOptions($dsOpts = null)
+	public static function tableName($value = null)
 	{
-		if (null !== $dsOpts) {
-			static::$datasourceOptions = $dsOpts;
-			return $this;
+		if (null !== $value) {
+			static::$tableName = $value;
 		}
-		return static::$datasourceOptions;
+		return static::$tableName;
 	}
 
 	/**
@@ -109,6 +131,32 @@ abstract class Entity
 	}
 
 	/**
+	 * Get type handler class by type
+	 *
+	 * @param string $type Field type (i.e. 'string' or 'int', etc.)
+	 * @return Spot\Adapter\Interface Spot adapter instance
+	 */
+	public static function typeHandler($type, $class = null)
+	{
+		if (null === $class) {
+			if (!isset(static::$typeHandlers[$type])) {
+				throw new \InvalidArgumentException(
+					"Type '$type' not registered. Register the type class handler with " . __METHOD__ . "'$type', '\Namespaced\Path\Class')."
+				);
+			}
+			return static::$typeHandlers[$type];
+		}
+
+		if (!class_exists($class)) {
+			throw new \InvalidArgumentException(
+				"Second parameter must be valid className with full namespace. Check the className and ensure the class is loaded before registering it as a type handler."
+			);
+		}
+
+		return self::$typeHandlers[$type] = $class;
+	}
+
+	/**
 	 * Gets and sets data on the current entity
 	 */
 	public function data($data = null, $modified = true)
@@ -124,7 +172,7 @@ abstract class Entity
 			foreach ($data as $k => $v) {
 				// Ensure value is set with type handler if Entity field type
 				if (isset($fields[$k])) {
-					$typeHandler = Config::typeHandler($fields[$k]['type']);
+					$typeHandler = static::typeHandler($fields[$k]['type']);
 					$v = $typeHandler::set($this, $v);
 				}
 
@@ -278,13 +326,16 @@ abstract class Entity
 			$v =  $this->dataModified[$field];
 		} elseif (isset($this->data[$field])) {
 			$v = $this->data[$field];
+		} elseif (method_exists($this, 'get' . $field)) {
+			$method = 'get' . $field;
+			$v = $this->$method();
 		}
 
 		if (null !== $v) {
 			$fields = $this->fields();
 			if (isset($fields[$field])) {
 				// Ensure value is get with type handler
-				$typeHandler = Config::typeHandler($fields[$field]['type']);
+				$typeHandler = static::typeHandler($fields[$field]['type']);
 				$v = $typeHandler::get($this, $v);
 			}
 		}
@@ -303,10 +354,14 @@ abstract class Entity
 		$fields = $this->fields();
 		if (isset($fields[$field])) {
 			// Ensure value is set with type handler
-			$typeHandler = Config::typeHandler($fields[$field]['type']);
+			$typeHandler = static::typeHandler($fields[$field]['type']);
 			$value = $typeHandler::set($this, $value);
+		} elseif (method_exists($this, 'set' . $field)) {
+			$method = 'set' . $field;
+			$this->$method($value);
+		} else {
+			$this->dataModified[$field] = $value;
 		}
-		$this->dataModified[$field] = $value;
 	}
 
 	/**

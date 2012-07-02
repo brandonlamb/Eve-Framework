@@ -11,7 +11,4 @@
  */
 namespace Eve\Database;
 
-// Namespace aliases;
-use Eve as Eve;
-
-class Exception extends Eve\Exception {}
+class Exception extends \Eve\Exception {}

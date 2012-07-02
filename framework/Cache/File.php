@@ -10,15 +10,12 @@
  */
 namespace Eve\Cache;
 
-// Namespace aliases
-use Eve\App;
-
 class File implements \Eve\ResourceInterface
 {
 	/**
 	 * @var string, cache path
 	 */
-	private $_path;
+	private $path;
 
 	/**
 	 * @var int, encoding flags
@@ -37,7 +34,7 @@ class File implements \Eve\ResourceInterface
 	 */
 	public function __construct($path)
 	{
-		$this->_path = $path;
+		$this->path = $path;
 	}
 
 	/**
@@ -50,7 +47,7 @@ class File implements \Eve\ResourceInterface
 	public function get($key)
 	{
 		// Check if file exists
-		if ($resourceAbsolutePath = stream_resolve_include_path($this->_path . $key)) {
+		if ($resourceAbsolutePath = stream_resolve_include_path($this->path . '/' . $key)) {
 			// Read file data
 			$file = fopen($resourceAbsolutePath, 'r');
 			if ($file === false) {
@@ -104,14 +101,14 @@ class File implements \Eve\ResourceInterface
 	public function set($key, $var, $flag, $expire)
 	{
 		// Create file
-		$file = fopen($this->_path . $key, 'w');
-		if ($file === false) {
-			throw new FileException('Unable to open the output file.');
+		$resourceAbsolutePath = $this->path . '/' . $key;
+		if (($file = fopen($resourceAbsolutePath, 'w')) === false) {
+			throw new FileException('Unable to open output file ' . $resourceAbsolutePath);
 		}
 
 		// Write header
 		$header = ($expire > time() ? $expire : $expire + time()) . '::' . $flag . \PHP_EOL;
-		$res = fwrite($f, $header);
+		$res = fwrite($file, $header);
 		if ($res === false) {
 			throw new FileException('Unable to write to the output file.');
 		}
@@ -131,7 +128,7 @@ class File implements \Eve\ResourceInterface
 			default:
 		}
 
-		$res = fwrite($f, $data);
+		$res = fwrite($file, $data);
 		if ($res === false) {
 			throw new FileException('Unable to write to the output file.');
 		}
@@ -152,7 +149,7 @@ class File implements \Eve\ResourceInterface
 		// Set counter
 		$counter = 0;
 		// Iterate over directory
-		foreach (new \DirectoryIterator($this->_path) as $file) {
+		foreach (new \DirectoryIterator($this->path) as $file) {
 			// Check file is valid and correct prefix
 			if ($file->isFile() && null !== $prefix	|| substr($file->getFilename(), 0, strlen($prefix)) == $prefix) {
 				// Increment counter

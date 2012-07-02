@@ -14,17 +14,16 @@ class Query
 	public $order	= array();
 	public $limit;
 	public $offset;
+	public $entityName;
 
 	/**
-	 * Returns the static model of the specified AR class.
-	 * Query::model()->select('col1')->from('tbl')->where('col1 = ?', $val)->fetchOne();
+	 * Create new query builder and set entity name
 	 *
-	 * @param string $className active record class name.
-	 * @return Query
+	 * @param string $entityName
 	 */
-	public static function factory($className = __CLASS__)
+	public function __construct($entityName = null)
 	{
-		return new $className();
+		null !== $entityName && $this->entityName = (string) $entityName;
 	}
 
 	/**

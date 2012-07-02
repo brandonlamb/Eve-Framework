@@ -8,31 +8,27 @@ class Config implements \Serializable
 {
 	protected $defaultConnection;
 	protected $connections = array();
-	protected static $typeHandlers = array();
+	protected static $typeHandlers = array(
+		'string' => '\Spot\Type\String',
+		'text' => '\Spot\Type\String',
 
-	public function __construct()
-	{
-		// Setup default type hanlders
-		self::typeHandler('string', '\Spot\Type\String');
-		self::typeHandler('text', '\Spot\Type\String');
+		'int' => '\Spot\Type\Integer',
+		'integer' => '\Spot\Type\Integer',
 
-		self::typeHandler('int', '\Spot\Type\Integer');
-		self::typeHandler('integer', '\Spot\Type\Integer');
+		'float' => '\Spot\Type\Float',
+		'double' => '\Spot\Type\Float',
+		'decimal' => '\Spot\Type\Float',
 
-		self::typeHandler('float', '\Spot\Type\Float');
-		self::typeHandler('double', '\Spot\Type\Float');
-		self::typeHandler('decimal', '\Spot\Type\Float');
+		'bool' => '\Spot\Type\Boolean',
+		'boolean' => '\Spot\Type\Boolean',
 
-		self::typeHandler('bool', '\Spot\Type\Boolean');
-		self::typeHandler('boolean', '\Spot\Type\Boolean');
-
-		self::typeHandler('datetime', '\Spot\Type\Datetime');
-		self::typeHandler('date', '\Spot\Type\Datetime');
-		self::typeHandler('timestamp', '\Spot\Type\Integer');
-		self::typeHandler('year', '\Spot\Type\Integer');
-		self::typeHandler('month', '\Spot\Type\Integer');
-		self::typeHandler('day', '\Spot\Type\Integer');
-	}
+		'datetime' => '\Spot\Type\Datetime',
+		'date' => '\Spot\Type\Datetime',
+		'timestamp' => '\Spot\Type\Integer',
+		'year' => '\Spot\Type\Integer',
+		'month' => '\Spot\Type\Integer',
+		'day' => '\Spot\Type\Integer',
+	);
 
 	/**
 	 * Add database connection
@@ -41,8 +37,8 @@ class Config implements \Serializable
 	 * @param string $dsn DSN string for this connection
 	 * @param array $options Array of key => value options for adapter
 	 * @param boolean $defaut Use this connection as the default? The first connection added is automatically set as the default, even if this flag is false.
-	 * @return Spot_Adapter_Interface Spot adapter instance
-	 * @throws Spot_Exception
+	 * @return Spot\Adapter\Interface Spot adapter instance
+	 * @throws Spot\Exception
 	 */
 	public function addConnection($name, $dsn, array $options = array(), $default = false)
 	{
@@ -69,8 +65,8 @@ class Config implements \Serializable
 	 * Get connection by name
 	 *
 	 * @param string $name Unique name of the connection to be returned
-	 * @return Spot_Adapter_Interface Spot adapter instance
-	 * @throws Spot_Exception
+	 * @return Spot\Adapter\Interface Spot adapter instance
+	 * @throws Spot\Exception
 	 */
 	public function connection($name = null)
 	{
@@ -89,8 +85,8 @@ class Config implements \Serializable
 	/**
 	 * Get default connection
 	 *
-	 * @return Spot_Adapter_Interface Spot adapter instance
-	 * @throws Spot_Exception
+	 * @return Spot\Adapter\Interface Spot adapter instance
+	 * @throws Spot\Exception
 	 */
 	public function defaultConnection()
 	{
@@ -101,40 +97,26 @@ class Config implements \Serializable
 	 * Get type handler class by type
 	 *
 	 * @param string $type Field type (i.e. 'string' or 'int', etc.)
-	 * @return Spot_Adapter_Interface Spot adapter instance
+	 * @return Spot\Adapter\Interface Spot adapter instance
 	 */
 	public static function typeHandler($type, $class = null)
 	{
 		if (null === $class) {
-			if (!isset(self::$typeHandlers[$type])) {
-				throw new \InvalidArgumentException("Type '$type' not registered. Register the type class handler with \Spot\Config::typeHandler('$type', '\Namespaced\Path\Class').");
+			if (!isset(static::$typeHandlers[$type])) {
+				throw new \InvalidArgumentException(
+					"Type '$type' not registered. Register the type class handler with " . __METHOD__ . "'$type', '\Namespaced\Path\Class')."
+				);
 			}
-			return self::$typeHandlers[$type];
+			return static::$typeHandlers[$type];
 		}
 
 		if (!class_exists($class)) {
-			throw new \InvalidArgumentException("Second parameter must be valid className with full namespace. Check the className and ensure the class is loaded before registering it as a type handler.");
+			throw new \InvalidArgumentException(
+				"Second parameter must be valid className with full namespace. Check the className and ensure the class is loaded before registering it as a type handler."
+			);
 		}
 
 		return self::$typeHandlers[$type] = $class;
-	}
-
-	/**
-	 * Class loader
-	 *
-	 * @param string $className Name of class to load
-	 */
-	public static function loadClass($className)
-	{
-		$loaded = false;
-
-		// Require Spot namespaced files by assumed folder structure (naming convention)
-		if (false !== strpos($className, 'Spot\\')) {
-			$classFile = trim(str_replace('\\', '/', str_replace('_', '/', str_replace('Spot\\', '', $className))), '\\');
-			$loaded = require_once(__DIR__ . '/' . $classFile . '.php');
-		}
-
-		return $loaded;
 	}
 
 	/**
@@ -155,8 +137,3 @@ class Config implements \Serializable
 	{
 	}
 }
-
-/**
- * Register 'spot_load_class' function as an autoloader for files prefixed with 'Spot_'
- */
-spl_autoload_register(array('\Spot\Config', 'loadClass'));
