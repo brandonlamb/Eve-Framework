@@ -2,8 +2,10 @@
 namespace Eve\Model;
 
 #class Query implements \Countable, \IteratorAggregate
-class Query
+class Query extends Entity
 {
+	protected static $connection;
+
 	// Storage for query properties
 	public $select	= array();
 	public $from	= array();
@@ -12,18 +14,42 @@ class Query
 	public $having	= array();
 	public $group	= array();
 	public $order	= array();
+	public $params	= array();
 	public $limit;
 	public $offset;
 	public $entityName;
+	public $statement;
+	protected $stmt;
 
 	/**
 	 * Create new query builder and set entity name
 	 *
 	 * @param string $entityName
 	 */
-	public function __construct($entityName = null)
+	public function __construct($data = null, $conn = null)
 	{
-		null !== $entityName && $this->entityName = (string) $entityName;
+		if (null !== $conn) {
+			static::connection($conn);
+		}
+
+		if (null !== $data) {
+			parent::__construct($data);
+		}
+
+		// Set default from
+		$this->from(static::tableName());
+	}
+
+	/**
+	 * Named connection getter/setter
+	 */
+	public static function connection($connection = null)
+	{
+		if (null !== $connection) {
+			static::$connection = $connection;
+			return $this;
+		}
+		return static::$connection;
 	}
 
 	/**
@@ -498,6 +524,271 @@ class Query
 		$this->offset = null === $offset ? null : (int) $offset;
 		return $this;
 	}
+
+	/**
+	 * Return the built SELECT section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getSelect()
+	{
+		return 'SELECT ' . (count($this->select) == 0 ? '*' : implode(', ', $this->select)) . ' ';
+	}
+
+	/**
+	 * Return the built FROM section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getFrom()
+	{
+		return count($this->from) == 0? null : 'FROM ' . implode(', ', $this->from) . ' ';
+	}
+
+	/**
+	 * Return the built JOIN sections of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getJoin()
+	{
+		return count($this->join) == 0 ? null : implode(', ', $this->join) . ' ';
+	}
+
+	/**
+	 * Builds an SQL string given conditions
+	 * @return string
+	 */
+	public function getWhere()
+	{
+		// If there are no conditions, return back
+		if (count($this->where) == 0) {
+			return;
+		}
+
+		$sqlStatement = '';
+		foreach ($this->where as $condition) {
+print_r($condition);
+			// Build where clause based on operator
+			switch ($condition['operator']) {
+				case '=':
+				case ':eq':
+					$sqlWhere = $condition['column'] . ' = ?';
+					break;
+				case '>':
+				case ':gt':
+					$sqlWhere = $condition['column'] . ' > ?';
+					break;
+				case '<':
+				case ':lt':
+					$sqlWhere = $condition['column'] . ' < ?';
+					break;
+				case '>=':
+				case ':gte':
+					$sqlWhere = $condition['column'] . ' >= ?';
+					break;
+				case '<=':
+				case ':lte':
+					$sqlWhere = $condition['column'] . ' <= ?';
+					break;
+				case ':gt':
+					$sqlWhere = $condition['column'] . ' > ?';
+					break;
+				case '!=':
+				case '<>':
+				case ':neq':
+				case ':not':
+					$sqlWhere = $condition['column'] . ' = ?';
+					break;
+				case ':like':
+					$sqlWhere = $condition['column'] . ' LIKE ?';
+					break;
+				case 'IN':
+					$sqlWhere = $condition['column'] . ' IN(' . join(', ', array_fill(0, count($condition['values']), '?')) . ')';
+					break;
+				case 'BETWEEN':
+					$sqlWhere = $condition['column'] . ' BETWEEN ' . join(' AND ', array_fill(0, count($condition['values']), '?'));
+					break;
+				case 'IS NULL':
+					$sqlWhere = $condition['column'] . ' IS NULL';
+					break;
+				case 'IS NOT NULL':
+					$sqlWhere = $condition['column'] . ' IS NOT NULL';
+					break;
+				default:
+					$sqlWhere = $condition['column'] . ' ' . $condition['operator'] . ' ?';
+			}
+
+			// If statement has already been started, precede next where with its type separator
+			if (!empty($sqlStatement)) {
+				$sqlStatement .= ' ' . $condition['type'] . ' ';
+			}
+			$sqlStatement .= $sqlWhere;
+
+			// If values is not an array, just push to boundParams
+			if (!is_array($condition['values'])) {
+				$this->_boundParams[] = $condition['values'];
+			} else {
+				// Loop through each value and push to boundParams
+				foreach ($condition['values'] as $value) {
+					if ($condition['operator'] != 'IS NULL' && $condition['operator'] != 'IS NOT NULL') {
+						$this->_boundParams[] = $value;
+					}
+				}
+			}
+		}
+
+		return ($sqlStatement != '') ? ' WHERE ' . $sqlStatement : '';
+	}
+
+	/**
+	 * Return the built ORDER BY section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getOrder()
+	{
+		return count($this->order) == 0 ? null : 'ORDER BY ' . implode(', ', $this->order) . ' ';
+	}
+
+	/**
+	 * Return the built GROUP BY section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getGroup()
+	{
+		return count($this->group) == 0 ? null :  'GROUP BY ' . implode(', ', $this->group) . ' ';
+	}
+
+	/**
+	 * Return the built LIMIT section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getLimit()
+	{
+		return null === $this->limit ? null :  'LIMIT ' . (int) $this->limit . ' ';
+	}
+
+	/**
+	 * Return the built OFFSET section of the SQL statement
+	 *
+	 * @return string
+	 */
+	public function getOffset()
+	{
+		return null === $this->offset ? null :  'OFFSET ' . (int) $this->offset . ' ';
+	}
+
+	/**
+	 * Return an object of the next result row
+	 *
+	 * @return false|array
+	 */
+	public function fetchRow()
+	{
+		return ($row = $this->stmt->fetch(\PDO::FETCH_ASSOC)) ? $row : false;
+	}
+
+	/**
+	 * Calls fetch on stmt
+	 *
+	 * @return array
+	 */
+	public function fetchRows()
+	{
+		$rows = array();
+		while ($row = $this->stmt->fetch(\PDO::FETCH_ASSOC))
+		{
+			$rows[] = $row;
+		}
+
+		// Reset where conditions and values and default results columns
+#		$this->reset();
+
+		// Close the cursor, allowing the statement to be executed again
+		$this->_stmt->closeCursor();
+
+		return $rows;
+	}
+
+	/**
+	 * Fetch a single result back from query and execute it. If you pass an ID as a parameter to
+	 * this method this will perform a primary key lookup on the table.
+	 *
+	 * @param int $primary
+	 * @return null|mixed
+	 */
+	public function fetchOne($primary = null)
+	{
+		// If id was passed, add to where clause
+		if (null !== $primary) {
+			$this->wherePrimary($primary);
+		}
+
+		// Run the query, fetch a row
+		$row = $this->limit(1)->read()->fetchRow();
+
+		// If we got results, return populated self, or hyrdated new instance
+		return (false !== $row) ? $this->data($row) : false;
+	}
+
+	/**
+	 * Tell the ORM that you are expecting multiple results from your query, and execute it. Will return an array of
+	 * instances of the ORM class, or an empty array if no rows were returned.
+	 * @return void
+	 */
+	public function fetchMany()
+	{
+		$rows = $this->read()->fetchRows();
+		$this->collection = array_map(array($this, 'create'), $rows);
+	}
+
+	/**
+	 * Execute query. Return an array of rows as associative arrays
+	 *
+	 * @return Query
+	 */
+	public function execute()
+	{
+		try
+		{
+			// Prepare the statement
+			$this->stmt = $this->connection()->prepare($this->statement);
+
+			// Execute the prepared statement
+			$this->stmt->execute($this->params);
+		} catch (PDOException $e) {
+			throw new \Exception(__LINE__ . ' ' . $e->getMessage() . " : " . $this->_statement);
+		}
+
+		// Reset conditions/parameters
+		$this->reset();
+
+		return $this;
+	}
+
+	/**
+	 *
+	 */
+	public function read()
+	{
+		$this->statement = $this->getSelect()
+			. $this->getFrom()
+			. $this->getJoin()
+			. $this->getWhere()
+			. $this->getOrder()
+			. $this->getGroup()
+			. $this->getLimit();
+	}
+
+
+
+
+
+
+
 
 /********************/
 

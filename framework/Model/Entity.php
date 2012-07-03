@@ -8,9 +8,6 @@ namespace Eve\Model;
 */
 abstract class Entity
 {
-	protected static $datasource;
-	protected static $datasourceOptions = array();
-	protected static $connection;
 	protected static $typeHandlers = array(
 		'string' => '\Eve\Model\Type\String',
 		'text' => '\Eve\Model\Type\String',
@@ -32,6 +29,7 @@ abstract class Entity
 		'month' => '\Eve\Model\Type\Integer',
 		'day' => '\Eve\Model\Type\Integer',
 	);
+	protected static $tableName;
 
 	// Entity data storage
 	protected $data = array();
@@ -55,19 +53,6 @@ abstract class Entity
 		// Set given data
 		if ($data) {
 			$this->data($data, false);
-		}
-	}
-
-	/**
-	 * Set all field values to their defualts or null
-	 */
-	protected function initFields()
-	{
-		$fields = static::fields();
-		foreach ($fields as $field => $opts) {
-			if (!isset($this->data[$field])) {
-				$this->data[$field] = isset($opts['default']) ? $opts['default'] : null;
-			}
 		}
 	}
 
@@ -96,18 +81,6 @@ abstract class Entity
 			static::$tableName = $value;
 		}
 		return static::$tableName;
-	}
-
-	/**
-	 * Named connection getter/setter
-	 */
-	public static function connection($connection = null)
-	{
-		if (null !== $connection) {
-			static::$connection = $connection;
-			return $this;
-		}
-		return static::$connection;
 	}
 
 	/**
@@ -154,6 +127,19 @@ abstract class Entity
 		}
 
 		return self::$typeHandlers[$type] = $class;
+	}
+
+	/**
+	 * Set all field values to their defualts or null
+	 */
+	protected function initFields()
+	{
+		$fields = static::fields();
+		foreach ($fields as $field => $opts) {
+			if (!isset($this->data[$field])) {
+				$this->data[$field] = isset($opts['default']) ? $opts['default'] : null;
+			}
+		}
 	}
 
 	/**
