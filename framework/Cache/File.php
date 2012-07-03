@@ -60,6 +60,9 @@ class File implements \Eve\ResourceInterface
 				throw new FileException('Unable to read from the input file, bad header.');
 			}
 			list ($expire, $flag) = explode('::', $header);
+			if ($expire < time()) {
+				return false;
+			}
 
 			// Read data
 			if (filesize($resourceAbsolutePath) - strlen($header) > 0) {
