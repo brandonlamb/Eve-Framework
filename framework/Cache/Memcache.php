@@ -20,7 +20,7 @@ class Memcache extends \Memcache implements \Eve\ResourceInterface
 	 * Constructor
 	 *
 	 * @param mixed $servers
-	 * @throws MemcacheException
+	 * @throws \RuntimeException
 	 * @return void
 	 */
 	public function __construct($servers)
@@ -33,7 +33,7 @@ class Memcache extends \Memcache implements \Eve\ResourceInterface
 		} elseif (is_string($servers)) {
 			$this->_addServerFromString($servers);
 		} else {
-			throw new MemcacheException(
+			throw new \RuntimeException(
 				'Unknown server type specified, must be an array or a string.'
 			);
 		}
@@ -43,7 +43,7 @@ class Memcache extends \Memcache implements \Eve\ResourceInterface
 	 * Add server from supplied string
 	 *
 	 * @param string $server
-	 * @throws MemcacheException
+	 * @throws \RuntimeException
 	 * @return bool
 	 */
 	private function _addServerFromString($server)
@@ -51,7 +51,7 @@ class Memcache extends \Memcache implements \Eve\ResourceInterface
 		list ($host, $port) = explode(':', $server);
 		$res = parent::addServer($host, $port);
 		if ($res === false) {
-			throw new MemcacheException(
+			throw new \RuntimeException(
 				'There was an error adding server ' . $server . '.'
 			);
 		}

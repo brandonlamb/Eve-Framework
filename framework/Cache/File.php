@@ -51,13 +51,13 @@ class File implements \Eve\ResourceInterface
 			// Read file data
 			$file = fopen($resourceAbsolutePath, 'r');
 			if ($file === false) {
-				throw new FileException('Unable to open the input file.');
+				throw new \RuntimeException('Unable to open the input file.');
 			}
 
 			// Read header
 			$header = fgets($file);
 			if (strpos($header, '::') === false) {
-				throw new FileException('Unable to read from the input file, bad header.');
+				throw new \RuntimeException('Unable to read from the input file, bad header.');
 			}
 			list ($expire, $flag) = explode('::', $header);
 			if ($expire < time()) {
@@ -106,14 +106,14 @@ class File implements \Eve\ResourceInterface
 		// Create file
 		$resourceAbsolutePath = $this->path . '/' . $key;
 		if (($file = fopen($resourceAbsolutePath, 'w')) === false) {
-			throw new FileException('Unable to open output file ' . $resourceAbsolutePath);
+			throw new \RuntimeException('Unable to open output file ' . $resourceAbsolutePath);
 		}
 
 		// Write header
 		$header = ($expire > time() ? $expire : $expire + time()) . '::' . $flag . \PHP_EOL;
 		$res = fwrite($file, $header);
 		if ($res === false) {
-			throw new FileException('Unable to write to the output file.');
+			throw new \RuntimeException('Unable to write to the output file.');
 		}
 
 		// Write data
@@ -133,7 +133,7 @@ class File implements \Eve\ResourceInterface
 
 		$res = fwrite($file, $data);
 		if ($res === false) {
-			throw new FileException('Unable to write to the output file.');
+			throw new \RuntimeException('Unable to write to the output file.');
 		}
 
 		fclose($file);
