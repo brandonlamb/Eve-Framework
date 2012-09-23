@@ -45,7 +45,7 @@ class Method
 				$this->_method = $value;
 				break;
 			default:
-				throw new \Eve\Mvc\RequestException('Invalid method type ' . $value);
+				throw new InvalidArgumentException('Invalid method type ' . $value);
 		}
 	}
 
