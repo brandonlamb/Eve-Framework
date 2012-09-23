@@ -74,7 +74,7 @@ class Pdo extends \PDO
 				default:
 			}
 		} catch (PDOException $e) {
-			throw new Exception($e->getMessage());
+			throw new \RuntimeException($e->getMessage());
 		}
 	}
 

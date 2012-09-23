@@ -70,7 +70,7 @@ class Database extends Mvc\Component
 			if (isset($this->_config['connections'][$name]) && $config = $this->_config['connections'][$name]) {
 				$this->createConnection($name, $config);
 			} else {
-				throw new Database\Exception('Database \'' . $name . '\' is not defined in the configuration.');
+				throw new \RuntimeException('Database \'' . $name . '\' is not defined in the configuration.');
 			}
 		}
 		return $this->_connections[$name];
@@ -114,7 +114,7 @@ class Database extends Mvc\Component
 			$config[static::CONF_USER],
 			$config[static::CONF_PASS]
 		)) {
-			throw new Database\Exception('Configuration for database \'' . $name . '\' is invalid.');
+			throw new \RuntimeException('Configuration for database \'' . $name . '\' is invalid.');
 		}
 
 		// Instantiate new connection
