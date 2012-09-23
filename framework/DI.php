@@ -6,12 +6,12 @@ class DI
 	/**
 	 * @var DI
 	 */
-	private static $defaultInstance;
+	protected static $defaultInstance;
 
 	/**
 	 * @var array
 	 */
-	private $container;
+	protected $container;
 
 	/**
 	 * Accept an array as a container to populate
@@ -77,7 +77,7 @@ class DI
 	 * @param string $alias
 	 * @return mixed
 	 */
-	public function get($alias, $config)
+	public function get($alias, $config = null)
 	{
 		if (!isset($this->container[$alias])) {
 			throw new \InvalidArgumentException($alias . ' is not defined.');
@@ -93,7 +93,7 @@ class DI
 		// of a DI\Injectable then set the DI container for the object
 		if (is_array($this->container[$alias])) {
 			$className = $this->container[$alias]['className'];
-			$instance = new $className($this->container[$alias]));
+			$instance = new $className($this->container[$alias]);
 			if ($instance instanceof DI\Injectable) {
 				$instance->setDI($this);
 			}
