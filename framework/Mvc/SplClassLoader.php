@@ -225,7 +225,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	{
 		if (isset(static::$_class[$resourceName])) {
 #			d(\Eve::app()->getComponent('config')->get('vendorsPath') . static::$_class[$resourceName]);
-			require_once\Eve::app()->getComponent('config')->get('vendorsPath') . static::$_class[$resourceName];
+			require_once \Eve::app()->getComponent('config')->get('vendorsPath') . static::$_class[$resourceName];
 			return true;
 		}
 
@@ -236,7 +236,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 				if ($resourceAbsolutePath === false) {
 					return false;
 				}
-				require_once$resourceAbsolutePath;
+				require_once $resourceAbsolutePath;
 				break;
 
 			case self::MODE_DEBUG:
@@ -245,7 +245,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 						sprintf('Autoloader unable to find path to "%s"', $resourceName)
 					);
 				}
-				require_once$resourceAbsolutePath;
+				require_once $resourceAbsolutePath;
 				break;
 
 			case self::MODE_NORMAL:
@@ -253,7 +253,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 				if ($resourceAbsolutePath === false) {
 					return false;
 				}
-				require_once$resourceAbsolutePath;
+				require_once $resourceAbsolutePath;
 				break;
 		}
 
