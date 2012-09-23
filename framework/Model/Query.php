@@ -569,6 +569,7 @@ class Query extends Entity
 		$sqlStatement = '';
 		foreach ($this->where as $condition) {
 print_r($condition);
+
 			// Build where clause based on operator
 			switch ($condition['operator']) {
 				case '=':

@@ -139,9 +139,9 @@ class Dispatcher extends Component implements \Eve\ResourceInterface
 						// Call controller afterAction() method if it exists
 						$c->afterAction();
 					} catch (\ErrorException $e) {
-						throw new ControllerException($e->getMessage(), 0, $e->getCode(), $e->getFile(), $e->getLine());
+						throw new \RuntimeException($e->getMessage(), 0, $e->getCode(), $e->getFile(), $e->getLine());
 					} catch (\Exception $e) {
-						throw new ControllerException($e->getMessage(), 0, 0, $e->getFile(), $e->getLine());
+						throw new \RuntimeException($e->getMessage(), 0, 0, $e->getFile(), $e->getLine());
 					}
 				} else {
 					throw new DispatcherException('Unable to load action method for  ' . $action . '.');
@@ -149,7 +149,7 @@ class Dispatcher extends Component implements \Eve\ResourceInterface
 
 				// Dispatched ok
 				$dispatched = true;
-			} catch (ControllerException $e) {
+			} catch (\RuntimeException $e) {
 				// Check if exception already is set, rethrow to avoid infinite loop
 				if ($exception !== null) { throw $e; }
 
