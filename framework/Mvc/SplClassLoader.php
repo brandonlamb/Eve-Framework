@@ -51,22 +51,22 @@ class SplClassLoader implements Mvc\SplAutoloader
 	/**
 	 * @var string
 	 */
-	private $_fileExtension = '.php';
+	private $fileExtension = '.php';
 
 	/**
 	 * @var boolean
 	 */
-	private $_includePathLookup = false;
+	private $includePathLookup = false;
 
 	/**
 	 * @var array
 	 */
-	private $_resources = array();
+	private $resources = array();
 
 	/**
 	 * @var integer
 	 */
-	private $_mode = self::MODE_NORMAL;
+	private $mode = self::MODE_NORMAL;
 
 	/**
 	 * Class => path map, found via:
@@ -137,7 +137,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 				sprintf('Cannot have %s working normally and silently at the same time!', __CLASS__)
 			);
 		}
-		$this->_mode = $mode;
+		$this->mode = $mode;
 		return $this;
 	}
 
@@ -149,7 +149,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	public function setFileExtension($fileExtension)
 	{
-		$this->_fileExtension = $fileExtension;
+		$this->fileExtension = $fileExtension;
 		return $this;
 	}
 
@@ -160,7 +160,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	public function getFileExtension()
 	{
-		return $this->_fileExtension;
+		return $this->fileExtension;
 	}
 
 	/**
@@ -171,7 +171,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	public function setIncludePathLookup($includePathLookup)
 	{
-		$this->_includePathLookup = $includePathLookup;
+		$this->includePathLookup = $includePathLookup;
 		return $this;
 	}
 
@@ -182,7 +182,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	public function getIncludePathLookup()
 	{
-		return $this->_includePathLookup;
+		return $this->includePathLookup;
 	}
 
 	/**
@@ -206,7 +206,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	public function add($resource, $resourcePath = null)
 	{
-		$this->_resources[$resource] = (array) $resourcePath;
+		$this->resources[$resource] = (array) $resourcePath;
 	}
 
 	/**
@@ -222,7 +222,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 
 		$resourceAbsolutePath = $this->getResourceAbsolutePath($resourceName);
 
-		switch ($this->_mode) {
+		switch ($this->mode) {
 			case self::MODE_SILENT:
 				if ($resourceAbsolutePath === false) {
 					return false;
@@ -248,7 +248,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 				break;
 		}
 
-		if ($this->_mode & self::MODE_DEBUG && ! $this->isResourceDeclared($resourceName)) {
+		if ($this->mode & self::MODE_DEBUG && ! $this->isResourceDeclared($resourceName)) {
 			throw new \RuntimeException(
 				sprintf('Autoloader expected resource "%s" to be declared in file "%s".', $resourceName, $resourceAbsolutePath)
 			);
@@ -265,7 +265,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 	 */
 	private function getResourceAbsolutePath($resourceName)
 	{
-		foreach ($this->_resources as $resource => $resourcesPath) {
+		foreach ($this->resources as $resource => $resourcesPath) {
 			if (strpos($resourceName, $resource) !== 0) {
 				continue;
 			}
@@ -280,7 +280,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 			}
 		}
 
-		if ($this->_includePathLookup && ($resourceAbsolutePath = stream_resolve_include_path($resourceRelativePath)) !== false) {
+		if ($this->includePathLookup && ($resourceAbsolutePath = stream_resolve_include_path($resourceRelativePath)) !== false) {
 			return $resourceAbsolutePath;
 		}
 
@@ -306,7 +306,7 @@ class SplClassLoader implements Mvc\SplAutoloader
 			$resourcePath =  str_replace('\\', DIRECTORY_SEPARATOR, $resourceName);
 		}
 
-		return str_replace('_', DIRECTORY_SEPARATOR, $resourcePath) . $this->_fileExtension;
+		return str_replace('_', DIRECTORY_SEPARATOR, $resourcePath) . $this->fileExtension;
 	}
 
 	/**

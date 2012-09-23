@@ -8,7 +8,7 @@ class Event
 	 *
 	 * @var array
 	 */
-	protected static $_events;
+	protected static $events;
 
 	/**
 	 * Attach multiple callbacks to an event
@@ -20,7 +20,7 @@ class Event
 	public function attach($event, $callback)
 	{
 		// Add callack to event
-		static::$_events[$event][] = $callback;
+		static::$events[$event][] = $callback;
 		return $this;
 	}
 
@@ -32,7 +32,7 @@ class Event
 	 */
 	public function remove($event)
 	{
-		unset(static::$_events[$event]);
+		unset(static::$events[$event]);
 		return $this;
 	}
 
@@ -45,10 +45,10 @@ class Event
 	 */
 	public function trigger($event, $value = null)
 	{
-		if (!isset(static::$_events[$event])) { return false; }
+		if (!isset(static::$events[$event])) { return false; }
 
 		// Fire a callback
-		foreach (static::$_events[$event] as $function) {
+		foreach (static::$events[$event] as $function) {
 			$value = call_user_func($function, $value);
 		}
 		return $value;
