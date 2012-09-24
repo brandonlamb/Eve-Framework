@@ -101,8 +101,8 @@ class DI
 		}
 
 		// If the object is a Closure, just return it
-		if ($this->container[$alias] instanceof Closure) {
-			return $this->container[$alias];
+		if ($this->container[$alias] instanceof \Closure) {
+			return $this->container[$alias]();
 		}
 
 		// Object is an already instantiated object, just return it
