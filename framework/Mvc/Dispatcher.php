@@ -10,18 +10,8 @@
  */
 namespace Eve\Mvc;
 
-// Namespace aliases
-use Eve\Mvc\Router as Router;
-
-class Dispatcher extends Component implements \Eve\ResourceInterface
+class Dispatcher extends \Eve\DI\Injectable
 {
-    /**
-     * Array of routers
-     *
-     * @var array
-     */
-    protected $_routers = array();
-
     /**
      * Configuration keys
      *
@@ -35,51 +25,70 @@ class Dispatcher extends Component implements \Eve\ResourceInterface
     const CONF_EXCEPTION	= 'exception';
 
     /**
-     * Constructor, parse config and add routers
-     *
-     * @param array $config
+     * @var string, Controller suffix
      */
-    public function __construct($config)
-    {
-        parent::__construct($config);
-
-        // Loop through each configured router and add to routers array
-        foreach ($config['routers'] as $router => $options) {
-            $this->addRouter(new $router($options));
-        }
-
-        // Append default simple router
-        $this->addRouter(new Router\Simple());
-    }
+    protected $controllerSuffix = 'Controller';
 
     /**
-     * Add a router to array of routers
-     *
-     * @param Router\RouterInterface, the router to add
-     * @param  bool $prepend, whether to prepend the router to array
-     * @return void
+     * @var string, Action suffix
      */
-    public function addRouter(Router\RouterInterface $router, $prepend = false)
-    {
-        if ($prepend === false) {
-            $this->_routers[] = $router;
-        } else {
-            array_unshift($this->_routers, $router);
-        }
-    }
+    protected $actionSuffix = 'Action';
 
     /**
-     * Route the request by looping through all the routers until one returns true
+     * @var string, Controller name
+     */
+    protected $controllerName;
+
+    /**
+     * @var string, Action name
+     */
+    protected $actionName;
+
+    /**
+     * Set the controller suffix
      *
-     * @param  Request    $request
+     * @param string $suffix
      * @return Dispatcher
      */
-    public function route(Request $request)
+    public function setControllerSuffix($suffix)
     {
-        foreach ($this->_routers as $router) {
-            if ($router->route($request) === true) { break; }
-        }
+        $this->controllerSuffix = (string) $suffix;
+        return $this;
+    }
 
+    /**
+     * Set the action suffix
+     *
+     * @param string $suffix
+     * @return Dispatcher
+     */
+    public function setActionSuffix($suffix)
+    {
+        $this->actionSuffix = (string) $suffix;
+        return $this;
+    }
+
+    /**
+     * Set the controller name
+     *
+     * @param string $controllerName
+     * @return Dispatcher
+     */
+    public function setControllerName($controllerName)
+    {
+        $this->controllerName = $this->camelize($controllerName) . $this->controllerSuffix;
+        return $this;
+    }
+
+    /**
+     * Set the action name
+     *
+     * @param string $actionName
+     * @return Dispatcher
+     */
+    public function setActionName($actionName)
+    {
+        $this->actionName = $this->camelize($actionName) . $this->actionSuffix;
         return $this;
     }
 
@@ -89,15 +98,10 @@ class Dispatcher extends Component implements \Eve\ResourceInterface
      * @param  Request    $request
      * @return Dispatcher
      */
-    public function dispatch(Request $request)
+    public function dispatch()
     {
         // Get config
-        $config		= \Eve::app()->getComponent(static::RES_CONFIG);
-
-        // Define initial values
-        $module		= $request->getModule();
-        $controller	= $request->getController();
-        $action		= $request->getAction();
+        $config = $this->getDI()->getShared('config')->get('router');
 
         // Try and dispatch the request
         $dispatched	= false;
@@ -197,38 +201,25 @@ class Dispatcher extends Component implements \Eve\ResourceInterface
     }
 
     /**
-     * Format controller as valid class/namespace
+     * Get camelized string, replacing all non word characters
      *
-     * @param  string $module
-     * @param  string $controller
+     * @param string $word
      * @return string
      */
-    public function getControllerName($module, $controllerName)
+    protected function camelize($word)
     {
-        $controller = null;
-        $parts = explode('-', $controllerName);
-        foreach ($parts as $part) {
-            $controller .= ucfirst($part);
+        static $cached;
+        if (!isset($cached[$word])) {
+            /*
+            if (preg_match_all('/\/(.?)/', $word, $got)) {
+                foreach ($got[1] as $k => $v) {
+                   $got[1][$k] = '::' . strtoupper($v);
+                }
+                $word = str_replace($got[0], $got[1], $word);
+            }
+            */
+            $cached[$word] = str_replace(' ', '', ucwords(preg_replace('/[^A-Z^a-z^0-9^:]+/', ' ', $word)));
         }
-
-        return '\\' . ucfirst($module) . '\\Controller\\' . ucfirst($controller);
-    }
-
-    /**
-     * Format action
-     *
-     * @param  string $action
-     * @return string
-     */
-    public function getActionName($action)
-    {
-        // Covert dashes to capitals
-        $parts = explode('-', $action);
-        $action = 'action';
-        foreach ($parts as $part) {
-            $action .= ucfirst($part);
-        }
-
-        return $action;
+        return $cached[$word];
     }
 }

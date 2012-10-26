@@ -7,34 +7,18 @@ class FactoryDefault extends \Eve\DI
     {
         parent::__construct($config);
 
+        $this->set('config', '\\Eve\\Mvc\\Config');
         $this->set('dispatcher', '\\Eve\\Mvc\\Dispatcher');
-#        $this->set('router', '\\Eve\Mvc\\Router');
+        $this->set('logger', '\\Eve\\Log');
         $this->set('response', '\\Eve\\Mvc\\Response');
         $this->set('request', '\\Eve\\Http\\Request');
-
-        $this->set('logger', function () {
-        	return new \Eve\Log(\PATH . '/protected/logs/application-' . strftime('%Y-%m-%d') . '.log');
-        });
+        $this->set('router', '\\Eve\\Mvc\\Router');
+        $this->set('view', '\\Eve\\Mvc\\View');
 
         $this->set('loader', function () {
         	$loader = new \Eve\Loader();
         	$loader->register();
         	return $loader;
         });
-
-        $this->set('router', function () {
-			$router = new \Eve\Mvc\Router();
-			$router->map('/:controller/:action/:params', array('module' => 'default'), array(
-				'filters' => array(
-					'params' => '?(.*)?',
-				)
-			));
-
-			return $router;
-        });
-
-        $this->set('view', function() {
-			return new \Eve\Mvc\View();
-		});
     }
 }

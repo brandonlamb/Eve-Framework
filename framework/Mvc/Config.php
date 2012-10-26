@@ -17,14 +17,31 @@ class Config implements \Countable
      *
      * @var string
      */
-    protected $_file;
+    protected $file;
 
     /**
      * Data
      *
      * @var array
      */
-    protected $_data = array();
+    protected $data;
+
+    /**
+     * Load configuration from file
+     *
+     * @param  string $filename
+     * @param  string $section
+     * @return void
+     */
+    public function __construct($file = null)
+    {
+        if ($resourceAbsolutePath = stream_resolve_include_path($file)) {
+            $this->file = $file;
+            $this->data = require $resourceAbsolutePath;
+        } else {
+            $this->data = array();
+        }
+    }
 
     /**
      * Set magic method
@@ -35,7 +52,7 @@ class Config implements \Countable
      */
     public function __set($name, $value)
     {
-        $this->_data[$name] = $value;
+        $this->data[$name] = $value;
     }
 
     /**
@@ -44,31 +61,9 @@ class Config implements \Countable
      * @param  string $name
      * @return mixed
      */
-    public function &__get($name)
+    public function __get($name)
     {
-        if (isset($this->_data[$name])) {
-            return $this->_data[$name];
-        }
-        $default = null;
-
-        return $default;
-    }
-
-    /**
-     * Load configuration from file
-     *
-     * @param  string $filename
-     * @param  string $section
-     * @return void
-     */
-    public function __construct($file)
-    {
-        $this->_file = $file;
-        if ($resourceAbsolutePath = stream_resolve_include_path($file)) {
-            $this->_data = require $resourceAbsolutePath;
-        } else {
-            throw new \Exception('Config file does not exist (' . $file . ')');
-        }
+        return $this->get($name);
     }
 
     /**
@@ -76,27 +71,24 @@ class Config implements \Countable
      *
      * @param  string $name
      * @param  mixed  $value
-     * @return void
+     * @return Config
      */
     public function set($name, $value)
     {
-        $this->_data[$name] =& $value;
+        $this->data[$name] =& $value;
+        return $this;
     }
 
     /**
      * Get value method
      *
      * @param  string $name
+     * @param mixed $default
      * @return mixed
      */
-    public function &get($name)
+    public function get($name, $default = null)
     {
-        if (isset($this->_data[$name])) {
-            return $this->_data[$name];
-        }
-        $default = null;
-
-        return $default;
+        return isset($this->data[$name]) ? $this->data[$name] : $default;
     }
 
     /**
@@ -107,7 +99,7 @@ class Config implements \Countable
      */
     public function __isset($name)
     {
-        return isset($this->_data[$name]);
+        return isset($this->data[$name]);
     }
 
     /**
@@ -117,7 +109,19 @@ class Config implements \Countable
      */
     public function count()
     {
-        return count($this->_data);
+        return count($this->data);
+    }
+
+    /**
+     * Set the configuration data array
+     *
+     * @param array $data
+     * @return Config
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
     }
 
     /**

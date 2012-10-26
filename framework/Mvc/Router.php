@@ -14,9 +14,44 @@ class Router
     protected $namedRoutes = array();
 
     /**
+     * @var Route, the matched route
+     */
+    protected $route;
+
+    /**
      * @var string The base REQUEST_URI. Gets prepended to all route url's.
      */
     protected $basePath;
+
+    /**
+     * @var string, default module name
+     */
+    protected $defaultModuleName = '';
+
+    /**
+     * @var string, default controller name
+     */
+    protected $defaultControllerName = 'index';
+
+    /**
+     * @var string, default action name
+     */
+    protected $defaultActionName = 'index';
+
+    /**
+     * @var string, routed module name
+     */
+    protected $moduleName;
+
+    /**
+     * @var string, routed controller name
+     */
+    protected $controllerName;
+
+    /**
+     * @var string, routed action name
+     */
+    protected $actionName;
 
     /**
      * @param string $basePath Set the base url - gets prepended to all route url's
@@ -116,7 +151,8 @@ class Router
             }
 
             $route->setParameters($params);
-            return $route;
+            $this->route = $route;
+            return $this->route;
         }
 
         return false;
@@ -153,5 +189,113 @@ class Router
         }
 
         return $url;
+    }
+
+    /**
+     * Set the default module name
+     *
+     * @param string $moduleName
+     * @return Router
+     */
+    public function setDefaultModule($moduleName)
+    {
+        $this->defaultModuleName = (string) $moduleName;
+        return $this;
+    }
+
+    /**
+     * Set the default controller name
+     *
+     * @param string $controllerName
+     * @return Router
+     */
+    public function setDefaultController($controllerName)
+    {
+        $this->defaultControllerName = (string) $controllerName;
+        return $this;
+    }
+
+    /**
+     * Set the default action name
+     *
+     * @param string $actionName
+     * @return Router
+     */
+    public function setDefaultAction($actionName)
+    {
+        $this->defaultActionName = (string) $actionName;
+        return $this;
+    }
+
+    /**
+     * Get the routed module name
+     *
+     * @return string
+     */
+    public function getModuleName()
+    {
+        if (!$this->route instanceof Route) {
+            return $this->defaultModuleName;
+        }
+
+        $target = $this->route->getTarget();
+        if (isset($target['module'])) {
+            return $target['module'];
+        }
+
+        $params = $this->route->getParameters();
+        if (isset($params['module'])) {
+            return $params['module'];
+        }
+
+        return $this->defaultModuleName;
+    }
+
+    /**
+     * Get the routed controller name
+     *
+     * @return string
+     */
+    public function getControllerName()
+    {
+        if (!$this->route instanceof Route) {
+            return $this->defaultControllerName;
+        }
+
+        $target = $this->route->getTarget();
+        if (isset($target['controller'])) {
+            return $target['controller'];
+        }
+
+        $params = $this->route->getParameters();
+        if (isset($params['controller'])) {
+            return $params['controller'];
+        }
+
+        return $this->controllerName;
+    }
+
+    /**
+     * Get the routed action name
+     *
+     * @return string
+     */
+    public function getActionname()
+    {
+        if (!$this->route instanceof Route) {
+            return $this->defaultActionName;
+        }
+
+        $target = $this->route->getTarget();
+        if (isset($target['action'])) {
+            return $target['action'];
+        }
+
+        $params = $this->route->getParameters();
+        if (isset($params['action'])) {
+            return $params['action'];
+        }
+
+        return $this->defaultActionName;
     }
 }
