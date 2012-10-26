@@ -10,15 +10,8 @@
  */
 namespace Eve\Mvc;
 
-class View implements \Eve\ResourceInterface
+class View extends \Eve\DI\Injectable
 {
-    /**
-     * Request object passed to constructor
-     *
-     * @var Request
-     */
-    protected $request;
-
     /**
      * Path to views directory
      *

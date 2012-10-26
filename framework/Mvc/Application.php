@@ -58,9 +58,10 @@ abstract class Application
         $dispatcher->setControllerName($router->getControllerName());
         $dispatcher->setActionName($router->getActionName());
         $dispatcher->dispatch();
-d($dispatcher);
 
-        return $this->di->getShared('response');
+#d($dispatcher);
+
+        return $response;
     }
 
     /**

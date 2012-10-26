@@ -100,15 +100,11 @@ class Dispatcher extends \Eve\DI\Injectable
      */
     public function dispatch()
     {
-        $di = $this->getDI();
-
-        // Get config
-        $config = $di->getShared('config')->get('router');
-        $request = $di->getShared('request');
-        $router = $di->getShared('router');
-        $params = explode('/', trim($router->getRoute()->getParameter('params'), '/'));
-
-        // Try and dispatch the request
+        $di         = $this->getDI();
+        $config     = $di->getShared('config')->get('router');
+        $request    = $di->getShared('request');
+        $router     = $di->getShared('router');
+        $params     = explode('/', trim($router->getRoute()->getParameter('params'), '/'));
         $dispatched	= false;
         $notFound	= false;
         $exception	= null;
@@ -117,7 +113,6 @@ class Dispatcher extends \Eve\DI\Injectable
             try {
                 // If no module is set then just assigned the controller name as className, otherwise prepend the module name
                 $className = $router->getModuleName() === '' ? $this->controllerName : $router->getModuleName() . '\\' . $this->controllerName;
-                $method = $this->actionName;
 
                 // Try and load the class. Catch exceptions for 404s
                 try {
