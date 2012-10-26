@@ -104,7 +104,9 @@ class Dispatcher extends \Eve\DI\Injectable
 
         // Get config
         $config = $di->getShared('config')->get('router');
+        $request = $di->getShared('request');
         $router = $di->getShared('router');
+        $params = explode('/', trim($router->getRoute()->getParameter('params'), '/'));
 
         // Try and dispatch the request
         $dispatched	= false;
@@ -113,7 +115,9 @@ class Dispatcher extends \Eve\DI\Injectable
 
         while (!$dispatched) {
             try {
+                // If no module is set then just assigned the controller name as className, otherwise prepend the module name
                 $className = $router->getModuleName() === '' ? $this->controllerName : $router->getModuleName() . '\\' . $this->controllerName;
+                $method = $this->actionName;
 
                 // Try and load the class. Catch exceptions for 404s
                 try {
@@ -123,35 +127,35 @@ class Dispatcher extends \Eve\DI\Injectable
                 }
 
                 if (!$controller instanceof Controller) {
-                    throw new DispatcherException('Unable to load controller class for ' . $controllerName);
+                    throw new DispatcherException('Unable to load controller class for ' . $className);
                 }
 
                 // Try and load the action.
                 // Wrap controller methods in separate try/catch so we can catch controller/model/etc errors
-                if (method_exists($c, $method)) {
+                if (method_exists($controller, $this->actionName)) {
                     try {
                         // Call Controller::init() method first
-                        $c->init();
+                        $controller->init();
 
-                        // Call controller beforeAction() method
-                        $c->beforeAction();
+                        // Call controller beforeDispatch() method
+                        $controller->beforeDispatch();
 
                         // Call action
-                        if (count($request->getParams()) == 0) {
-                            $c->$method();
+                        if (count($params) == 0) {
+                            $controller->{$this->actionName}();
                         } else {
-                            call_user_func_array(array($c, $method), $request->getParams());
+                            call_user_func_array(array($controller, $this->actionName), $params);
                         }
 
-                        // Call controller afterAction() method if it exists
-                        $c->afterAction();
+                        // Call controller afterDispatch() method if it exists
+                        $controller->afterDispatch();
                     } catch (\ErrorException $e) {
                         throw new \RuntimeException($e->getMessage(), 0, $e->getCode(), $e->getFile(), $e->getLine());
                     } catch (\Exception $e) {
                         throw new \RuntimeException($e->getMessage(), 0, 0, $e->getFile(), $e->getLine());
                     }
                 } else {
-                    throw new DispatcherException('Unable to load action method for  ' . $action . '.');
+                    throw new DispatcherException('Unable to load action method for  ' . $this->actionName . '.');
                 }
 
                 // Dispatched ok

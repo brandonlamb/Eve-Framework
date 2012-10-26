@@ -280,7 +280,7 @@ class Router
      *
      * @return string
      */
-    public function getActionname()
+    public function getActionName()
     {
         if (!$this->route instanceof Route) {
             return $this->defaultActionName;
@@ -297,5 +297,15 @@ class Router
         }
 
         return $this->defaultActionName;
+    }
+
+    /**
+     * Return the routed route
+     *
+     * @return Route
+     */
+    public function getRoute()
+    {
+        return null !== $this->route ? $this->route : new Route();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Eve\Mvc;
 
-abstract class AbstractController extends \Eve\DI\Injectable
+abstract class Controller extends \Eve\DI\Injectable
 {
     public function init() {}
     public function beforeDispatch() {}
