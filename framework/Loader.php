@@ -170,7 +170,7 @@ class Loader
      */
     public function registerDirs(array $paths)
     {
-        $this->dirPaths = $paths;
+        $this->dirPaths = array_merge($this->dirPaths, $paths);
 
         return $this;
     }

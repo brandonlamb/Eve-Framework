@@ -100,8 +100,11 @@ class Dispatcher extends \Eve\DI\Injectable
      */
     public function dispatch()
     {
+        $di = $this->getDI();
+
         // Get config
-        $config = $this->getDI()->getShared('config')->get('router');
+        $config = $di->getShared('config')->get('router');
+        $router = $di->getShared('router');
 
         // Try and dispatch the request
         $dispatched	= false;
@@ -110,17 +113,16 @@ class Dispatcher extends \Eve\DI\Injectable
 
         while (!$dispatched) {
             try {
-                $controllerName = $this->getControllerName($module, $controller);
-                $method = $this->getActionName($action);
+                $className = $router->getModuleName() === '' ? $this->controllerName : $router->getModuleName() . '\\' . $this->controllerName;
 
                 // Try and load the class. Catch exceptions for 404s
                 try {
-                    $c = new $controllerName($request, $this, $exception);
+                    $controller = new $className();
                 } catch (\Exception $e) {
                     throw new DispatcherException($e->getMessage());
                 }
 
-                if (!$c instanceof AbstractController) {
+                if (!$controller instanceof Controller) {
                     throw new DispatcherException('Unable to load controller class for ' . $controllerName);
                 }
 

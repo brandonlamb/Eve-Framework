@@ -57,6 +57,7 @@ abstract class Application
 #        $dispatcher->setModuleName($router->getModuleName());
         $dispatcher->setControllerName($router->getControllerName());
         $dispatcher->setActionName($router->getActionName());
+        $dispatcher->dispatch();
 d($dispatcher);
 
         return $this->di->getShared('response');
@@ -71,14 +72,14 @@ d($dispatcher);
     public function addDefaultRoutes(\Eve\Mvc\Router $router)
     {
         // route: /indexController/indexAction/blah1/blah2
-        $router->map('/:controller/:action/:params', array('module' => 'default'), array(
+        $router->map('/:controller/:action/:params', array('module' => ''), array(
             'filters' => array(
                 'params' => '?(.*)?',
             )
         ));
 
         // route: /indexController
-        $router->map('/:controller', array('module' => 'default', 'action' => 'index'), array(
+        $router->map('/:controller', array('module' => '', 'action' => 'index'), array(
             'filters' => array(
                 'controller' => '?([\w-]+)/?',
             )
