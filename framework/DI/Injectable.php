@@ -6,7 +6,12 @@ abstract class Injectable implements InjectableInterface
     /**
      * @var DI
      */
-    protected $di;
+    private $di;
+
+    /**
+     * @var Events\Manager
+     */
+    private $eventsManager;
 
     public function __construct(\Eve\DI $di = null)
     {
@@ -22,7 +27,7 @@ abstract class Injectable implements InjectableInterface
      * @param  DI         $di
      * @return Injectable
      */
-    public function setDI(\Eve\DI $di)
+    public final function setDI(\Eve\DI $di)
     {
         $this->di = $di;
 
@@ -34,8 +39,30 @@ abstract class Injectable implements InjectableInterface
      *
      * @return DI
      */
-    public function getDI()
+    public final function getDI()
     {
         return $this->di;
     }
+
+    /**
+     * Set the events manager
+     *
+     * @param Events\Manager $eventsManager
+     * @return Injectable
+     */
+    public final function setEventsManager(\Eve\Events\Manager $eventsManager)
+    {
+        $this->eventsManager = $eventsManager;
+        return $this;
+    }
+
+    /**
+     * Return the events manager
+     * @return Events\Manager
+     */
+    public final function getEventsManager()
+    {
+        return $this->eventsManager;
+    }
+
 }

@@ -7,10 +7,10 @@
  */
 namespace Eve\Http;
 
-class Request
+class Request extends \Eve\DI\Injectable
 {
-#	const SCHEME_HTTP		= 'http';
-#	const SCHEME_HTTPS		= 'https';
+	const SCHEME_HTTP		= 'http';
+	const SCHEME_HTTPS		= 'https';
     const URI_REGEX			= '/[^a-zA-Z0-9_\-\/\s]/';
     const METHOD_HEAD       = 'HEAD';
     const METHOD_GET        = 'GET';
@@ -20,35 +20,20 @@ class Request
     const METHOD_OPTIONS    = 'OPTIONS';
     const METHOD_OVERRIDE   = '_METHOD';
 
-    /**
-     * @var Request\Method
-     */
     protected $method;
-
     protected $body;
     protected $query;
     protected $fragment;
-    protected $module;
-    protected $controller;
-    protected $action;
     protected $baseUri;
     protected $uri;
     protected $params;
     protected $language;
-    protected $exception;
-    protected $dispatched;
-    protected $routed;
 
     /**
      * Constructor
-     *
-     * @param array $config
      */
-    public function __construct($config)
+    public function __construct()
     {
-        parent::__construct($config);
-
-        $this->body = @file_get_contents('php://input');
         $uri = null;
 
         do {
@@ -102,6 +87,9 @@ class Request
      */
     public function getBody()
     {
+        if (null === $this->body) {
+            $this->body = @file_get_contents('php://input');
+        }
         return $this->body;
     }
 
@@ -245,107 +233,6 @@ class Request
     }
 
     /**
-     * Set base uri from uri
-     *
-     * @todo Is this even used? probably just remove this method
-     * @param  string $value
-     * @return void
-     */
-    protected function DEPRECATED_setBaseUri($value)
-    {
-        $scriptFilename = (isset($_SERVER['SCRIPT_FILENAME'])) ? $_SERVER['SCRIPT_FILENAME'] : null;
-        $ext = 'php';
-
-        do {
-            if (!is_string($scriptFilename)) {
-                break;
-            }
-
-            $scriptFilename = basename($scriptFilename, $ext);
-            $scriptName = (isset($_SERVER['SCRIPT_NAME'])) ? $_SERVER['SCRIPT_NAME'] : null;
-
-            if (is_string($scriptName)) {
-                $scriptFilename = basename($scriptName);
-            }
-        } while (0);
-    }
-
-    /**
-     * Set the module name
-     *
-     * @param  string  $value
-     * @return Request
-     */
-    public function setModule($value = null)
-    {
-        if (null !== $value) {
-            $this->module = (string) $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the module name
-     *
-     * @return string
-     */
-    public function getModule()
-    {
-        return $this->module;
-    }
-
-    /**
-     * Set the controller name
-     *
-     * @param  string  $value
-     * @return Request
-     */
-    public function setController($value = null)
-    {
-        if (null !== $value) {
-            $this->controller = (string) $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the controller name
-     *
-     * @return string
-     */
-    public function getController()
-    {
-        return $this->controller;
-    }
-
-    /**
-     * Set the action name
-     *
-     * @param  string  $value
-     * @return Request
-     */
-    public function setAction($value = null)
-    {
-        if (null !== $value) {
-            $this->action = (string) $value;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get the action name
-     *
-     * @return string
-     */
-    public function getAction()
-    {
-        return $this->action;
-    }
-
-    /**
      * Set the base uri
      *
      * @param  string  $value
@@ -424,75 +311,6 @@ class Request
     }
 
     /**
-     * Set dispatched flag
-     *
-     * @param  bool    $value
-     * @return Request
-     */
-    public function setDispatched($value)
-    {
-        $this->dispatched = (bool) $value;
-
-        return $this;
-    }
-
-    /**
-     * Get dispatched flag
-     *
-     * @return bool
-     */
-    public function isDispatched()
-    {
-        return (bool) $this->dispatched;
-    }
-
-    /**
-     * Set routed flag
-     *
-     * @param  bool    $value
-     * @return Request
-     */
-    public function setRouted($value)
-    {
-        $this->routed = (bool) $value;
-
-        return $this;
-    }
-
-    /**
-     * Get routed flag
-     *
-     * @return bool
-     */
-    public function isRouted()
-    {
-        return (bool) $this->routed;
-    }
-
-    /**
-     * Set the exception object
-     *
-     * @param  \Exception $exception
-     * @return Request
-     */
-    public function setException(\Exception $exception = null)
-    {
-        if (null !== $exception) { $this->exception = $exception; }
-
-        return $this;
-    }
-
-    /**
-     * Get the exception object
-     *
-     * @return \Exception
-     */
-    public function getException()
-    {
-        return (is_object($this->exception)) ? $this->exception : null;
-    }
-
-    /**
      * Set parameters array
      *
      * @param  array $value
@@ -552,17 +370,6 @@ class Request
     public function getServer($key, $default = null)
     {
         return (isset($_SERVER[$key])) ? $_SERVER[$key] : $default;
-    }
-
-    /**
-     * Checks whether $_SERVER superglobal has certain index
-     *
-     * @param string $key
-     * @return bool
-     */
-    public function has($key)
-    {
-        return isset($_SERVER[$key]);
     }
 
     /**
@@ -693,15 +500,5 @@ class Request
     public function isAjax()
     {
         return ($this->getParam('isajax') === true || (isset($_SERVER['X_REQUESTED_WITH']) && $_SERVER['X_REQUESTED_WITH'] === 'XMLHttpRequest'));
-    }
-
-    /**
-     * Is this a XHR request?
-     *
-     * @return bool
-     */
-    public function isXmlHttpRequest()
-    {
-        return $this->isAjax();
     }
 }
