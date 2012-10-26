@@ -226,4 +226,26 @@ class DI
 
 		return self::$defaultInstance;
 	}
+
+	/**
+	 * Check if the container contains the index
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function has($key)
+	{
+		return isset($this->container[$key]);
+	}
+
+	/**
+	 * Check if the shared container contains the index
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function hasShared($key)
+	{
+		return isset($this->sharedContainer[$key]);
+	}
 }

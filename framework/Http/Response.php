@@ -184,6 +184,7 @@ class Response extends \Eve\DI\Injectable
 
     /**
      * Resets all established headers
+     *
      * @return Response
      */
     public function resetHeaders()

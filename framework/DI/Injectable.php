@@ -22,6 +22,23 @@ abstract class Injectable implements InjectableInterface
     }
 
     /**
+     * Magic getter method that checks DI container for propery
+     *
+     * @param string $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        $di = $this->getDI();
+        if ($di->hasShared($key)) {
+            return $this->getShared($key);
+        } else if ($this->has($key)) {
+            return $this->get($key);
+        }
+        throw new \InvalidArgument($key . ' is not a valid property');
+    }
+
+    /**
      * Set the DI container
      *
      * @param  DI         $di
@@ -58,11 +75,11 @@ abstract class Injectable implements InjectableInterface
 
     /**
      * Return the events manager
+     *
      * @return Events\Manager
      */
     public final function getEventsManager()
     {
         return $this->eventsManager;
     }
-
 }
