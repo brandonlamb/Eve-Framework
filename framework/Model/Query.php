@@ -136,7 +136,7 @@ class Query extends Entity
     public function where(array $conditions = array(), $type = 'AND', $setType = 'AND')
     {
         // Don't add WHERE clause if array is empty (easy way to support dynamic request options that modify current query)
-        if ($conditions) {
+        if (isset($conditions[2])) {
             $where = array();
             $where['conditions'] = $conditions;
             $where['type'] = $type;
@@ -575,7 +575,7 @@ class Query extends Entity
         if (count($this->where) == 0) {
             return;
         }
-
+print_r($this->where);return;
         $sqlStatement = '';
         foreach ($this->where as $condition) {
 print_r($condition);
