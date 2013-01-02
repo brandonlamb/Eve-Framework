@@ -2,28 +2,12 @@
 /**
  * Eve Application Framework
  *
- * @author Phil Bayfield
- * @copyright 2010
- * @license Creative Commons Attribution-Share Alike 2.0 UK: England & Wales License
  * @package Eve
- * @version 0.1.0
  */
 namespace Eve\Mvc;
 
 class Dispatcher extends \Eve\DI\Injectable
 {
-    /**
-     * Configuration keys
-     *
-     * @var string
-     */
-    const CONF_MODULE		= 'module';
-    const CONF_CONTROLLER	= 'controller';
-    const CONF_ACTION		= 'action';
-    const CONF_NA			= 'notAllowed';
-    const CONF_NOTFOUND		= 'notFound';
-    const CONF_EXCEPTION	= 'exception';
-
     /**
      * @var string, Controller suffix
      */
@@ -35,6 +19,26 @@ class Dispatcher extends \Eve\DI\Injectable
     protected $actionSuffix = 'Action';
 
     /**
+     * @var string, default namespace name
+     */
+    protected $defaultNamespace;
+
+    /**
+     * @var string, namespace name
+     */
+    protected $namespaceName;
+
+    /**
+     * @var string, default controller name
+     */
+    protected $defaultControllerName = 'Index';
+
+    /**
+     * @var string, default action name
+     */
+    protected $defaultActionName = 'Index';
+
+    /**
      * @var string, Controller name
      */
     protected $controllerName;
@@ -43,6 +47,21 @@ class Dispatcher extends \Eve\DI\Injectable
      * @var string, Action name
      */
     protected $actionName;
+
+    /**
+     * @var Controller, the last controller instantiated
+     */
+    protected $lastController;
+
+    /**
+     * @var Controller, the active controller instance
+     */
+    protected $activeController;
+
+    /**
+     * @var array, action parameters
+     */
+    protected $params;
 
     /**
      * Set the controller suffix
@@ -69,6 +88,28 @@ class Dispatcher extends \Eve\DI\Injectable
     }
 
     /**
+     * Set the namespace name
+     *
+     * @param string $namespaceName
+     * @return Dispatcher
+     */
+    public function setNamespace($namespaceName)
+    {
+        $this->namespaceName = (string) $namespaceName;
+        return $this;
+    }
+
+    /**
+     * Get the namespace name
+     *
+     * @return string
+     */
+    public function getNamespaceName()
+    {
+        return $this->namespaceName;
+    }
+
+    /**
      * Set the controller name
      *
      * @param string $controllerName
@@ -76,8 +117,18 @@ class Dispatcher extends \Eve\DI\Injectable
      */
     public function setControllerName($controllerName)
     {
-        $this->controllerName = $this->camelize($controllerName) . $this->controllerSuffix;
+        $this->controllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
         return $this;
+    }
+
+    /**
+     * Get the controller name
+     *
+     * @return string
+     */
+    public function getControllerName()
+    {
+        return $this->controllerName;
     }
 
     /**
@@ -88,9 +139,176 @@ class Dispatcher extends \Eve\DI\Injectable
      */
     public function setActionName($actionName)
     {
-        $this->actionName = $this->camelize($actionName) . $this->actionSuffix;
+        $this->actionName = (string) $this->camelize($actionName) . $this->actionSuffix;
         return $this;
     }
+
+    /**
+     * Get the action name
+     *
+     * @return string
+     */
+    public function getActionName()
+    {
+        return $this->actionName;
+    }
+
+    /**
+     * Set the default namespace name
+     *
+     * @param string $namespaceName
+     * @return Dispatcher
+     */
+    public function setDefaultNamespace($namespaceName)
+    {
+        $this->defaultNamespace = (string) $namespaceName;
+        return $this;
+    }
+
+    /**
+     * Get default namespace name
+     *
+     * @return string
+     */
+    public function getDefaultNamespace()
+    {
+        return $this->defaultNamespace;
+    }
+
+    /**
+     * Set the default controller name
+     *
+     * @param string $controllerName
+     * @return Dispatcher
+     */
+    public function setDefaultController($controllerName)
+    {
+        $this->defaultControllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
+        return $this;
+    }
+
+    /**
+     * Set the default action name
+     *
+     * @param string $actionName
+     * @return Dispatcher
+     */
+    public function setDefaultAction($actionName)
+    {
+        $this->defaultActionName = (string) $this->camelize($actionName) . $this->actionSuffix;
+        return $this;
+    }
+
+    /**
+     * Set the last controller
+     *
+     * @param Controller $controller
+     * @return Dispatcher
+     */
+    protected function setLastController(Controller $controller)
+    {
+        $this->lastController = $controller;
+        return $this;
+    }
+
+    /**
+     * Get the last controller instantiated
+     *
+     * @return Controller
+     */
+    public function getLastController()
+    {
+        if (null === $this->lastController) {
+            return $this->getActiveController();
+        }
+        return $this->lastController;
+    }
+
+    /**
+     * Set the current controller
+     *
+     * @param Controller $controller
+     * @return Dispatcher
+     */
+    public function setActiveController(Controller $controller)
+    {
+        $this->activeController = $controller;
+        return $this;
+    }
+
+    /**
+     * Get the active controller. If no controller is yet instantiated, an except is thrown
+     *
+     * @throws Exception
+     * @return Controller
+     */
+    public function getActiveController()
+    {
+        if (null === $this->activeController || !$this->activeController instanceof Controller) {
+            throw new \RuntimeException('No active controller has been instantiated');
+        }
+        return $this->activeController;
+    }
+
+    /**
+     * Set action parameters
+     *
+     * @param array $params
+     * @return Dispatcher
+     */
+    public function setParams(array $params = array())
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * Get action parameters
+     *
+     * @return array
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * Set a param by its name or numeric index
+     *
+     * @param mixed $key
+     * @param mixed $value
+     * @return Dispatcher
+     */
+    public function setParam($key, $value)
+    {
+        if (is_string($key) || is_numeric($key)) {
+            $this->params[$key] = $value;
+        }
+        return $this;
+    }
+
+    /**
+     * Get a param by its name or numeric index
+     *
+     * @param mixed $key
+     * @return mixed
+     */
+    public function getParam($key)
+    {
+        return isset($this->params[$key]) ? $this->params[$key] : null;
+    }
+
+    /**
+     * Forward the execution flow to another controller/action
+     *
+     * @param array $forward
+     * @return Dispatcher
+     */
+    public function forward($forward)
+    {
+
+    }
+
 
     /**
      * Dispatch the request
@@ -211,14 +429,6 @@ class Dispatcher extends \Eve\DI\Injectable
     {
         static $cached;
         if (!isset($cached[$word])) {
-            /*
-            if (preg_match_all('/\/(.?)/', $word, $got)) {
-                foreach ($got[1] as $k => $v) {
-                   $got[1][$k] = '::' . strtoupper($v);
-                }
-                $word = str_replace($got[0], $got[1], $word);
-            }
-            */
             $cached[$word] = str_replace(' ', '', ucwords(preg_replace('/[^A-Z^a-z^0-9^:]+/', ' ', $word)));
         }
         return $cached[$word];
