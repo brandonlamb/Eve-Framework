@@ -10,223 +10,217 @@
  */
 namespace Eve\Mvc;
 
-// Namespace aliases
-use Eve\Mvc\Router as Router;
-
-class Dispatcher extends Component implements \Eve\ResourceInterface
+class Dispatcher extends \Eve\DI\Injectable
 {
-	/**
-	 * Array of routers
-	 *
-	 * @var array
-	 */
-	protected $_routers = array();
+    /**
+     * Configuration keys
+     *
+     * @var string
+     */
+    const CONF_MODULE		= 'module';
+    const CONF_CONTROLLER	= 'controller';
+    const CONF_ACTION		= 'action';
+    const CONF_NA			= 'notAllowed';
+    const CONF_NOTFOUND		= 'notFound';
+    const CONF_EXCEPTION	= 'exception';
 
-	/**
-	 * Configuration keys
-	 *
-	 * @var string
-	 */
-	const CONF_MODULE		= 'module';
-	const CONF_CONTROLLER	= 'controller';
-	const CONF_ACTION		= 'action';
-	const CONF_NA			= 'notAllowed';
-	const CONF_NOTFOUND		= 'notFound';
-	const CONF_EXCEPTION	= 'exception';
+    /**
+     * @var string, Controller suffix
+     */
+    protected $controllerSuffix = 'Controller';
 
-	/**
-	 * Constructor, parse config and add routers
-	 *
-	 * @param array $config
-	 */
-	public function __construct($config)
-	{
-		parent::__construct($config);
+    /**
+     * @var string, Action suffix
+     */
+    protected $actionSuffix = 'Action';
 
-		// Loop through each configured router and add to routers array
-		foreach ($config['routers'] as $router => $options) {
-			$this->addRouter(new $router($options));
-		}
+    /**
+     * @var string, Controller name
+     */
+    protected $controllerName;
 
-		// Append default simple router
-		$this->addRouter(new Router\Simple());
-	}
+    /**
+     * @var string, Action name
+     */
+    protected $actionName;
 
-	/**
-	 * Add a router to array of routers
-	 *
-	 * @param Router\RouterInterface, the router to add
-	 * @param bool $prepend, whether to prepend the router to array
-	 * @return void
-	 */
-	public function addRouter(Router\RouterInterface $router, $prepend = false)
-	{
-		if ($prepend === false) {
-			$this->_routers[] = $router;
-		} else {
-			array_unshift($this->_routers, $router);
-		}
-	}
+    /**
+     * Set the controller suffix
+     *
+     * @param string $suffix
+     * @return Dispatcher
+     */
+    public function setControllerSuffix($suffix)
+    {
+        $this->controllerSuffix = (string) $suffix;
+        return $this;
+    }
 
-	/**
-	 * Route the request by looping through all the routers until one returns true
-	 *
-	 * @param Request $request
-	 * @return Dispatcher
-	 */
-	public function route(Request $request)
-	{
-		foreach ($this->_routers as $router) {
-			if ($router->route($request) === true) { break; }
-		}
-		return $this;
-	}
+    /**
+     * Set the action suffix
+     *
+     * @param string $suffix
+     * @return Dispatcher
+     */
+    public function setActionSuffix($suffix)
+    {
+        $this->actionSuffix = (string) $suffix;
+        return $this;
+    }
 
-	/**
-	 * Dispatch the request
-	 *
-	 * @param Request $request
-	 * @return Dispatcher
-	 */
-	public function dispatch(Request $request)
-	{
-		// Get config
-		$config		= \Eve::app()->getComponent(static::RES_CONFIG);
+    /**
+     * Set the controller name
+     *
+     * @param string $controllerName
+     * @return Dispatcher
+     */
+    public function setControllerName($controllerName)
+    {
+        $this->controllerName = $this->camelize($controllerName) . $this->controllerSuffix;
+        return $this;
+    }
 
-		// Define initial values
-		$module		= $request->getModule();
-		$controller	= $request->getController();
-		$action		= $request->getAction();
+    /**
+     * Set the action name
+     *
+     * @param string $actionName
+     * @return Dispatcher
+     */
+    public function setActionName($actionName)
+    {
+        $this->actionName = $this->camelize($actionName) . $this->actionSuffix;
+        return $this;
+    }
 
-		// Try and dispatch the request
-		$dispatched	= false;
-		$notFound	= false;
-		$exception	= null;
+    /**
+     * Dispatch the request
+     *
+     * @param  Request    $request
+     * @return Dispatcher
+     */
+    public function dispatch()
+    {
+        $di         = $this->getDI();
+        $config     = $di->getShared('config')->get('router');
+        $request    = $di->getShared('request');
+        $router     = $di->getShared('router');
+        $params     = explode('/', trim($router->getRoute()->getParameter('params'), '/'));
+        $dispatched	= false;
+        $notFound	= false;
+        $exception	= null;
 
-		while (!$dispatched) {
-			try {
-				$controllerName = $this->getControllerName($module, $controller);
-				$method = $this->getActionName($action);
+        while (!$dispatched) {
+            try {
+                // If no module is set then just assigned the controller name as className, otherwise prepend the module name
+                $className = $router->getModuleName() === '' ? $this->controllerName : $router->getModuleName() . '\\' . $this->controllerName;
 
-				// Try and load the class. Catch exceptions for 404s
-				try {
-					$c = new $controllerName($request, $this, $exception);
-				} catch (\Exception $e) {
-					throw new DispatcherException($e->getMessage());
-				}
+                // Try and load the class. Catch exceptions for 404s
+                try {
+                    $controller = new $className();
+                } catch (\Exception $e) {
+                    throw new DispatcherException($e->getMessage());
+                }
 
-				if (!$c instanceof AbstractController) {
-					throw new DispatcherException('Unable to load controller class for ' . $controllerName);
-				}
+                if (!$controller instanceof Controller) {
+                    throw new DispatcherException('Unable to load controller class for ' . $className);
+                }
 
-				// Try and load the action.
-				// Wrap controller methods in separate try/catch so we can catch controller/model/etc errors
-				if (method_exists($c, $method)) {
-					try {
-						// Call Controller::init() method first
-						$c->init();
+                // Try and load the action.
+                // Wrap controller methods in separate try/catch so we can catch controller/model/etc errors
+                if (method_exists($controller, $this->actionName)) {
+                    try {
+                        // Call Controller::init() method first
+                        $controller->init();
 
-						// Call controller beforeAction() method
-						$c->beforeAction();
+                        // Call controller beforeDispatch() method
+                        $controller->beforeDispatch();
 
-						// Call action
-						if (count($request->getParams()) == 0) {
-							$c->$method();
-						} else {
-							call_user_func_array(array($c, $method), $request->getParams());
-						}
+                        // Call action
+                        if (count($params) == 0) {
+                            $controller->{$this->actionName}();
+                        } else {
+                            call_user_func_array(array($controller, $this->actionName), $params);
+                        }
 
-						// Call controller afterAction() method if it exists
-						$c->afterAction();
-					} catch (\ErrorException $e) {
-						throw new ControllerException($e->getMessage(), 0, $e->getCode(), $e->getFile(), $e->getLine());
-					} catch (\Exception $e) {
-						throw new ControllerException($e->getMessage(), 0, 0, $e->getFile(), $e->getLine());
-					}
-				} else {
-					throw new DispatcherException('Unable to load action method for  ' . $action . '.');
-				}
+                        // Call controller afterDispatch() method if it exists
+                        $controller->afterDispatch();
+                    } catch (\ErrorException $e) {
+                        throw new \RuntimeException($e->getMessage(), 0, $e->getCode(), $e->getFile(), $e->getLine());
+                    } catch (\Exception $e) {
+                        throw new \RuntimeException($e->getMessage(), 0, 0, $e->getFile(), $e->getLine());
+                    }
+                } else {
+                    throw new DispatcherException('Unable to load action method for  ' . $this->actionName . '.');
+                }
 
-				// Dispatched ok
-				$dispatched = true;
-			} catch (ControllerException $e) {
-				// Check if exception already is set, rethrow to avoid infinite loop
-				if ($exception !== null) { throw $e; }
+                // Dispatched ok
+                $dispatched = true;
+            } catch (\RuntimeException $e) {
+                // Check if exception already is set, rethrow to avoid infinite loop
+                if ($exception !== null) { throw $e; }
 
-				// Exception throw inside controller (model, view, etc)
-				$exception = $e;
-				$error = $config->components['request']['error'];
+                // Exception throw inside controller (model, view, etc)
+                $exception = $e;
+                $error = $config->components['request']['error'];
 
-				// Set controller to exception handling controller/action
-				if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_EXCEPTION])) {
-					$controller = $error[self::CONF_CONTROLLER];
-					$action = $error[self::CONF_EXCEPTION];
-				}
-			} catch (DispatcherException $e) {
-				// Page not found, display error page
-				if ($notFound === true) {
-					throw new DispatcherException('Page not found. Unable to load error page, configuration is invalid. ' . $e->getMessage());
-				} else if ($exception !== null) {
-					throw new Exception('Fatal error');
-				}
+                // Set controller to exception handling controller/action
+                if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_EXCEPTION])) {
+                    $controller = $error[self::CONF_CONTROLLER];
+                    $action = $error[self::CONF_EXCEPTION];
+                }
+            } catch (DispatcherException $e) {
+                // Page not found, display error page
+                if ($notFound === true) {
+                    throw new DispatcherException('Page not found. Unable to load error page, configuration is invalid. ' . $e->getMessage());
+                } elseif ($exception !== null) {
+                    throw new Exception('Fatal error');
+                }
 
-				$notFound = true;
-				$error = $config->components['request']['error'];
+                $notFound = true;
+                $error = $config->components['request']['error'];
 
-				// Set controller to 404 controller/action
-				if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_NOTFOUND])) {
-					$controller = $error[self::CONF_CONTROLLER];
-					$action = $error[self::CONF_NOTFOUND];
-				}
-			} catch (\Exception $e) {
-				// Catch any other exceptions within the application
-				if ($exception) {
-					throw new DispatcherException('Uncaught exception. Unable to load error page, configuration is invalid.');
-				}
+                // Set controller to 404 controller/action
+                if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_NOTFOUND])) {
+                    $controller = $error[self::CONF_CONTROLLER];
+                    $action = $error[self::CONF_NOTFOUND];
+                }
+            } catch (\Exception $e) {
+                // Catch any other exceptions within the application
+                if ($exception) {
+                    throw new DispatcherException('Uncaught exception. Unable to load error page, configuration is invalid.');
+                }
 
-				$exception = $e;
-				$error = $config->components['request']['error'];
+                $exception = $e;
+                $error = $config->components['request']['error'];
 
-				if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_EXCEPTION])) {
-					$controller = $error[self::CONF_CONTROLLER];
-					$action = $error[self::CONF_EXCEPTION];
-				}
-			}
-		}
-	}
+                if (isset($error[self::CONF_CONTROLLER]) && isset($error[self::CONF_EXCEPTION])) {
+                    $controller = $error[self::CONF_CONTROLLER];
+                    $action = $error[self::CONF_EXCEPTION];
+                }
+            }
+        }
+    }
 
-	/**
-	 * Format controller as valid class/namespace
-	 *
-	 * @param string $module
-	 * @param string $controller
-	 * @return string
-	 */
-	public function getControllerName($module, $controllerName)
-	{
-		$controller = null;
-		$parts = explode('-', $controllerName);
-		foreach ($parts as $part) {
-			$controller .= ucfirst($part);
-		}
-
-		return '\\' . ucfirst($module) . '\\Controller\\' . ucfirst($controller);
-	}
-
-	/**
-	 * Format action
-	 *
-	 * @param string $action
-	 * @return string
-	 */
-	public function getActionName($action)
-	{
-		// Covert dashes to capitals
-		$parts = explode('-', $action);
-		$action = 'action';
-		foreach ($parts as $part) {
-			$action .= ucfirst($part);
-		}
-		return $action;
-	}
+    /**
+     * Get camelized string, replacing all non word characters
+     *
+     * @param string $word
+     * @return string
+     */
+    protected function camelize($word)
+    {
+        static $cached;
+        if (!isset($cached[$word])) {
+            /*
+            if (preg_match_all('/\/(.?)/', $word, $got)) {
+                foreach ($got[1] as $k => $v) {
+                   $got[1][$k] = '::' . strtoupper($v);
+                }
+                $word = str_replace($got[0], $got[1], $word);
+            }
+            */
+            $cached[$word] = str_replace(' ', '', ucwords(preg_replace('/[^A-Z^a-z^0-9^:]+/', ' ', $word)));
+        }
+        return $cached[$word];
+    }
 }

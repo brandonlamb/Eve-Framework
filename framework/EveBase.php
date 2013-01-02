@@ -14,319 +14,321 @@ require_once 'ResourceInterface.php';
 
 class EveBase implements \Eve\ResourceInterface
 {
-	/**
-	 * Instance of self
-	 *
-	 * @var Eve\Base
-	 */
-	protected static $_instance;
+    /**
+     * Instance of self
+     *
+     * @var Eve\Base
+     */
+    protected static $_instance;
 
-	/**
-	 * Components array
-	 *
-	 * @var array
-	 */
-	protected $_components = array();
+    /**
+     * Components array
+     *
+     * @var array
+     */
+    protected $_components = array();
 
-	/**
-	 * Modules array
-	 *
-	 * @var array
-	 */
-	protected $_modules = array();
+    /**
+     * Modules array
+     *
+     * @var array
+     */
+    protected $_modules = array();
 
-	/**
-	 * Extensions array
-	 *
-	 * @var array
-	 */
+    /**
+     * Extensions array
+     *
+     * @var array
+     */
 #	protected $_extensions = array();
 
-	/**
-	 * Base Constructor. Sets up default Mvc\Autoloader
-	 *
-	 * @return void
-	 */
-	protected function __construct($config)
-	{
-		// Require autoloader class
-		require_once dirname(__FILE__) . '/Mvc/Config.php';
+    /**
+     * Base Constructor. Sets up default Mvc\Autoloader
+     *
+     * @return void
+     */
+    protected function __construct($config)
+    {
+        // Require autoloader class
+        require_once dirname(__FILE__) . '/Mvc/Config.php';
 
-		// Config is special case and is saved as 'Config' resource for convenience
-		$this->setComponent(static::RES_CONFIG, new Mvc\Config($config));
-	}
+        // Config is special case and is saved as 'Config' resource for convenience
+        $this->setComponent(static::RES_CONFIG, new Mvc\Config($config));
+    }
 
-	/**
-	 * Enforce singleton; disallow __clone
-	 *
-	 * @return void
-	 */
-	protected final function __clone() {}
+    /**
+     * Enforce singleton; disallow __clone
+     *
+     * @return void
+     */
+    final protected function __clone() {}
 
-	/**
-	 * Enforce singleton; disallow __sleep
-	 *
-	 * @return void
-	 */
-	protected final function __sleep() {}
+    /**
+     * Enforce singleton; disallow __sleep
+     *
+     * @return void
+     */
+    final protected function __sleep() {}
 
-	/**
-	 * Enforce singleton; disallow __wake
-	 *
-	 * @return void
-	 */
-	protected final function __wake() {}
+    /**
+     * Enforce singleton; disallow __wake
+     *
+     * @return void
+     */
+    final protected function __wake() {}
 
-	/**
-	 * Destruct
-	 *
-	 * @return void
-	 */
-	public function __destruct()
-	{
-		static::$_instance = null;
-	}
+    /**
+     * Destruct
+     *
+     * @return void
+     */
+    public function __destruct()
+    {
+        static::$_instance = null;
+    }
 
-	/**
-	 * Get magic method that will try to return a component
-	 *
-	 * @param string $key
-	 * @return mixed
-	 */
-	public function __get($key)
-	{
-		$config = $this->getComponent(static::RES_CONFIG)->get('components');
+    /**
+     * Get magic method that will try to return a component
+     *
+     * @param  string $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        $config = $this->getComponent(static::RES_CONFIG)->get('components');
 
-		// If config entry exists for component then load it
-		if (isset($config[$key])) {
-			return $this->getComponent($key, $config[$key]);
-		} else {
-			throw new Exception('Component ' . $key . ' is not registered');
-		}
-	}
+        // If config entry exists for component then load it
+        if (isset($config[$key])) {
+            return $this->getComponent($key, $config[$key]);
+        } else {
+            throw new Exception('Component ' . $key . ' is not registered');
+        }
+    }
 
-	/**
-	 * Create new instance of Eve\App. This is the entry into this class
-	 *
-	 * @return Eve\App
-	 */
-	public static function init($config)
-	{
-		static::$_instance = new static($config);
-		return static::$_instance->_init(static::$_instance->getComponent(static::RES_CONFIG));
-	}
+    /**
+     * Create new instance of Eve\App. This is the entry into this class
+     *
+     * @return Eve\App
+     */
+    public static function init($config)
+    {
+        static::$_instance = new static($config);
 
-	/**
-	 * Return the static instance.
-	 *
-	 * @return Eve_App
-	 */
-	public static function app()
-	{
-		return self::$_instance;
-	}
+        return static::$_instance->_init(static::$_instance->getComponent(static::RES_CONFIG));
+    }
 
-	/**
-	 * Return entire array of components
-	 *
-	 * @return array
-	 */
-	public function getComponents()
-	{
-		return $this->_components;
-	}
+    /**
+     * Return the static instance.
+     *
+     * @return Eve_App
+     */
+    public static function app()
+    {
+        return self::$_instance;
+    }
 
-	/**
-	 * Check if an application component exists
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
-	public function isComponent($name)
-	{
-		return (isset($this->_components[$name]) && is_object($this->_components[$name])) ? true : false;
-	}
+    /**
+     * Return entire array of components
+     *
+     * @return array
+     */
+    public function getComponents()
+    {
+        return $this->_components;
+    }
 
-	/**
-	 * Get an application component
-	 *
-	 * @param string $name
-	 * @param mixed $params
-	 * @return object
-	 */
-	public function getComponent($name, $params = null)
-	{
-		return (isset($this->_components[$name]) || $this->loadComponent($name, $params)) ?
-			$this->_components[$name] : null;
-	}
+    /**
+     * Check if an application component exists
+     *
+     * @param  string $name
+     * @return bool
+     */
+    public function isComponent($name)
+    {
+        return (isset($this->_components[$name]) && is_object($this->_components[$name])) ? true : false;
+    }
 
-	/**
-	 * Set an application component
-	 *
-	 * @param string $name
-	 * @param object $object
-	 * @return void
-	 */
-	public function setComponent($name, $object)
-	{
-		$this->_components[$name] = $object;
-	}
+    /**
+     * Get an application component
+     *
+     * @param  string $name
+     * @param  mixed  $params
+     * @return object
+     */
+    public function getComponent($name, $params = null)
+    {
+        return (isset($this->_components[$name]) || $this->loadComponent($name, $params)) ?
+            $this->_components[$name] : null;
+    }
 
-	/**
-	 * Load an application component
-	 *
-	 * @param string $name
-	 * @param mixed $params
-	 * @return bool
-	 */
-	public function loadComponent($name, $params = null)
-	{
-		// Attempt to load a class from the specified name
-		if (null === $params) {
-			$config = $this->_components[static::RES_CONFIG]->get('components');
-			$params = $config[$name];
-		}
-		$class = $params['class'];
+    /**
+     * Set an application component
+     *
+     * @param  string $name
+     * @param  object $object
+     * @return void
+     */
+    public function setComponent($name, $object)
+    {
+        $this->_components[$name] = $object;
+    }
 
-		// If file option is set then attempt including it
-		if (isset($params['file'])) {
-			require $params['file'];
-			if (false === class_exists($class)) {
-				return false;
-			}
-		}
-		$obj = (null === $params) ? new $class($this) : new $class($params);
-		$this->setComponent($name, $obj);
-		return true;
-	}
+    /**
+     * Load an application component
+     *
+     * @param  string $name
+     * @param  mixed  $params
+     * @return bool
+     */
+    public function loadComponent($name, $params = null)
+    {
+        // Attempt to load a class from the specified name
+        if (null === $params) {
+            $config = $this->_components[static::RES_CONFIG]->get('components');
+            $params = $config[$name];
+        }
+        $class = $params['class'];
 
-	/**
-	 * Return entire array of modules
-	 *
-	 * @return array
-	 */
-	public function getModules()
-	{
-		return $this->_modules;
-	}
+        // If file option is set then attempt including it
+        if (isset($params['file'])) {
+            require $params['file'];
+            if (false === class_exists($class)) {
+                return false;
+            }
+        }
+        $obj = (null === $params) ? new $class($this) : new $class($params);
+        $this->setComponent($name, $obj);
 
-	/**
-	 * Setup config and run other init methods
-	 *
-	 * @param string $configFile
-	 * @return Base
-	 */
-	protected function _init($config)
-	{
-		// Autoloader is special so manually load it. Save autoloader as an application component
-		$components = $config->get('components');
-		$loader = $this->getComponent(static::RES_LOADER, $components['autoloader']);
+        return true;
+    }
 
-		// Configure the SplClassLoader to act normally or silently
-		$loader->setMode(Mvc\SplClassLoader::MODE_DEBUG);
+    /**
+     * Return entire array of modules
+     *
+     * @return array
+     */
+    public function getModules()
+    {
+        return $this->_modules;
+    }
 
-		// Allow to PHP use the include_path for file path lookup
-		$loader->setIncludePathLookup(true);
+    /**
+     * Setup config and run other init methods
+     *
+     * @param  string $configFile
+     * @return Base
+     */
+    protected function _init($config)
+    {
+        // Autoloader is special so manually load it. Save autoloader as an application component
+        $components = $config->get('components');
+        $loader = $this->getComponent(static::RES_LOADER, $components['autoloader']);
 
-		// Register the autoloader, prepending it in the stack
-		$loader->register(true);
+        // Configure the SplClassLoader to act normally or silently
+        $loader->setMode(Mvc\SplClassLoader::MODE_DEBUG);
 
-		// Load any preconfigured namespaces for the autoloader
-		if (isset($components['autoloader']['ns'])) {
-			foreach ($components['autoloader']['ns'] as $ns => $paths) {
-				$loader->add($ns, $paths);
-			}
-		}
+        // Allow to PHP use the include_path for file path lookup
+        $loader->setIncludePathLookup(true);
 
-		$this->_preloadComponents($config);
-		$this->_initModules($config);
+        // Register the autoloader, prepending it in the stack
+        $loader->register(true);
 
-		return $this;
-	}
+        // Load any preconfigured namespaces for the autoloader
+        if (isset($components['autoloader']['ns'])) {
+            foreach ($components['autoloader']['ns'] as $ns => $paths) {
+                $loader->add($ns, $paths);
+            }
+        }
 
-	/**
-	 * Preload component objects
-	 *
-	 * @param Mvc\Config $config
-	 * @return void
-	 */
-	protected function _preloadComponents(Mvc\Config $config)
-	{
-		// Configure preloaded namespaces
-		if (is_array($config->get('preload')) && $preload = $config->get('preload')) {
-			// Preload components if they are not already loaded
-			$components = $config->get('components');
-			foreach ($preload as $component) {
-				if (isset($components[$component]) && !isset($this->_components[$component])) {
-					$this->loadComponent($component, $components[$component]);
-				}
-			}
-		}
-	}
+        $this->_preloadComponents($config);
+        $this->_initModules($config);
 
-	/**
-	 * Load module config classes
-	 *
-	 * @param Mvc\Config $config
-	 * @return void
-	 */
-	protected function _initModules(Mvc\Config $config)
-	{
-		// Configure module settings
-		if (is_array($config->get('modules'))) {
-			$modules = $config->get('modules');
-			foreach ($modules as $module => $options) {
-				$this->_modules[] = $module;
-			}
-		}
-	}
+        return $this;
+    }
 
-	/**
-	 * Run application
-	 *
-	 * @return void
-	 */
-	public function run()
-	{
-		// Dispatch request
-		$request = $this->getComponent(static::RES_REQUEST);
-		$this->getComponent(static::RES_DISPATCH)->route($request)->dispatch($request);
+    /**
+     * Preload component objects
+     *
+     * @param  Mvc\Config $config
+     * @return void
+     */
+    protected function _preloadComponents(Mvc\Config $config)
+    {
+        // Configure preloaded namespaces
+        if (is_array($config->get('preload')) && $preload = $config->get('preload')) {
+            // Preload components if they are not already loaded
+            $components = $config->get('components');
+            foreach ($preload as $component) {
+                if (isset($components[$component]) && !isset($this->_components[$component])) {
+                    $this->loadComponent($component, $components[$component]);
+                }
+            }
+        }
+    }
 
-		// Send response
-		$this->getComponent(static::RES_RESPONSE)->send();
-	}
+    /**
+     * Load module config classes
+     *
+     * @param  Mvc\Config $config
+     * @return void
+     */
+    protected function _initModules(Mvc\Config $config)
+    {
+        // Configure module settings
+        if (is_array($config->get('modules'))) {
+            $modules = $config->get('modules');
+            foreach ($modules as $module => $options) {
+                $this->_modules[] = $module;
+            }
+        }
+    }
 
-	/**
-	 * Output benchmark stats
-	 * @return void
-	 */
-	public static function shutdown()
-	{
-		$now = microtime(true);
+    /**
+     * Run application
+     *
+     * @return void
+     */
+    public function run()
+    {
+        // Dispatch request
+        $request = $this->getComponent(static::RES_REQUEST);
+        $this->getComponent(static::RES_DISPATCH)->route($request)->dispatch($request);
 
-		$data = json_encode(array(
-			'Runtime in milliseconds' => number_format(($now - \START_TIME) * 1000, 2),
-			'Runtime in microseconds' => number_format(($now - \START_TIME), 5),
-			'Peak memory in KB' => number_format(memory_get_peak_usage() / 1024, 2),
-			'Included files' => count(get_included_files()),
-		));
+        // Send response
+        $this->getComponent(static::RES_RESPONSE)->send();
+    }
 
-		echo "\n<script>console.log($data);</script>";
+    /**
+     * Output benchmark stats
+     * @return void
+     */
+    public static function shutdown()
+    {
+        $now = microtime(true);
 
-		/*
-		echo "\n<script>console.log('Runtime: " .number_format(($now - \START_TIME) * 1000, 2) . " ms / ",
-			number_format(($now - \START_TIME), 5) . " microseconds / ",
-			'Peak memory: ' . number_format(memory_get_peak_usage() / 1024, 2) . "KB / ",
+        $data = json_encode(array(
+            'Runtime in milliseconds' => number_format(($now - \START_TIME) * 1000, 2),
+            'Runtime in microseconds' => number_format(($now - \START_TIME), 5),
+            'Peak memory in KB' => number_format(memory_get_peak_usage() / 1024, 2),
+            'Included files' => count(get_included_files()),
+        ));
+
+        echo "\n<script>console.log($data);</script>";
+
+        /*
+        echo "\n<script>console.log('Runtime: " .number_format(($now - \START_TIME) * 1000, 2) . " ms / ",
+            number_format(($now - \START_TIME), 5) . " microseconds / ",
+            'Peak memory: ' . number_format(memory_get_peak_usage() / 1024, 2) . "KB / ",
 #			'Peak memory: ' . memory_get_peak_usage() / 1024 . "KB<br/>\n",
-			'Included files: ' . count(get_included_files()) . "');</script>";
-		*/
+            'Included files: ' . count(get_included_files()) . "');</script>";
+        */
 
-		/*
-		echo "\n<script>console.log('",
-			number_format(memory_get_usage() / 1024, 2) . 'K / ',
-			number_format(memory_get_peak_usage() / 1024, 2) . 'K / ',
-			round((microtime(true) - \START_TIME), 5) . ' / ',
-			"');</script>";
-		*/
-	}
+        /*
+        echo "\n<script>console.log('",
+            number_format(memory_get_usage() / 1024, 2) . 'K / ',
+            number_format(memory_get_peak_usage() / 1024, 2) . 'K / ',
+            round((microtime(true) - \START_TIME), 5) . ' / ',
+            "');</script>";
+        */
+    }
 }
