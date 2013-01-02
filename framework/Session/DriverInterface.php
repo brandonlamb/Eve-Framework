@@ -3,35 +3,35 @@ namespace Eve\Session;
 
 interface DriverInterface
 {
-	/**
-	 * Load a session by ID.
-	 *
-	 * @param string $sessionId
-	 * @return array
-	 */
-	public function read($sessionId);
+    /**
+     * Load a session by ID.
+     *
+     * @param  string $sessionId
+     * @return array
+     */
+    public function read($sessionId);
 
-	/**
-	 * Save a session.
-	 *
-	 * @param array $session
-	 * @return void
-	 */
-	public function write($session);
+    /**
+     * Save a session.
+     *
+     * @param  array $session
+     * @return void
+     */
+    public function write($session);
 
-	/**
-	 * Delete a session by ID.
-	 *
-	 * @param string $sessionId
-	 * @return void
-	 */
-	public function destroy($sessionId);
+    /**
+     * Delete a session by ID.
+     *
+     * @param  string $sessionId
+     * @return void
+     */
+    public function destroy($sessionId);
 
-	/**
-	 * Validate config options for individual driver
-	 *
-	 * @param array $config
-	 * @return array
-	 */
-	public function validateConfig(array $config);
+    /**
+     * Validate config options for individual driver
+     *
+     * @param  array $config
+     * @return array
+     */
+    public function validateConfig(array $config);
 }
