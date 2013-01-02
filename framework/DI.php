@@ -20,7 +20,7 @@ class DI
 	protected $sharedContainer;
 
 	/**
-	 * @var array, array to hold parameters
+	 * @var array, hold parameters
 	 */
 	protected $paramContainer;
 
@@ -100,7 +100,6 @@ class DI
 		}
 
 		$this->sharedContainer[$alias] = $config;
-
 		return $this;
 	}
 
@@ -108,18 +107,12 @@ class DI
 	 * Set an object/value into the parameter container
 	 *
 	 * @param string $alias
-	 * @param mixed $config
+	 * @param mixed $value
 	 * @return DI
 	 */
-	public function setParam($alias, $config)
+	public function setParam($alias, $value)
 	{
-		// If config is an array, verify it has a required className key
-		if (is_array($config) && !isset($config['className'])) {
-			throw new \InvalidArgumentException('Must contain a className key.');
-		}
-
-		$this->paramContainer[$alias] = $config;
-
+		$this->paramContainer[$alias] = $value;
 		return $this;
 	}
 
@@ -175,7 +168,8 @@ class DI
 			return $this->sharedContainer[$alias];
 		}
 
-		// Object is an already instantiated object, just return it
+		// Pull in a new instance of the requested alias from the container.
+		// Equivalent of $obj = $di->get('abc'), $di->setShared('abc', $obj)
 		$this->sharedContainer[$alias] = $this->get($alias);
 		return $this->sharedContainer[$alias];
 	}
@@ -184,6 +178,7 @@ class DI
 	 * Get an object from the param container
 	 *
 	 * @param string $alias
+	 * @throws InvalidArgumentException
 	 * @return mixed
 	 */
 	public function getParam($alias)
@@ -223,7 +218,6 @@ class DI
 	public static function setDefault(DI $di)
 	{
 		self::$defaultInstance = $di;
-
 		return $di;
 	}
 
