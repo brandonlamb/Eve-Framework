@@ -54,9 +54,10 @@ abstract class Application
         $router->match($request->getUri(), $request->getMethod());
 
         // Configure dispatcher
-#        $dispatcher->setModuleName($router->getModuleName());
+        $dispatcher->setNamespaceName($router->getModuleName());
         $dispatcher->setControllerName($router->getControllerName());
         $dispatcher->setActionName($router->getActionName());
+        $dispatcher->setParams(explode('/', trim($router->getRoute()->getParameter('params'), '/')));
         $dispatcher->dispatch();
 
 #d($dispatcher);
