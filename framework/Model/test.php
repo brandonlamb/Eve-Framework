@@ -1,9 +1,10 @@
+<pre>
 <?php
 
-include 'Query.php';
+include '/web/library/Granada/Zimlr/Model.php';
 
-#$query = new \Eve\Model\Query();
-$query = \Eve\Model\Query::factory()
+$query = (new \Zimlr\Model())
+#$query = \Eve\Model\Query::factory()
     ->select('column1 ')
     ->select('column2', ' c2   ')
 #	->select('column3 as c3   ')
@@ -11,7 +12,7 @@ $query = \Eve\Model\Query::factory()
 #	->select('column6, column7 as c7, column8   ')
 #	->select('(SELECT col1, col2 FROM tbl2 WHERE id = 3)', 'c9  ');
 
-    ->from('table1')
+#    ->from('table1')
 /*
     ->from('table2', 't2')
     ->from('table3 t3')
@@ -57,6 +58,7 @@ $query->select('username, password, userId AS uid')
     ->limit(123);
 */
 
+$query->read();
 print_r($query);
 
 /*
@@ -69,3 +71,5 @@ echo $query->getGroup();
 echo $query->getLimit();
 */
 die("<\n\n");
+?>
+</pre>

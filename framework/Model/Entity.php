@@ -42,21 +42,6 @@ abstract class Entity
     protected $query;
 
     /**
-     * Constructor - allows setting of object properties with array on construct
-     *
-     * @param array $data, populate entity from array of data
-     */
-    public function __construct(array $data = array())
-    {
-        $this->initFields();
-
-        // Set given data
-        if ($data) {
-            $this->data($data, false);
-        }
-    }
-
-    /**
      * Return query builder
      *
      * @param  string $className
@@ -130,6 +115,94 @@ abstract class Entity
         }
 
         return self::$typeHandlers[$type] = $class;
+    }
+
+    /**
+     * Constructor - allows setting of object properties with array on construct
+     *
+     * @param array $data, populate entity from array of data
+     */
+    public function __construct(array $data = array())
+    {
+        $this->initFields();
+
+        // Set given data
+        if ($data) {
+            $this->data($data, false);
+        }
+    }
+
+    /**
+     * Enable isset() for object properties
+     *
+     * @param  string $key
+     * @return bool
+     */
+    public function __isset($key)
+    {
+        return isset($this->data[$key]) || isset($this->dataModified[$key]);
+    }
+
+    /**
+     * Getter for field properties
+     *
+     * @param  string $key
+     * @return mixed
+     */
+    public function __get($field)
+    {
+        $v = null;
+
+        if (isset($this->dataModified[$field])) {
+            $v =  $this->dataModified[$field];
+        } elseif (isset($this->data[$field])) {
+            $v = $this->data[$field];
+        } elseif (method_exists($this, 'get' . $field)) {
+            $method = 'get' . $field;
+            $v = $this->$method();
+        }
+
+        if (null !== $v) {
+            $fields = $this->fields();
+            if (isset($fields[$field])) {
+                // Ensure value is get with type handler
+                $typeHandler = static::typeHandler($fields[$field]['type']);
+                $v = $typeHandler::get($this, $v);
+            }
+        }
+
+        return $v;
+    }
+
+    /**
+     * Setter for field properties
+     *
+     * @param string $field
+     * @param mixed  $value
+     */
+    public function __set($field, $value)
+    {
+        $fields = $this->fields();
+        if (isset($fields[$field])) {
+            // Ensure value is set with type handler
+            $typeHandler = static::typeHandler($fields[$field]['type']);
+            $value = $typeHandler::set($this, $value);
+        } elseif (method_exists($this, 'set' . $field)) {
+            $method = 'set' . $field;
+            $this->$method($value);
+        } else {
+            $this->dataModified[$field] = $value;
+        }
+    }
+
+    /**
+     * String representation of the class
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return __CLASS__;
     }
 
     /**
@@ -294,78 +367,5 @@ abstract class Entity
             // Add to error array
             $this->errors[$field][] = $msg;
         }
-    }
-
-    /**
-     * Enable isset() for object properties
-     *
-     * @param  string $key
-     * @return bool
-     */
-    public function __isset($key)
-    {
-        return isset($this->data[$key]) || isset($this->dataModified[$key]);
-    }
-
-    /**
-     * Getter for field properties
-     *
-     * @param  string $key
-     * @return mixed
-     */
-    public function __get($field)
-    {
-        $v = null;
-
-        if (isset($this->dataModified[$field])) {
-            $v =  $this->dataModified[$field];
-        } elseif (isset($this->data[$field])) {
-            $v = $this->data[$field];
-        } elseif (method_exists($this, 'get' . $field)) {
-            $method = 'get' . $field;
-            $v = $this->$method();
-        }
-
-        if (null !== $v) {
-            $fields = $this->fields();
-            if (isset($fields[$field])) {
-                // Ensure value is get with type handler
-                $typeHandler = static::typeHandler($fields[$field]['type']);
-                $v = $typeHandler::get($this, $v);
-            }
-        }
-
-        return $v;
-    }
-
-    /**
-     * Setter for field properties
-     *
-     * @param string $field
-     * @param mixed  $value
-     */
-    public function __set($field, $value)
-    {
-        $fields = $this->fields();
-        if (isset($fields[$field])) {
-            // Ensure value is set with type handler
-            $typeHandler = static::typeHandler($fields[$field]['type']);
-            $value = $typeHandler::set($this, $value);
-        } elseif (method_exists($this, 'set' . $field)) {
-            $method = 'set' . $field;
-            $this->$method($value);
-        } else {
-            $this->dataModified[$field] = $value;
-        }
-    }
-
-    /**
-     * String representation of the class
-     *
-     * @return string
-     */
-    public function __toString()
-    {
-        return __CLASS__;
     }
 }
