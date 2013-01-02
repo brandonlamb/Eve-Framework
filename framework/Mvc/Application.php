@@ -37,6 +37,8 @@ abstract class Application
 
     /**
      * Handle the request and dispatch the controller, return the response
+     *
+     * @return Http\Response
      */
     public function handle()
     {

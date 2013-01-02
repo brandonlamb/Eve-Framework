@@ -184,7 +184,6 @@ class Loader
     public function load($className)
     {
         $resourceAbsolutePath = $this->getAbsolutePath($className);
-error_log(__METHOD__ . ':' . __LINE__ . ' - className: ' . $className);
 
         switch ($this->mode) {
             case self::MODE_SILENT:
@@ -231,14 +230,12 @@ error_log(__METHOD__ . ':' . __LINE__ . ' - className: ' . $className);
     {
         // Check registered classes, if the path resolves then return it, otherwise reset relative path variable
         if (isset($this->classPaths[$className]) && ($absolutePath = stream_resolve_include_path($this->classPaths[$className])) !== false) {
-error_log(__METHOD__ . ':' . __LINE__ . ' - absolutePath: ' . $absolutePath);
 
             return $absolutePath;
         }
 
         // Get relative path/file for class name with namespace stripped
         $relativePath = $this->getRelativePath($className, true);
-error_log(__METHOD__ . ':' . __LINE__ . ' - relativePath: ' . $relativePath);
 
         // Check registered namespace paths
         foreach ($this->namespacePaths as $resource => $resourcePaths) {
@@ -259,8 +256,6 @@ error_log(__METHOD__ . ':' . __LINE__ . ' - relativePath: ' . $relativePath);
         // Check registered directory paths
         foreach ($this->dirPaths as $resourcePath) {
             $absolutePath = stream_resolve_include_path(rtrim($resourcePath, '/') . DIRECTORY_SEPARATOR . $relativePath);
-error_log(__METHOD__ . ':' . __LINE__ . ' - resourcePath: ' . $resourcePath );
-error_log(__METHOD__ . ':' . __LINE__ . ' - absolutePath: ' . $absolutePath);
 
             if ($absolutePath !== false) {
                 return $absolutePath;
