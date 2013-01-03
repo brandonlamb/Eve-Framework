@@ -3,7 +3,7 @@ namespace Eve\DI;
 
 trait InjectableTrait
 {    /**
-	 * @var DI
+	 * @var DiInterface
 	 */
 	private $di;
 
@@ -11,19 +11,6 @@ trait InjectableTrait
 	 * @var Events\Manager
 	 */
 	private $eventsManager;
-
-	/**
-	 * Constructor
-	 *
-	 * @param Eve\DiInterface $di
-	 */
-	public function __construct(\Eve\DiInterface $di = null)
-	{
-		if (null === $di) {
-			$di = \Eve\DI::getDefault();
-		}
-		$this->di = $di;
-	}
 
 	/**
 	 * Magic getter method that checks DI container for propery
@@ -61,6 +48,9 @@ trait InjectableTrait
 	 */
 	public final function getDI()
 	{
+		if (null === $this->di) {
+			$this->di = \Eve\DI::getDefault();
+		}
 		return $this->di;
 	}
 

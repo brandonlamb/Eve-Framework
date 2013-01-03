@@ -5,9 +5,9 @@
  * @package Eve
  */
 namespace Eve\Mvc;
-use Eve\DI\InjectableTrait;
 use Eve\DI\InjectionAwareInterface;
 use Eve\Events\EventsAwareInterface;
+use Eve\DI\InjectableTrait;
 
 class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 {
