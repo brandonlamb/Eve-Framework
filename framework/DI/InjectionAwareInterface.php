@@ -7,14 +7,14 @@ interface InjectionAwareInterface
     /**
      * Sets the DI container
      *
-     * @param DI $di
+     * @param DiInterface $di
      */
     public function setDI(DiInterface $di);
 
     /**
      * Returns the DI container
      *
-     * @return DI
+     * @return DiInterface
      */
     public function getDI();
 }

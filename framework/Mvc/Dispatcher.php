@@ -7,11 +7,10 @@
 namespace Eve\Mvc;
 use Eve\DI\InjectionAwareInterface;
 use Eve\Events\EventsAwareInterface;
-use Eve\DI\InjectableTrait;
 
 class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 {
-	use InjectableTrait;
+	use \Eve\DI\InjectableTrait;
 
 	const MAX_DISPATCH_LOOPS = 5;
 
