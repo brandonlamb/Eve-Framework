@@ -372,6 +372,7 @@ class Dispatcher extends \Eve\DI\Injectable
 	{
 		$di	= $this->getDI();
 		$config = $di->getShared('config')->get('router');
+		$autoloader = $di->getShared('loader');
 
 		// If activeController is already an instantiated instance, save it to lastController
 		if ($this->activeController instanceof Controller) {
@@ -387,6 +388,10 @@ class Dispatcher extends \Eve\DI\Injectable
 		$className = null === $this->namespaceName ? $this->controllerName : $this->namespaceName . '\\' . $this->controllerName;
 
 		try {
+			if (class_exists($className) === false) {
+				throw new Exception('Could not load controller class ' . $className);
+			}
+
 			// Attempt to instantiate the contrller class
 			$this->activeController = new $className();
 
