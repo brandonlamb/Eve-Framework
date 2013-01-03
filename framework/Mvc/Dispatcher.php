@@ -384,6 +384,9 @@ class Dispatcher extends \Eve\DI\Injectable
 			throw new \Exception('Max dispatch loops exceeded');
 		}
 
+		// Increment dispatch loop count
+		$this->dispatchLoops++;
+
 		// If no namespace/module is set then just assigned the controller name as className, otherwise prepend the module name
 		$className = null === $this->namespaceName ? $this->controllerName : $this->namespaceName . '\\' . $this->controllerName;
 
