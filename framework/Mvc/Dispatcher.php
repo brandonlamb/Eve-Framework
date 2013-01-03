@@ -430,7 +430,7 @@ class Dispatcher extends \Eve\DI\Injectable
 			}
 
 			// Error controller defined, forward to the set error handler
-			$this->setParams(array('error' => $e->getMessage()));
+			$this->setParams(array($e->getMessage()));
 			$this->forward(array(
 				'controller'	=> $config['error']['controller'],
 				'action'		=> $config['error']['action'],
