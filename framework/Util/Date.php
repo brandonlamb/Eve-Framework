@@ -1,9 +1,6 @@
 <?php
 namespace Eve\Util;
 
-// Namespace aliases
-use Eve\Util as Util;
-
 /**
  * Extension of PHP DateTime Class
  * Easy to remember format strings, magic toString method, diff method, and getAge method

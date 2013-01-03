@@ -10,7 +10,7 @@ class FactoryDefault extends \Eve\DI
         $this->set('config', '\\Eve\\Mvc\\Config');
         $this->set('dispatcher', '\\Eve\\Mvc\\Dispatcher');
         $this->set('logger', '\\Eve\\Log');
-        $this->set('response', '\\Eve\\Mvc\\Response');
+        $this->set('response', '\\Eve\\Http\\Response');
         $this->set('request', '\\Eve\\Http\\Request');
         $this->set('router', '\\Eve\\Mvc\\Router');
         $this->set('view', '\\Eve\\Mvc\\View');

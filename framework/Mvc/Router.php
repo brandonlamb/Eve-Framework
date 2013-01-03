@@ -163,13 +163,14 @@ class Router
      *
      * @param string $routeName The name of the route to reverse route.
      * @param array $params Optional array of parameters to use in URL
+     * @throws Router\Exception
      * @return string The url to the route
      */
     public function generate($routeName, array $params = array())
     {
         // Check if route exists
         if (!isset($this->namedRoutes[$routeName])) {
-            throw new Exception("No route with the name $routeName has been found.");
+            throw new Router\Exception("No route with the name $routeName has been found.");
         }
 
         $route = $this->namedRoutes[$routeName];

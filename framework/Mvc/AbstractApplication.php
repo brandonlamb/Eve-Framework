@@ -1,7 +1,7 @@
 <?php
 namespace Eve\Mvc;
 
-abstract class Application
+abstract class AbstractApplication
 {
     /**
      * @var Eve\DI

@@ -6,35 +6,32 @@
  * @package Eve\Request
  */
 namespace Eve\Http;
+use Eve\DI\InjectableTrait;
+use Eve\DI\InjectionAwareInterface;
+use Eve\Events\EventsAwareInterface;
 
-#class Response extends Component
-class Response extends \Eve\DI\Injectable
+class Response implements InjectionAwareInterface, EventsAwareInterface
+#class Response extends \Eve\DI\Injectable
 {
+    use InjectableTrait;
+
     /**
-     * The content body of the response.
-     *
-     * @var mixed
+     * @var mixed, The content body of the response.
      */
     protected $body;
 
     /**
-     * The HTTP status code of the response.
-     *
-     * @var int
+     * @var int, The HTTP status code of the response.
      */
     protected $status = 200;
 
     /**
-     * The response headers.
-     *
-     * @var array
+     * @var array, The response headers
      */
     protected $headers = array();
 
     /**
-     * HTTP status codes.
-     *
-     * @var array
+     * @var array, HTTP status codes
      */
     protected static $statuses = array(
         100 => 'Continue',

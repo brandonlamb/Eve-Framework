@@ -47,7 +47,6 @@ class DI
 	 * Magic getter to access container objects
 	 *
 	 * @param string $alias
-	 * @throws InvalidArgumentException
 	 * @return mixed
 	 */
 	public function __get($alias)
@@ -71,13 +70,14 @@ class DI
 	 *
 	 * @param string $alias
 	 * @param mixed $config
+	 * @throws DI\Exception
 	 * @return DI
 	 */
 	public function set($alias, $config)
 	{
 		// If config is an array, verify it has a required className key
 		if (is_array($config) && !isset($config['className'])) {
-			throw new \InvalidArgumentException('Must contain a className key.');
+			throw new DI\Exception('Must contain a className key.');
 		}
 
 		$this->container[$alias] = $config;
@@ -90,13 +90,14 @@ class DI
 	 *
 	 * @param string $alias
 	 * @param mixed $config
+	 * @throws DI\Exception
 	 * @return DI
 	 */
 	public function setShared($alias, $config)
 	{
 		// If config is an array, verify it has a required className key
 		if (is_array($config) && !isset($config['className'])) {
-			throw new \InvalidArgumentException('Must contain a className key.');
+			throw new DI\Exception('Must contain a className key.');
 		}
 
 		$this->sharedContainer[$alias] = $config;
@@ -120,12 +121,13 @@ class DI
 	 * Get an object from the container
 	 *
 	 * @param string $alias
+	 * @throws DI\Exception
 	 * @return mixed
 	 */
 	public function get($alias)
 	{
 		if (!isset($this->container[$alias])) {
-			throw new \InvalidArgumentException($alias . ' is not defined.');
+			throw new DI\Exception($alias . ' is not defined.');
 		}
 
 		// If the object is a string, return new object using the value as the class name
@@ -178,13 +180,13 @@ class DI
 	 * Get an object from the param container
 	 *
 	 * @param string $alias
-	 * @throws InvalidArgumentException
+	 * @throws DI\Exception
 	 * @return mixed
 	 */
 	public function getParam($alias)
 	{
 		if (!isset($this->paramContainer[$alias])) {
-			throw new \InvalidArgumentException('Parameter not set: ' . $alias);
+			throw new DI\Exception('Parameter not set: ' . $alias);
 		}
 
 		// Return the parameter
@@ -195,13 +197,13 @@ class DI
 	 * Remove an object from the container
 	 *
 	 * @param string $alias
-	 * @throws InvalidArgumentException
+	 * @throws DI\Exception
 	 * @return DI
 	 */
 	public function remove($alias)
 	{
 		if (!isset($this->container[$alias])) {
-			throw new \InvalidArgumentException($alias . ' is not defined.');
+			throw new DI\Exception($alias . ' is not defined.');
 		}
 
 		unset($this->container[$alias]);

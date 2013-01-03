@@ -1,9 +1,6 @@
 <?php
 namespace Eve\Util;
 
-// Namespace aliases
-use Eve\Util as Util;
-
 class Arrays
 {
     /**

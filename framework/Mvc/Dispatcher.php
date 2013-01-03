@@ -5,9 +5,14 @@
  * @package Eve
  */
 namespace Eve\Mvc;
+use Eve\DI\InjectableTrait;
+use Eve\DI\InjectionAwareInterface;
+use Eve\Events\EventsAwareInterface
 
-class Dispatcher extends \Eve\DI\Injectable
+class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 {
+	use InjectableTrait;
+
 	const MAX_DISPATCH_LOOPS = 5;
 
 	/**
@@ -231,10 +236,10 @@ class Dispatcher extends \Eve\DI\Injectable
 	/**
 	 * Set the last controller
 	 *
-	 * @param Controller $controller
+	 * @param ControllerInterface $controller
 	 * @return Dispatcher
 	 */
-	protected function setLastController(Controller $controller)
+	protected function setLastController(ControllerInterface $controller)
 	{
 		$this->lastController = $controller;
 		return $this;
@@ -243,7 +248,7 @@ class Dispatcher extends \Eve\DI\Injectable
 	/**
 	 * Get the last controller instantiated
 	 *
-	 * @return Controller
+	 * @return ControllerInterface
 	 */
 	public function getLastController()
 	{
@@ -256,10 +261,10 @@ class Dispatcher extends \Eve\DI\Injectable
 	/**
 	 * Set the current controller
 	 *
-	 * @param Controller $controller
+	 * @param ControllerInterface $controller
 	 * @return Dispatcher
 	 */
-	public function setActiveController(Controller $controller)
+	public function setActiveController(ControllerInterface $controller)
 	{
 		$this->activeController = $controller;
 		return $this;
@@ -268,13 +273,13 @@ class Dispatcher extends \Eve\DI\Injectable
 	/**
 	 * Get the active controller. If no controller is yet instantiated, an except is thrown
 	 *
-	 * @throws Exception
-	 * @return Controller
+	 * @throws Dispatcher\Exception
+	 * @return ControllerInterface
 	 */
 	public function getActiveController()
 	{
-		if (null === $this->activeController || !$this->activeController instanceof Controller) {
-			throw new \RuntimeException('No active controller has been instantiated');
+		if (null === $this->activeController || !$this->activeController instanceof ControllerInterface) {
+			throw new Dispatcher\Exception('No active controller has been instantiated');
 		}
 		return $this->activeController;
 	}
@@ -366,6 +371,7 @@ class Dispatcher extends \Eve\DI\Injectable
 	/**
 	 * Dispatch the request
 	 *
+	 * @throws Dispatcher\Exception
 	 * @return Dispatcher
 	 */
 	public function dispatch()
@@ -381,7 +387,7 @@ class Dispatcher extends \Eve\DI\Injectable
 
 		// Throw exception if we have exceeded max dispatch loops
 		if ($this->dispatchLoops > static::MAX_DISPATCH_LOOPS) {
-			throw new \Exception('Max dispatch loops exceeded');
+			throw new Dispatcher\Exception('Max dispatch loops exceeded');
 		}
 
 		// Increment dispatch loop count
@@ -392,20 +398,20 @@ class Dispatcher extends \Eve\DI\Injectable
 
 		try {
 			if (class_exists($className) === false) {
-				throw new Exception('Could not load controller class ' . $className);
+				throw new Dispatcher\Exception('Could not load controller class ' . $className);
 			}
 
 			// Attempt to instantiate the contrller class
 			$this->activeController = new $className();
 
 			// If the class object is not an instance of the Controller class then throw exception
-			if (!$this->activeController instanceof Controller) {
-				throw new \Exception('Unable to load controller class for ' . $className);
+			if (!$this->activeController instanceof ControllerInterface) {
+				throw new Dispatcher\Exception('Unable to load controller class for ' . $className);
 			}
 
 			// Verify the requested action is callable
 			if (!method_exists($this->activeController, $this->actionName)) {
-				throw new \Exception('Unable to load action method for  ' . $this->actionName . '.');
+				throw new Dispatcher\Exception('Unable to load action method for  ' . $this->actionName . '.');
 			}
 
 			// Call Controller::init() method first
@@ -423,7 +429,7 @@ class Dispatcher extends \Eve\DI\Injectable
 
 			// Call controller afterDispatch() method if it exists
 			$this->activeController->afterDispatch();
-		} catch (\Exception $e) {
+		} catch (Dispatcher\Exception $e) {
 			// Caught an error, if no defined error controller then throw exception
 			if (!isset($config['error']['controller'], $config['error']['action'])) {
 				throw $e;
@@ -435,6 +441,8 @@ class Dispatcher extends \Eve\DI\Injectable
 				'controller'	=> $config['error']['controller'],
 				'action'		=> $config['error']['action'],
 			));
+		} catch (\Exception $e) {
+			throw $e;
 		}
 	}
 }

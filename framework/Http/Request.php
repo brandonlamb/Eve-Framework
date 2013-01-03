@@ -6,9 +6,15 @@
  * @package Eve\Request
  */
 namespace Eve\Http;
+use Eve\DI\InjectableTrait;
+use Eve\DI\InjectionAwareInterface;
+use Eve\Events\EventsAwareInterface;
 
-class Request extends \Eve\DI\Injectable
+class Request implements InjectionAwareInterface, EventsAwareInterface
+#class Request extends \Eve\DI\Injectable
 {
+    use InjectableTrait;
+
 	const SCHEME_HTTP		= 'http';
 	const SCHEME_HTTPS		= 'https';
     const URI_REGEX			= '/[^a-zA-Z0-9_\-\/\s]/';

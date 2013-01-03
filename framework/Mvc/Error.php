@@ -13,11 +13,9 @@ namespace Eve\Mvc;
 class Error extends Component
 {
     /**
-     * Error codes (PHP errors)
-     *
-     * @var array
+     * @var array, Error codes (PHP errors)
      */
-    protected $_codes = array(
+    protected $codes = array(
         \E_ERROR             => 'PHP Error',
         \E_WARNING           => 'PHP Warning',
         \E_PARSE             => 'PHP Parse Error',
@@ -36,11 +34,9 @@ class Error extends Component
     );
 
     /**
-     * Error codes that should be treated as fatal errors
-     *
-     * @var array
+     * @var array, Error codes that should be treated as fatal errors
      */
-    protected $_fatal = array(
+    protected $fatal = array(
         \E_ERROR,
         \E_CORE_ERROR,
         \E_COMPILE_ERROR,
@@ -48,68 +44,50 @@ class Error extends Component
     );
 
     /**
-     * Display errors
-     *
-     * @var bool
+     * @var bool, display errors
      */
-    protected $_display = false;
+    protected $display = false;
 
     /**
-     * Error mode
-     *
-     * @var string
+     * @var string, error mode
      */
-    protected $_mode = self::MODE_HTML;
+    protected $mode = self::MODE_HTML;
 
     /**
-     * Error template
-     *
-     * @var string
+     * @var string, error templte
      */
-    protected $_template;
+    protected $template;
 
     /**
-     * Have any errors occured
-     *
-     * @var bool
+     * @var bool, have any errors occurred
      */
-    protected $_errors = false;
+    protected $errors = false;
 
     /**
-     * The error log
-     *
-     * @var array
+     * @var array, the error log
      */
-    protected $_log = array();
+    protected $log = array();
 
     /**
-     * Error code for exception
-     *
-     * @var string
+     * @var string, error code for exception
      */
     const E_EXCEPTION = 'Exception';
 
     /**
-     * Header constants
-     *
-     * @var string
+     * @var string, header constants
      */
     const HEADER_PREFIX	= 'HTTP/1.1 ';
     const HEADER_OK		= '200 OK';
     const HEADER_FATAL	= '500 Internal Server Error';
 
     /**
-     * Error mode constants
-     *
-     * @var string
+     * @var string, error mode constants
      */
     const MODE_HTML	= 'HTML';
     const MODE_JSON	= 'JSON';
 
     /**
-     * Logging key names
-     *
-     * @var string
+     * @var string, logging key names
      */
     const LOG_LEVEL	= 'level';
     const LOG_CODE	= 'code';
@@ -119,26 +97,20 @@ class Error extends Component
     const LOG_TRACE	= 'trace';
 
     /**
-     * Logging HTML
-     *
-     * @var string
+     * @var string, logging html
      */
     const HTML_LOG		= '<b>{level}</b>: {message}<br /><b>Occurred in</b>: {file} at line {line}.<br />';
     const HTML_TRACE	= '<b>Stack trace</b>:<br />{trace}<br />';
 
     /**
-     * Configuration keys
-     *
-     * @var string
+     * @var string, configuration keys
      */
     const CONF_DISPLAY	= 'display';
     const CONF_MODE		= 'mode';
     const CONF_TEMPLATE	= 'layout';
 
     /**
-     * Resource names
-     *
-     * @var string
+     * @var string, resource names
      */
     const RES_CONFIG = 'config';
 
@@ -185,7 +157,6 @@ class Error extends Component
      */
     public function register()
     {
-#		register_shutdown_function(array($this, 'exceptionHandler'));
         set_error_handler(array($this, 'errorHandler'), E_ALL);
         set_exception_handler(array($this, 'exceptionHandler'));
     }
@@ -209,7 +180,7 @@ class Error extends Component
      */
     public function setDisplay($display)
     {
-        $this->_display = $display;
+        $this->display = $display;
     }
 
     /**
@@ -221,7 +192,7 @@ class Error extends Component
     public function setMode($mode)
     {
         if ($mode == self::MODE_HTML || $mode = self::MODE_JSON) {
-            $this->_mode = $mode;
+            $this->mode = $mode;
         }
     }
 
@@ -233,7 +204,7 @@ class Error extends Component
      */
     public function setTemplate($template)
     {
-        $this->_template = $template;
+        $this->template = $template;
     }
 
     /**
@@ -243,17 +214,18 @@ class Error extends Component
      * @param string $errstr
      * @param string $errfile
      * @param int    $errline
+     * @throws \ErrorException
      */
     public function errorHandler($errno, $errstr, $errfile, $errline)
     {
         // Check for fatal error
-        if (in_array($errno, $this->_fatal)) {
+        if (in_array($errno, $this->fatal)) {
             // Throw ErrorException for fatal errors (enables trace)
-            throw new ErrorException($errstr, $errno, $errno, $errfile, $errline);
+            throw new \ErrorException($errstr, $errno, $errno, $errfile, $errline);
         } else {
             // Log non-fatal errors
             $this->logError(
-                $this->_codes[$errno],
+                $this->codes[$errno],
                 $errno,
                 $errstr,
                 $errfile,
@@ -270,8 +242,8 @@ class Error extends Component
     public function exceptionHandler($e)
     {
         // Check error code (not 0 = ErrorException)
-        if (isset($this->_codes[$e->getCode()])) {
-            $level = $this->_codes[$e->getCode()];
+        if (isset($this->codes[$e->getCode()])) {
+            $level = $this->codes[$e->getCode()];
         } else {
             $level = self::E_EXCEPTION;
         }
@@ -302,7 +274,7 @@ class Error extends Component
      */
     public function logError($level, $code, $message, $file, $line, $trace = null)
     {
-        $this->_log[] = array(
+        $this->log[] = array(
             self::LOG_LEVEL	=> $level,
             self::LOG_CODE	=> $code,
             self::LOG_MSG	=> $message,
@@ -310,7 +282,7 @@ class Error extends Component
             self::LOG_LINE	=> $line,
             self::LOG_TRACE	=> $trace
         );
-        $this->_errors = true;
+        $this->errors = true;
     }
 
     /**
@@ -320,7 +292,7 @@ class Error extends Component
      */
     public function hasErrors()
     {
-        return $this->_errors;
+        return $this->errors;
     }
 
     /**
@@ -330,7 +302,7 @@ class Error extends Component
      */
     public function getLog()
     {
-        return ($this->hasErrors()) ? $this->_log : false;
+        return ($this->hasErrors()) ? $this->log : false;
     }
 
     /**
@@ -344,7 +316,7 @@ class Error extends Component
         header(self::HEADER_PREFIX . self::HEADER_FATAL);
 
         // Compile the log
-        switch ($this->_mode) {
+        switch ($this->mode) {
             case self::MODE_HTML:
                 $page = $this->HTML();
                 break;
@@ -368,10 +340,10 @@ class Error extends Component
     protected function HTML()
     {
         $output = '';
-        if ($this->_config['display'] === true) {
+        if ($this->config['display'] === true) {
             $output = '<h2>Error Log</h2>' . PHP_EOL;
             $output .= '<p>' . PHP_EOL;
-            $log = array_reverse($this->_log);
+            $log = array_reverse($this->log);
             foreach ($log as $entry) {
                 // Compile log entry
                 $entryHtml = self::HTML_LOG;
@@ -393,7 +365,7 @@ class Error extends Component
         }
 
         // Use template if one exists
-        $template = \PATH . $this->_config['template'];
+        $template = \PATH . $this->config['template'];
         if ($resourceAbsolutePath = stream_resolve_include_path($template)) {
             $page = file_get_contents($resourceAbsolutePath);
             $page = str_replace('{LOG}', $output, $page);
@@ -411,8 +383,8 @@ class Error extends Component
      */
     protected function JSON()
     {
-        $log = array_reverse($this->_log);
-        if ($this->_display) {
+        $log = array_reverse($this->log);
+        if ($this->display) {
             return json_encode(
                 array(
                     'error'   => $log[0][self::LOG_CODE],

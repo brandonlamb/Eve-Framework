@@ -1,9 +1,6 @@
 <?php
 namespace Eve\Util;
-
-// Namespace aliases
 use Eve\Curl as Curl;
-use Eve\Util as Util;
 
 class Map
 {
