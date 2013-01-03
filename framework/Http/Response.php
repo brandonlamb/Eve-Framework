@@ -6,14 +6,12 @@
  * @package Eve\Request
  */
 namespace Eve\Http;
-use Eve\DI\InjectableTrait;
 use Eve\DI\InjectionAwareInterface;
 use Eve\Events\EventsAwareInterface;
 
 class Response implements InjectionAwareInterface, EventsAwareInterface
-#class Response extends \Eve\DI\Injectable
 {
-    use InjectableTrait;
+    use \Eve\DI\InjectableTrait;
 
     /**
      * @var mixed, The content body of the response.

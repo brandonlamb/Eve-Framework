@@ -1,7 +1,7 @@
 <?php
 namespace Eve;
 
-class DI
+class DI implements DiInterface
 {
 	/**
 	 * @var DI

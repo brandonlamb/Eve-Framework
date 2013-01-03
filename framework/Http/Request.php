@@ -6,14 +6,12 @@
  * @package Eve\Request
  */
 namespace Eve\Http;
-use Eve\DI\InjectableTrait;
 use Eve\DI\InjectionAwareInterface;
 use Eve\Events\EventsAwareInterface;
 
 class Request implements InjectionAwareInterface, EventsAwareInterface
-#class Request extends \Eve\DI\Injectable
 {
-    use InjectableTrait;
+    use \Eve\DI\InjectableTrait;
 
 	const SCHEME_HTTP		= 'http';
 	const SCHEME_HTTPS		= 'https';
