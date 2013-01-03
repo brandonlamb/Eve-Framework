@@ -12,7 +12,12 @@ trait InjectableTrait
 	 */
 	private $eventsManager;
 
-	public function __construct(\Eve\DI $di = null)
+	/**
+	 * Constructor
+	 *
+	 * @param Eve\DiInterface $di
+	 */
+	public function __construct(\Eve\DiInterface $di = null)
 	{
 		if (null === $di) {
 			$di = \Eve\DI::getDefault();
@@ -40,20 +45,19 @@ trait InjectableTrait
 	/**
 	 * Set the DI container
 	 *
-	 * @param  DI         $di
+	 * @param  Eve\DiInterface $di
 	 * @return Injectable
 	 */
-	public final function setDI(\Eve\DI $di)
+	public final function setDI(\Eve\DiInterface $di)
 	{
 		$this->di = $di;
-
 		return $this;
 	}
 
 	/**
 	 * Return the DI container
 	 *
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public final function getDI()
 	{

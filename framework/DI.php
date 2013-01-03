@@ -71,7 +71,7 @@ class DI
 	 * @param string $alias
 	 * @param mixed $config
 	 * @throws DI\Exception
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public function set($alias, $config)
 	{
@@ -91,7 +91,7 @@ class DI
 	 * @param string $alias
 	 * @param mixed $config
 	 * @throws DI\Exception
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public function setShared($alias, $config)
 	{
@@ -109,7 +109,7 @@ class DI
 	 *
 	 * @param string $alias
 	 * @param mixed $value
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public function setParam($alias, $value)
 	{
@@ -137,11 +137,11 @@ class DI
 
 		// If the object is an array, return a new object using the defined class name
 		// and pass in the object as the constructor parameter. If the class is an instance
-		// of a DI\Injectable then set the DI container for the object
+		// of a DI\InjectionAwareInterface then set the DI container for the object
 		if (is_array($this->container[$alias])) {
 			$className = $this->container[$alias]['className'];
 			$instance = new $className($this->container[$alias]);
-			if ($instance instanceof DI\Injectable) {
+			if ($instance instanceof DI\InjectionAwareInterface) {
 				$instance->setDI($this);
 			}
 
@@ -198,7 +198,7 @@ class DI
 	 *
 	 * @param string $alias
 	 * @throws DI\Exception
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public function remove($alias)
 	{
@@ -214,10 +214,10 @@ class DI
 	/**
 	 * Set the default DI container to return by getDefault()
 	 *
-	 * @param DI $di
-	 * @return DI
+	 * @param DiInterface $di
+	 * @return DiInterface
 	 */
-	public static function setDefault(DI $di)
+	public static function setDefault(DiInterface $di)
 	{
 		self::$defaultInstance = $di;
 		return $di;
@@ -227,7 +227,7 @@ class DI
 	 * Returns the default DI container instance, or if one was not created
 	 * then created a new instance and set the default
 	 *
-	 * @return DI
+	 * @return DiInterface
 	 */
 	public static function getDefault()
 	{
@@ -258,5 +258,16 @@ class DI
 	public function hasShared($key)
 	{
 		return isset($this->sharedContainer[$key]);
+	}
+
+	/**
+	 * Check if the param container contains the index
+	 *
+	 * @param string $key
+	 * @return bool
+	 */
+	public function hasParam($key)
+	{
+		return isset($this->paramContainer[$key]);
 	}
 }
