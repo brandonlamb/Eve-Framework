@@ -55,8 +55,22 @@ abstract class AbstractApplication
 		// Attempt to route the request
 		$router->match($request->getUri(), $request->getMethod());
 
+		// Check if we need to load a module
+		$routeTarget = $router->getRoute()->getTarget();
+		if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($routeTarget['path'])) !== false) {
+			include_once $modulePath;
+
+			// Throw exception if the module class is not loaded
+			if (class_exists($routeTarget['className']) === false) {
+				throw new \Exception('Could not load module class ' . $routeTarget['className']);
+			}
+
+			// Instantiate module class
+			$module = new $routeTarget['className']();
+			$module->registerServices($di);
+		}
+
 		// Configure dispatcher
-		$dispatcher->setNamespaceName($router->getModuleName());
 		$dispatcher->setControllerName($router->getControllerName());
 		$dispatcher->setActionName($router->getActionName());
 		$dispatcher->setParams(explode('/', trim($router->getRoute()->getParameter('params'), '/')));

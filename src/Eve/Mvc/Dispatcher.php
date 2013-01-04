@@ -391,8 +391,6 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	{
 		$di	= $this->getDI();
 		$config = $di->getShared('config')->get('router');
-		$autoloader = $di->getShared('loader');
-		$routeTarget = $di->getShared('router')->getRoute()->getTarget();
 
 		// If activeController is already an instantiated instance, save it to lastController
 		if ($this->activeController instanceof Controller) {
@@ -408,20 +406,6 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		$this->dispatchLoops++;
 
 		try {
-			// Check if we need to load a module
-			if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($routeTarget['path'])) !== false) {
-				include_once $modulePath;
-
-				// Throw exception if the module class is not loaded
-				if (class_exists($routeTarget['className']) === false) {
-					throw new Dispatcher\Exception('Could not load module class ' . $routeTarget['className']);
-				}
-
-				// Instantiate module class
-				$module = new $routeTarget['className']();
-				$module->registerServices($di);
-			}
-
 			// If namespace is defined, prepend it to classname from controllerName
 			if (null !== $this->namespaceName) {
 				$className = $this->namespaceName . '\\' . $this->controllerName;
