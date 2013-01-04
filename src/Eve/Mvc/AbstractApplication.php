@@ -67,7 +67,7 @@ abstract class AbstractApplication
 
 			// Instantiate module class
 			$module = new $routeTarget['className']();
-			$module->registerServices($di);
+			$module->registerServices($this->di);
 		}
 
 		// Configure dispatcher
