@@ -392,8 +392,16 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		// Increment dispatch loop count
 		$this->dispatchLoops++;
 
-		// If no namespace/module is set then just assigned the controller name as className, otherwise prepend the module name
-		$className = null === $this->namespaceName ? $this->controllerName : $this->namespaceName . '\\' . $this->controllerName;
+		// If namespace is defined, prepend it to classname from controllerName
+		if (null !== $this->namespaceName) {
+			$className = $this->namespaceName . '\\' . $this->controllerName;
+		} elseif (null !== $this->defaultNamespace) {
+			// namespaceName wasnt defined but defaultNamespace was so use it
+			$className = $this->defaultNamespace . '\\' . $this->controllerName;
+		} else {
+			// No namespaceName or defaultNamespace set so just use the controllerName
+			$className = $this->controllerName;
+		}
 
 		try {
 			if (class_exists($className) === false) {
