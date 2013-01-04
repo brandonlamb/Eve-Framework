@@ -105,5 +105,5 @@ interface DiInterface
 	 * @param string $key
 	 * @return bool
 	 */
-	public function hasParam($key)
+	public function hasParam($key);
 }
