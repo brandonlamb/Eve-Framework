@@ -16,18 +16,24 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 {
 	use \Eve\DI\InjectableTrait;
 
-	const LEVEL_MAIN_LAYOUT		= 1;
-	const LEVEL_AFTER_TEMPLATE  = 2;
+	const LEVEL_NO_RENDER		= 0;
+	const LEVEL_ACTION_VIEW		= 1;
+	const LEVEL_BEFORE_TEMPLATE	= 2;
 	const LEVEL_LAYOUT			= 3;
-	const LEVEL_BEFORE_TEMPLATE	= 4;
-	const LEVEL_ACTION_VIEW		= 5;
-	const LEVEL_NO_RENDER		= 6;
+	const LEVEL_AFTER_TEMPLATE  = 4;
+	const LEVEL_MAIN_LAYOUT		= 5;
 
 	/**
 	 * Render level
 	 * @var int
 	 */
 	protected $renderLevel = 1;
+
+	/**
+	 * Disabled render levels
+	 * @var array
+	 */
+	protected $disableLevel = array();
 
 	/**
 	 * Views directory
@@ -72,6 +78,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	public function reset()
 	{
 		$this->renderLevel 		= 1;
+		$this->disableLevel 	= array();
 		$this->viewsDir 		= null;
 		$this->layoutsDir		= null;
 		$this->partialsDir		= null;
