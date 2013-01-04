@@ -409,7 +409,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 
 		try {
 			// Check if we need to load a module
-			if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($$routeTarget['path'])) !== false) {
+			if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($routeTarget['path'])) !== false) {
 				include_once $modulePath;
 
 				// Throw exception if the module class is not loaded
