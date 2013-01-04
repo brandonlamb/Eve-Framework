@@ -11,10 +11,10 @@ abstract class AbstractApplication
 	/**
 	 * Set the DI container object
 	 *
-	 * @param  Eve\DI      $di
+	 * @param  Eve\DiInterface      $di
 	 * @return Application
 	 */
-	final public function setDI(\Eve\DI $di)
+	final public function setDI(\Eve\DiInterface $di)
 	{
 		$this->di = $di;
 
@@ -24,7 +24,7 @@ abstract class AbstractApplication
 	/**
 	 * Get the DI container object or create a new instance if one is not set
 	 *
-	 * @return \Eve\DI
+	 * @return \Eve\DiInterface
 	 */
 	final public function getDI()
 	{

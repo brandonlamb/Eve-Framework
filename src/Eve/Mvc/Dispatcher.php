@@ -392,6 +392,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		$di	= $this->getDI();
 		$config = $di->getShared('config')->get('router');
 		$autoloader = $di->getShared('loader');
+		$routeTarget = $di->getShared('router')->getRoute()->getTarget();
 
 		// If activeController is already an instantiated instance, save it to lastController
 		if ($this->activeController instanceof Controller) {
@@ -405,6 +406,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 
 		// Increment dispatch loop count
 		$this->dispatchLoops++;
+
+		// Check if we need to load a module
+		\d($target);
 
 		// If namespace is defined, prepend it to classname from controllerName
 		if (null !== $this->namespaceName) {
