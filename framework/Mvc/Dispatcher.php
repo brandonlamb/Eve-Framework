@@ -82,7 +82,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setControllerSuffix($suffix)
 	{
-		$this->controllerSuffix = (string) $suffix;
+		if (!empty($suffix)) {
+			$this->controllerSuffix = (string) $suffix;
+		}
 		return $this;
 	}
 
@@ -104,7 +106,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setActionSuffix($suffix)
 	{
-		$this->actionSuffix = (string) $suffix;
+		if (!empty($suffix)) {
+			$this->actionSuffix = (string) $suffix;
+		}
 		return $this;
 	}
 
@@ -126,7 +130,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setNamespaceName($namespaceName)
 	{
-		if (null !== $namespaceName && !empty($namespaceName)) {
+		if (!empty($namespaceName)) {
 			$this->namespaceName = (string) $namespaceName;
 		}
 		return $this;
@@ -150,7 +154,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setControllerName($controllerName)
 	{
-		$this->controllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
+		if (!empty($controllerName)) {
+			$this->controllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
+		}
 		return $this;
 	}
 
@@ -172,7 +178,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setActionName($actionName)
 	{
-		$this->actionName = (string) $this->camelize($actionName) . $this->actionSuffix;
+		if (!empty($actionName)) {
+			$this->actionName = (string) $this->camelize($actionName) . $this->actionSuffix;
+		}
 		return $this;
 	}
 
@@ -194,7 +202,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setDefaultNamespace($namespaceName)
 	{
-		$this->defaultNamespace = (string) $namespaceName;
+		if (!empty($namespaceName)) {
+			$this->defaultNamespace = (string) $namespaceName;
+		}
 		return $this;
 	}
 
@@ -216,7 +226,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setDefaultController($controllerName)
 	{
-		$this->defaultControllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
+		if (!empty($controllerName)) {
+			$this->defaultControllerName = (string) $this->camelize($controllerName) . $this->controllerSuffix;
+		}
 		return $this;
 	}
 
@@ -228,7 +240,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setDefaultAction($actionName)
 	{
-		$this->defaultActionName = (string) $this->camelize($actionName) . $this->actionSuffix;
+		if (!empty($actionName)) {
+			$this->defaultActionName = (string) $this->camelize($actionName) . $this->actionSuffix;
+		}
 		return $this;
 	}
 
