@@ -4,7 +4,12 @@ use Eve\DiInterface;
 
 interface ModuleDefinitionInterface
 {
-	public function registerAutoloaders();
+	/**
+	 * Register autoloaders
+	 *
+	 * @param DiInterface $di
+	 */
+	public function registerAutoloaders(DiInterface $di);
 
 	/**
 	 * Register DI services
