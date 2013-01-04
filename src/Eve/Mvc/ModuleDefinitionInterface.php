@@ -1,5 +1,6 @@
 <?php
 namespace Eve\Mvc;
+use Eve\DiInterface;
 
 interface ModuleDefinitionInterface
 {
