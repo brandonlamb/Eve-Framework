@@ -407,21 +407,33 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		// Increment dispatch loop count
 		$this->dispatchLoops++;
 
-		// Check if we need to load a module
-		\d($routeTarget);
-
-		// If namespace is defined, prepend it to classname from controllerName
-		if (null !== $this->namespaceName) {
-			$className = $this->namespaceName . '\\' . $this->controllerName;
-		} elseif (null !== $this->defaultNamespace) {
-			// namespaceName wasnt defined but defaultNamespace was so use it
-			$className = $this->defaultNamespace . '\\' . $this->controllerName;
-		} else {
-			// No namespaceName or defaultNamespace set so just use the controllerName
-			$className = $this->controllerName;
-		}
-
 		try {
+			// Check if we need to load a module
+			if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($$routeTarget['path'])) !== false) {
+				include_once $modulePath;
+
+				// Throw exception if the module class is not loaded
+				if (class_exists($routeTarget['className']) === false) {
+					throw new Dispatcher\Exception('Could not load module class ' . $routeTarget['className']);
+				}
+
+				// Instantiate module class
+				$module = new $routeTarget['className']();
+				$module->registerServices($di);
+			}
+
+			// If namespace is defined, prepend it to classname from controllerName
+			if (null !== $this->namespaceName) {
+				$className = $this->namespaceName . '\\' . $this->controllerName;
+			} elseif (null !== $this->defaultNamespace) {
+				// namespaceName wasnt defined but defaultNamespace was so use it
+				$className = $this->defaultNamespace . '\\' . $this->controllerName;
+			} else {
+				// No namespaceName or defaultNamespace set so just use the controllerName
+				$className = $this->controllerName;
+			}
+
+			// Throw exception if the controller class is not loaded
 			if (class_exists($className) === false) {
 				throw new Dispatcher\Exception('Could not load controller class ' . $className);
 			}
