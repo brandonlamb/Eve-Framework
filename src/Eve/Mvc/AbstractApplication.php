@@ -67,6 +67,7 @@ abstract class AbstractApplication
 
 			// Instantiate module class
 			$module = new $routeTarget['className']();
+			$module->registerAutoloaders($this->di);
 			$module->registerServices($this->di);
 		}
 
