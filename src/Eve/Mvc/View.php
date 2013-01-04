@@ -384,12 +384,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Render a partial view
-	 *
-	 * @param  string $view, the partial view file
-	 * @param  array  $data, local array of view variables
+	 * @param string $partialPath, the partial view file
 	 * @return string
 	 */
-	public function partial($view, array $data = array())
+	public function partial($partialPath)
 	{
 		$view = $this->getpartial($view);
 
