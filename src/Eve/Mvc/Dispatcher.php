@@ -408,7 +408,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		$this->dispatchLoops++;
 
 		// Check if we need to load a module
-		\d($target);
+		\d($routeTarget);
 
 		// If namespace is defined, prepend it to classname from controllerName
 		if (null !== $this->namespaceName) {
