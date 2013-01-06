@@ -83,7 +83,7 @@ abstract class AbstractApplication
 		$view->finish();
 
 		// Set the response content from the view content
-		$response->setContent($view->getContent());
+		$response->setBody($view->getContent());
 
 		return $response;
 	}
