@@ -47,7 +47,7 @@ abstract class AbstractApplication
 		$router     = $this->di->getShared('router');
 		$request    = $this->di->getShared('request');
 		$response   = $this->di->getShared('response');
-#		$view       = $this->di->getShared('view');
+		$view       = $this->di->getShared('view');
 
 		// Append default mvc routes to router
 		$this->addDefaultRoutes($router);
@@ -76,6 +76,14 @@ abstract class AbstractApplication
 		$dispatcher->setActionName($router->getActionName());
 		$dispatcher->setParams(explode('/', trim($router->getRoute()->getParameter('params'), '/')));
 		$dispatcher->dispatch();
+
+		// Parse the view
+		$view->start();
+		$view->render($dispatcher->getControllerName(), $dispatcher->getActionName());
+		$view->finish();
+
+		// Set the response content from the view content
+		$response->setContent($view->getContent());
 
 		return $response;
 	}

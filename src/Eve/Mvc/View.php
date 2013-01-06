@@ -417,11 +417,8 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function finish()
 	{
-		if ($this->renderStart === true) {
-			// Assign output buffer from view to $content
-			$this->content = ob_get_clean();
-		}
-
+		// Assign output buffer from view to $content
+		$this->renderStart === true && $this->content = ob_get_clean();
 
 		while (ob_get_level() > 1) {
 			ob_get_clean();
@@ -488,29 +485,13 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 				}
 			}
 
-
-
-
-
-			// Throw exception if view file not resolved
-			if ($viewAbsolutePath = stream_resolve_include_path($this->view)) {
-				// Include view script
-				include $viewAbsolutePath;
+			// LEVEL_ACTION_VIEW - Action view
+			if ($renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
+				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
+				if ($viewPath = stream_resolve_include_path($viewPath)) {
+					include $viewPath;
+				}
 			}
-
-			// Throw exception if layout file not resolved
-			if (!$layoutAbsolutePath = stream_resolve_include_path($this->layout)) {
-				throw new \RuntimeException('Layout file ' . $layoutAbsolutePath . ' not found');
-			}
-
-			// Start output buffering for layout
-			ob_start();
-
-			// Include the layout view script
-			include $layoutAbsolutePath;
-
-			// Return the layout + view output buffer
-			return ob_get_clean();
 		} catch (\Exception $e) {
 			$this->finish();
 			throw $e;
@@ -524,20 +505,13 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function partial($partialPath)
 	{
-		$view = $this->getpartial($view);
-
 		// Catch any exceptions/errors that happen inside a view
 		try {
-			// Render page
-			if (!$resourceAbsolutePath = stream_resolve_include_path($view)) {
-				throw new \RuntimeException('View file ' . $view . ' not found');
+			$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
+			if ($viewPath = stream_resolve_include_path($viewPath)) {
+				return include $viewPath;
+#				return $content;
 			}
-
-			ob_start();
-			extract($data);
-			include $resourceAbsolutePath;
-
-			return ob_get_clean();
 		} catch (\Exception $e) {
 			while (ob_get_level() > 1) { ob_get_clean(); }
 			throw $e;
