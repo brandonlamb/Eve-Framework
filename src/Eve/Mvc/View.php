@@ -30,10 +30,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	protected $renderStart = false;
 
 	/**
-	 * Render level
+	 * Render level, default 5 (max)
 	 * @var int
 	 */
-	protected $renderLevel = 1;
+	protected $renderLevel = 5;
 
 	/**
 	 * Disabled render levels
@@ -63,7 +63,23 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Main view
 	 * @var string
 	 */
-	protected $mainView;
+	protected $mainView = 'index';
+
+	/**
+	 * Template before view
+	 *
+	 * Rendered before the action view
+	 * @var string
+	 */
+	protected $templateBeforeView;
+
+	/**
+	 * Template after view
+	 *
+	 * Rendered after the action view
+	 * @var string
+	 */
+	protected $templateAfterView;
 
 	/**
 	 * View variables
@@ -76,6 +92,54 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * @var string
 	 */
 	protected $content;
+
+	/**
+	 * Action name
+	 * @var string
+	 */
+	protected $actionName;
+
+	/**
+	 * Controller name
+	 * @var string
+	 */
+	protected $controllerName;
+
+	/**
+	 * View file suffix
+	 * @var string
+	 */
+	protected $viewSuffix = '.phtml';
+
+	/**
+	 * Checks if a property value is null.
+	 * Do not call this method. This is a PHP magic method that we override
+	 * to allow using isset() to detect if a component property is set or not.
+	 * @param  string  $key the property name or the event name
+	 * @return boolean
+	 */
+	public function __isset($key)
+	{
+		return isset($this->viewVars[$key]);
+	}
+
+	/**
+	 * Magic Method for removing an item from the view data.
+	 * @param string $key
+	 */
+	public function __unset($key)
+	{
+		unset($this->viewVars[$key]);
+	}
+
+	/**
+	 * Return the view's HTML
+	 * @return string
+	 */
+	public function __toString()
+	{
+		return $this->getContent();
+	}
 
 	/**
 	 * Resets the view to its factory default values
@@ -106,7 +170,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 		switch ($level) {
 			case static::LEVEL_MAIN_LAYOUT:
-			case static::LEVEL_AFTER_LAYOUT:
+			case static::LEVEL_AFTER_TEMPLATE:
 			case static::LEVEL_LAYOUT:
 			case static::LEVEL_BEFORE_TEMPLATE:
 			case static::LEVEL_ACTION_VIEW:
@@ -121,12 +185,14 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Set the views directory
+	 *
+	 * Sets views directory. Depending of your platform, always add a trailing slash or backslash
 	 * @param string $dir
 	 * @return View
 	 */
 	public function setViewsDir($directory)
 	{
-		if (is_string($directory)) {
+		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
 			$this->viewsDir = (string) $directory;
 		}
 		return $this;
@@ -143,12 +209,15 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Set the layouts directory
+	 *
+	 * Sets the layouts sub-directory. Must be a directory under the views directory.
+	 * Depending of your platform, always add a trailing slash or backslash
 	 * @param string $dir
 	 * @return View
 	 */
 	public function setLayoutsDir($directory)
 	{
-		if (is_string($directory)) {
+		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
 			$this->layoutsDir = (string) $directory;
 		}
 		return $this;
@@ -165,12 +234,15 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Set the partials directory
+	 *
+	 * Sets a partials sub-directory. Must be a directory under the views directory.
+	 * Depending of your platform, always add a trailing slash or backslash
 	 * @param string $dir
 	 * @return View
 	 */
 	public function setPartialsDir($directory)
 	{
-		if (is_string($directory)) {
+		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
 			$this->partialsDir = (string) $directory;
 		}
 		return $this;
@@ -205,6 +277,66 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	public function getMainView()
 	{
 		return $this->mainView;
+	}
+
+	/**
+	 * Sets the template before view
+	 * @param string $templateBeforeView
+	 * @return View
+	 */
+	public function setTemplateBefore($templateBeforeView)
+	{
+		$this->templateBeforeView = (string) $templateBeforeView;
+		return $this;
+	}
+
+	/**
+	 * Get the template before view
+	 * @return string
+	 */
+	public function getTemplateBefore()
+	{
+		return $this->templateBeforeView;
+	}
+
+	/**
+	 * Resets any template before layouts
+	 * @return View
+	 */
+	public function cleanTemplateBefore()
+	{
+		$this->templateBeforeView = null;
+		return $this;
+	}
+
+	/**
+	 * Sets the template after view
+	 * @param string $templateBeforeView
+	 * @return View
+	 */
+	public function setTemplateAfter($templateAfterView)
+	{
+		$this->templateAfterView = (string) $templateAfterView;
+		return $this;
+	}
+
+	/**
+	 * Get the template before view
+	 * @return string
+	 */
+	public function getTemplateAfter()
+	{
+		return $this->templateAfterView;
+	}
+
+	/**
+	 * Resets any template after layouts
+	 * @return View
+	 */
+	public function cleanTemplateAfter()
+	{
+		$this->templateAfterView = null;
+		return $this;
 	}
 
 	/**
@@ -269,36 +401,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	}
 
 	/**
-	 * Checks if a property value is null.
-	 * Do not call this method. This is a PHP magic method that we override
-	 * to allow using isset() to detect if a component property is set or not.
-	 * @param  string  $key the property name or the event name
-	 * @return boolean
-	 */
-	public function __isset($key)
-	{
-		return isset($this->viewVars[$key]);
-	}
-
-	/**
-	 * Magic Method for removing an item from the view data.
-	 * @param string $key
-	 */
-	public function __unset($key)
-	{
-		unset($this->viewVars[$key]);
-	}
-
-	/**
-	 * Return the view's HTML
-	 * @return string
-	 */
-	public function __toString()
-	{
-		return $this->getContent();
-	}
-
-	/**
 	 * Starts rendering process enabling the output buffer
 	 */
 	public function start()
@@ -315,12 +417,11 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function finish()
 	{
-		if ($this->renderStart !== false) {
-			return;
+		if ($this->renderStart === true) {
+			// Assign output buffer from view to $content
+			$this->content = ob_get_clean();
 		}
 
-		// Assign output buffer from view to $content
-		$this->content = ob_get_clean();
 
 		while (ob_get_level() > 1) {
 			ob_get_clean();
@@ -350,17 +451,51 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			$this->viewVars = array_merge($this->viewVars, $params);
 		}
 
-		// Catchy any exceptions/errors that happen inside a view
+		// Catch any exceptions/errors that happen inside a view
 		try {
 			// Extract data to local variables
-			extract($this->data);
+			extract($this->data, EXTR_REFS);
+
+			// LEVEL_MAIN_LAYOUT - Main view
+			if ($renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
+				$viewPath = $this->viewsDir . $this->mainView . $this->viewSuffix;
+				if ($viewPath = stream_resolve_include_path($viewPath)) {
+					include $viewPath;
+				}
+			}
+
+			// LEVEL_AFTER_TEMPLATE - Template after view
+			if ($renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
+				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateAfterView . $this->viewSuffix;
+				if ($viewPath = stream_resolve_include_path($viewPath)) {
+					include $viewPath;
+				}
+			}
+
+			// LEVEL_LAYOUT - Controller template view
+			if ($renderLevel <= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
+				$viewPath = $this->viewsDir . $this->layoutsDir . $this->controllerName . $this->viewSuffix;
+				if ($viewPath = stream_resolve_include_path($viewPath)) {
+					include $viewPath;
+				}
+			}
+
+			// LEVEL_BEFORE_TEMPLATE - Template before view
+			if ($renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
+				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateBeforeView . $this->viewSuffix;
+				if ($viewPath = stream_resolve_include_path($viewPath)) {
+					include $viewPath;
+				}
+			}
+
+
+
+
 
 			// Throw exception if view file not resolved
 			if ($viewAbsolutePath = stream_resolve_include_path($this->view)) {
 				// Include view script
 				include $viewAbsolutePath;
-
-
 			}
 
 			// Throw exception if layout file not resolved
@@ -377,7 +512,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			// Return the layout + view output buffer
 			return ob_get_clean();
 		} catch (\Exception $e) {
-			while (ob_get_level() > 1) { ob_get_clean(); }
+			$this->finish();
 			throw $e;
 		}
 	}
