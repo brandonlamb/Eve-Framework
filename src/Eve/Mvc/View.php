@@ -69,17 +69,17 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Template before view
 	 *
 	 * Rendered before the action view
-	 * @var string
+	 * @var array
 	 */
-	protected $templateBeforeView;
+	protected $templateBeforeView = array();
 
 	/**
 	 * Template after view
 	 *
 	 * Rendered after the action view
-	 * @var string
+	 * @var array
 	 */
-	protected $templateAfterView;
+	protected $templateAfterView = array();
 
 	/**
 	 * View variables
@@ -104,6 +104,12 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * @var string
 	 */
 	protected $controllerName;
+
+	/**
+	 * Picked view (0 => controller, 1 => action)
+	 * @var array
+	 */
+	protected $pickView;
 
 	/**
 	 * View file suffix
@@ -281,18 +287,22 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Sets the template before view
-	 * @param string $templateBeforeView
+	 * @param string|array $templateBeforeView
 	 * @return View
 	 */
 	public function setTemplateBefore($templateBeforeView)
 	{
-		$this->templateBeforeView = (string) $templateBeforeView;
+		if (is_array($templateBeforeView)) {
+			$this->templateBeforeView = $templateBeforeView;
+		} else {
+			$this->templateBeforeView = array($templateBeforeView);
+		}
 		return $this;
 	}
 
 	/**
 	 * Get the template before view
-	 * @return string
+	 * @return array
 	 */
 	public function getTemplateBefore()
 	{
@@ -316,13 +326,17 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setTemplateAfter($templateAfterView)
 	{
-		$this->templateAfterView = (string) $templateAfterView;
+		if (is_array($templateAfterView)) {
+			$this->templateAfterView = $templateAfterView;
+		} else {
+			$this->templateAfterView = array($templateAfterView);
+		}
 		return $this;
 	}
 
 	/**
 	 * Get the template before view
-	 * @return string
+	 * @return array
 	 */
 	public function getTemplateAfter()
 	{
@@ -335,7 +349,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function cleanTemplateAfter()
 	{
-		$this->templateAfterView = null;
+		$this->templateAfterView = array();
 		return $this;
 	}
 
@@ -401,6 +415,28 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	}
 
 	/**
+	 * Set the controller name
+	 * @param string $controllerName
+	 * @return View
+	 */
+	protected function setControllerName($controllerName)
+	{
+		$this->controllerName = (string) $controllerName;
+		return $this;
+	}
+
+	/**
+	 * Set the action name
+	 * @param string $actionName
+	 * @return View
+	 */
+	protected function setActionName($actionName)
+	{
+		$this->actionName = (string) $actionName;
+		return $this;
+	}
+
+	/**
 	 * Starts rendering process enabling the output buffer
 	 */
 	public function start()
@@ -424,6 +460,27 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		}
 	}
 
+	/**
+	 * Pick the view script to render
+	 *
+	 * Picks which view to render by passing a string with a format of controller/action
+	 * or just action. Example: pick('posts/add') or pick('add')
+	 * @param string
+	 * @return View
+	 */
+	protected function pick($pickView)
+	{
+		if (strpos($pickView, DIRECTORY_SEPARATOR) === true) {
+			// Parse controller/action into array and assign
+			$parts = explode('/', $pickView);
+			$this->pickView = array($parts[1], $parts[0]);
+		} else {
+			null === $this->pickView && $this->pickView = array();
+			$this->pickView[0] = $pickView;
+		}
+
+		return $this;
+	}
 
 
 
@@ -443,13 +500,26 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		}
 
 		// Merge parameters with viewVars if data is passed
-		if (count($params) > 0) {
-			$this->viewVars = array_merge($this->viewVars, $params);
+		count($params) > 0 && $this->viewVars = array_merge($this->viewVars, $params);
+
+		// Define layoutsDir if not set
+		null === $this->layoutsDir && $this->layoutsDir = 'layouts/';
+
+		// Set controller and action name if they were not picked
+		if (null === $this->pickView) {
+			$this->setControllerName($controllerName);
+			$this->setActionName($actionName);
+		} else {
+			$this->setActionName($this->pickView[0]);
+			if (isset($this->pickView[1])) {
+				$this->setControllerName($this->pickView[1]);
+			} else {
+				$this->setControllerName($controllerName);
+			}
 		}
 
-		$this->controllerName = $controllerName;
-		$this->actionName = $actionName;
-echo "$controllerName / $actionName\n";
+		// @todo - init cache
+		// @todo - event manager view:beforeRender
 
 		// Catch any exceptions/errors that happen inside a view
 		try {
