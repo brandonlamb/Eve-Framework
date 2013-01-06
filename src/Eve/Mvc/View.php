@@ -405,7 +405,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function start()
 	{
-		$this->renderStart === true && ob_start();
+		if ($this->renderStart === false) {
+			$this->renderStart = true;
+			ob_start();
+		}
 	}
 
 	/**
