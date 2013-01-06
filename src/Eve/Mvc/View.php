@@ -192,7 +192,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setViewsDir($directory)
 	{
-		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
+		if (is_string($directory) && strpos($directory, DIRECTORY_SEPARATOR) !== false) {
 			$this->viewsDir = (string) $directory;
 		}
 		return $this;
@@ -217,7 +217,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setLayoutsDir($directory)
 	{
-		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
+		if (is_string($directory) && strpos($directory, DIRECTORY_SEPARATOR) !== false) {
 			$this->layoutsDir = (string) $directory;
 		}
 		return $this;
@@ -242,7 +242,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setPartialsDir($directory)
 	{
-		if (is_string($directory) && (($pos = strpos($directory, DIRECTORY_SEPARATOR)) !== false) {
+		if (is_string($directory) && strpos($directory, DIRECTORY_SEPARATOR) !== false) {
 			$this->partialsDir = (string) $directory;
 		}
 		return $this;
@@ -454,7 +454,7 @@ echo "$controllerName / $actionName\n";
 		// Catch any exceptions/errors that happen inside a view
 		try {
 			// Extract data to local variables
-			extract($this->data, EXTR_REFS);
+			extract($this->viewVars, EXTR_REFS);
 
 			// LEVEL_MAIN_LAYOUT - Main view
 			if ($this->renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {

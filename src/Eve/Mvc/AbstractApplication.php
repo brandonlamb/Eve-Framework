@@ -47,7 +47,6 @@ abstract class AbstractApplication
 		$router     = $this->di->getShared('router');
 		$request    = $this->di->getShared('request');
 		$response   = $this->di->getShared('response');
-		$view       = $this->di->getShared('view');
 
 		// Append default mvc routes to router
 		$this->addDefaultRoutes($router);
@@ -78,6 +77,7 @@ abstract class AbstractApplication
 		$dispatcher->dispatch();
 
 		// Parse the view
+		$view = $this->di->getShared('view');
 		$view->start();
 		$view->render($dispatcher->getControllerName(), $dispatcher->getActionName());
 		$view->finish();
