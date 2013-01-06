@@ -22,9 +22,9 @@ trait InjectableTrait
 	{
 		$di = $this->getDI();
 		if ($di->hasShared($key)) {
-			return $this->getShared($key);
-		} else if ($this->has($key)) {
-			return $this->get($key);
+			return $di->getShared($key);
+		} else if ($di->has($key)) {
+			return $di->get($key);
 		}
 		throw new \InvalidArgument($key . ' is not a valid property');
 	}
