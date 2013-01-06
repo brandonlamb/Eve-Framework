@@ -227,7 +227,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	public function setVar($key, $value)
 	{
 		if (is_string($key)) {
-			$this->viewVars[$key] = $view;
+			$this->viewVars[$key] = $value;
 		}
 		return $this;
 	}
