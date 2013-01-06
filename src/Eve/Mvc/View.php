@@ -443,7 +443,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		}
 
 		// Merge parameters with viewVars if data is passed
-		if (count(params) > 0) {
+		if (count($params) > 0) {
 			$this->viewVars = array_merge($this->viewVars, $params);
 		}
 
