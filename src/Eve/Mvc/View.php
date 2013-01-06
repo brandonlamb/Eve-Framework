@@ -405,11 +405,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function start()
 	{
-		if ($this->renderStart !== false) {
-			return;
-		}
-
-		ob_start();
+		$this->renderStart === true && ob_start();
 	}
 
 	/**
@@ -448,13 +444,17 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			$this->viewVars = array_merge($this->viewVars, $params);
 		}
 
+		$this->controllerName = $controllerName;
+		$this->actionName = $actionName;
+echo "$controllerName / $actionName\n";
+
 		// Catch any exceptions/errors that happen inside a view
 		try {
 			// Extract data to local variables
 			extract($this->data, EXTR_REFS);
 
 			// LEVEL_MAIN_LAYOUT - Main view
-			if ($renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
+			if ($this->renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
 				$viewPath = $this->viewsDir . $this->mainView . $this->viewSuffix;
 				if ($viewPath = stream_resolve_include_path($viewPath)) {
 					include $viewPath;
@@ -462,7 +462,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_AFTER_TEMPLATE - Template after view
-			if ($renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
+			if ($this->renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateAfterView . $this->viewSuffix;
 				if ($viewPath = stream_resolve_include_path($viewPath)) {
 					include $viewPath;
@@ -470,7 +470,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_LAYOUT - Controller template view
-			if ($renderLevel <= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
+			if ($this->renderLevel <= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->controllerName . $this->viewSuffix;
 				if ($viewPath = stream_resolve_include_path($viewPath)) {
 					include $viewPath;
@@ -478,7 +478,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_BEFORE_TEMPLATE - Template before view
-			if ($renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
+			if ($this->renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateBeforeView . $this->viewSuffix;
 				if ($viewPath = stream_resolve_include_path($viewPath)) {
 					include $viewPath;
@@ -486,7 +486,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_ACTION_VIEW - Action view
-			if ($renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
+			if ($this->renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
 				if ($viewPath = stream_resolve_include_path($viewPath)) {
 					include $viewPath;
