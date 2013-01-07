@@ -527,7 +527,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		if ($this->renderLevel > 0) {
 			// LEVEL_ACTION_VIEW - Action view
 			if ($this->renderLevel >= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
-				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
+				$viewPath = $this->viewsDir . $this->controllerName . '/' . $this->actionName . $this->viewSuffix;
 				$this->engineRender($viewPath, true, true);
 			}
 
@@ -575,6 +575,8 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	protected function engineRender($viewPath, $silence = false, $mustClean = false, $cache = null)
 	{
+error_log('engineRender: ' . $viewPath);
+
 		// Clean output buffer
 		$mustClean === true && ob_clean();
 
