@@ -74,11 +74,13 @@ abstract class AbstractApplication
 		$dispatcher->setControllerName($router->getControllerName());
 		$dispatcher->setActionName($router->getActionName());
 		$dispatcher->setParams(explode('/', trim($router->getRoute()->getParameter('params'), '/')));
+
+		$view = $this->di->getShared('view');
+		$view->start();
+
 		$dispatcher->dispatch();
 
 		// Parse the view
-		$view = $this->di->getShared('view');
-		$view->start();
 		$view->render($dispatcher->getControllerName(), $dispatcher->getActionName());
 		$view->finish();
 

@@ -523,12 +523,8 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		// Get the current content in the buffer maybe some output from the controller
 		$this->content = ob_get_contents();
 
-
 		// If render level is > 0
 		if ($this->renderLevel > 0) {
-			// Extract data to local variables
-			extract($this->viewVars, EXTR_REFS);
-
 			// LEVEL_ACTION_VIEW - Action view
 			if ($this->renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
