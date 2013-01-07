@@ -190,6 +190,34 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	}
 
 	/**
+	 * Disable one or more render levels
+	 * @param int|array $level
+	 * @return View
+	 */
+	public function disableLevel($level)
+	{
+		if (is_numeric($level)) {
+			$level = (int) $level;
+
+			switch ($level) {
+				case static::LEVEL_MAIN_LAYOUT:
+				case static::LEVEL_AFTER_TEMPLATE:
+				case static::LEVEL_LAYOUT:
+				case static::LEVEL_BEFORE_TEMPLATE:
+				case static::LEVEL_ACTION_VIEW:
+				case static::LEVEL_NO_RENDER:
+					$this->disableLevel[$level] = true;
+				default:
+					throw new \InvalidArgumentException('Invalid render level');
+			}
+		} elseif (is_array($level)) {
+			$this->disableLevel = $level;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Set the views directory
 	 *
 	 * Sets views directory. Depending of your platform, always add a trailing slash or backslash
@@ -280,10 +308,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Gets the main view
 	 * @return string
 	 */
-	public function getMainView()
-	{
-		return $this->mainView;
-	}
+#	public function getMainView()
+#	{
+#		return $this->mainView;
+#	}
 
 	/**
 	 * Sets the template before view
@@ -304,10 +332,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Get the template before view
 	 * @return array
 	 */
-	public function getTemplateBefore()
-	{
-		return $this->templateBeforeView;
-	}
+#	public function getTemplateBefore()
+#	{
+#		return $this->templateBeforeView;
+#	}
 
 	/**
 	 * Resets any template before layouts
@@ -338,10 +366,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Get the template before view
 	 * @return array
 	 */
-	public function getTemplateAfter()
-	{
-		return $this->templateAfterView;
-	}
+#	public function getTemplateAfter()
+#	{
+#		return $this->templateAfterView;
+#	}
 
 	/**
 	 * Resets any template after layouts
@@ -605,16 +633,8 @@ error_log('engineRender: ' . $viewPath);
 	 */
 	public function partial($partialPath)
 	{
-		// Catch any exceptions/errors that happen inside a view
-		try {
-			$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
-			if ($viewPath = stream_resolve_include_path($viewPath)) {
-				return include $viewPath;
-#				return $content;
-			}
-		} catch (\Exception $e) {
-			while (ob_get_level() > 1) { ob_get_clean(); }
-			throw $e;
-		}
+		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath;
+		$this->engineRender($viewPath, false, false);
+		return $this->content;
 	}
 }
