@@ -515,7 +515,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 		// Set controller and action name if they were not picked
 		$this->controllerName = isset($this->pickView[0]) ? $this->pickView[0] : $controllerName;
-		$this->actionName = isset($this->pickView[1]) ? $this->pickView[1] $actionName;
+		$this->actionName = isset($this->pickView[1]) ? $this->pickView[1] : $actionName;
 
 		// @todo - init cache
 		// @todo - event manager view:beforeRender
