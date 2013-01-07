@@ -635,7 +635,7 @@ error_log('engineRender: ' . $viewPath);
 	 */
 	public function partial($partialPath)
 	{
-		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath;
+		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
 error_log('Partial: ' . $viewPath);
 		$this->engineRender($viewPath, false, false);
 		return $this->content;
