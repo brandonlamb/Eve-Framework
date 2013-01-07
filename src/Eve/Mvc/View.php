@@ -402,9 +402,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setVar($key, $value)
 	{
-		if (is_string($key)) {
-			$this->viewVars[$key] = $value;
-		}
+		is_string($key) && $this->viewVars[$key] = $value;
 		return $this;
 	}
 
@@ -429,9 +427,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setContent($content)
 	{
-		if (is_string($content)) {
-			$this->content = (string) $content;
-		}
+		is_string($content) && $this->content = (string) $content;
 		return $this;
 	}
 
@@ -468,17 +464,17 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Starts rendering process enabling the output buffer
+	 * @return View
 	 */
 	public function start()
 	{
-		if ($this->renderStart === false) {
-			$this->renderStart = true;
-			ob_start();
-		}
+		$this->renderStart === false && $this->renderStart = true && ob_start();
+		return $this;
 	}
 
 	/**
 	 * Finish rendering process disabling the output buffer
+	 * @return View
 	 */
 	public function finish()
 	{
@@ -488,6 +484,8 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		while (ob_get_level() > 1) {
 			ob_get_clean();
 		}
+
+		return $this;
 	}
 
 	/**
@@ -512,15 +510,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 		return $this;
 	}
-
-
-
-
-
-
-
-
-
 
 	/**
 	 * Executes render process from dispatching data
@@ -596,6 +585,19 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	}
 
 	/**
+	 * Render a partial view
+	 * @param string $partialPath, the partial view file
+	 * @return string
+	 */
+	public function partial($partialPath)
+	{
+		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
+		$this->engineRender($viewPath, false, false);
+
+		return $this->content;
+	}
+
+	/**
 	 * Checks whether view exists on registered extensions and render it
 	 * @param string $viewPath
 	 * @param bool $silence
@@ -605,8 +607,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	protected function engineRender($viewPath, $silence = false, $mustClean = false, $cache = null)
 	{
-error_log('engineRender: ' . $viewPath);
-
 		// Clean output buffer
 		$mustClean === true && ob_clean();
 
@@ -626,18 +626,5 @@ error_log('engineRender: ' . $viewPath);
 		} elseif ($silence === false) {
 			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
 		}
-	}
-
-	/**
-	 * Render a partial view
-	 * @param string $partialPath, the partial view file
-	 * @return string
-	 */
-	public function partial($partialPath)
-	{
-		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
-error_log('Partial: ' . $viewPath);
-		$this->engineRender($viewPath, false, false);
-		return $this->content;
 	}
 }
