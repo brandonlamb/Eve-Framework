@@ -470,17 +470,25 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	protected function pick($pickView)
 	{
-		if (strpos($pickView, DIRECTORY_SEPARATOR) === true) {
+		if (is_array($pickView)) {
+			$this->pickView = $pickView;
+		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) === true) {
 			// Parse controller/action into array and assign
-			$parts = explode('/', $pickView);
-			$this->pickView = array($parts[1], $parts[0]);
+			$this->pickView = explode('/', $pickView);
 		} else {
 			null === $this->pickView && $this->pickView = array();
-			$this->pickView[0] = $pickView;
+			$this->pickView[1] = $pickView;
 		}
 
 		return $this;
 	}
+
+
+
+
+
+
+
 
 
 
@@ -506,68 +514,90 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		null === $this->layoutsDir && $this->layoutsDir = 'layouts/';
 
 		// Set controller and action name if they were not picked
-		if (null === $this->pickView) {
-			$this->controllerName = $controllerName;
-			$this->actionName = $actionName;
-		} else {
-			$this->actionName = $this->pickView[0];
-			if (isset($this->pickView[1])) {
-				$this->controllerName = $this->pickView[1];
-			} else {
-				$this->controllerName = $controllerName;
-			}
-		}
+		$this->controllerName = isset($this->pickView[0]) ? $this->pickView[0] : $controllerName;
+		$this->actionName = isset($this->pickView[1]) ? $this->pickView[1] $actionName;
 
 		// @todo - init cache
 		// @todo - event manager view:beforeRender
+
+		// Get the current content in the buffer maybe some output from the controller
+		$this->content = ob_get_contents();
+
 
 		// If render level is > 0
 		if ($this->renderLevel > 0) {
 			// Extract data to local variables
 			extract($this->viewVars, EXTR_REFS);
 
-			// LEVEL_MAIN_LAYOUT - Main view
-			if ($this->renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
-				$viewPath = $this->viewsDir . $this->mainView . $this->viewSuffix;
-				if ($viewPath = stream_resolve_include_path($viewPath)) {
-					include $viewPath;
-				}
+			// LEVEL_ACTION_VIEW - Action view
+			if ($this->renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
+				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
+				$this->engineRender($viewPath, true, true);
 			}
 
-			// LEVEL_AFTER_TEMPLATE - Template after view
-			if ($this->renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
-				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateAfterView . $this->viewSuffix;
-				if ($viewPath = stream_resolve_include_path($viewPath)) {
-					include $viewPath;
+			// LEVEL_BEFORE_TEMPLATE - Template before view
+			if ($this->renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
+				$silence = false;
+				foreach ($this->templateBeforeView as $template) {
+					$viewPath = $this->viewsDir . $this->layoutsDir . $template . $this->viewSuffix;
+					$this->engineRender($viewPath, true, true);
 				}
+				$silence = true;
 			}
 
 			// LEVEL_LAYOUT - Controller template view
 			if ($this->renderLevel <= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->controllerName . $this->viewSuffix;
-				if ($viewPath = stream_resolve_include_path($viewPath)) {
-					include $viewPath;
-				}
+				$this->engineRender($viewPath, true, true);
 			}
 
-			// LEVEL_BEFORE_TEMPLATE - Template before view
-			if ($this->renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
-				$viewPath = $this->viewsDir . $this->layoutsDir . $this->templateBeforeView . $this->viewSuffix;
-				if ($viewPath = stream_resolve_include_path($viewPath)) {
-					include $viewPath;
+			// LEVEL_AFTER_TEMPLATE - Template after view
+			if ($this->renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
+				$silence = false;
+				foreach ($this->templateAfterView as $template) {
+					$viewPath = $this->viewsDir . $this->layoutsDir . $template . $this->viewSuffix;
+					$this->engineRender($viewPath, true, true);
 				}
+				$silence = true;
 			}
 
-			// LEVEL_ACTION_VIEW - Action view
-			if ($this->renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
-				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
-				if ($viewPath = stream_resolve_include_path($viewPath)) {
-					include $viewPath;
-				}
+			// LEVEL_MAIN_LAYOUT - Main view
+			if ($this->renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
+				$viewPath = $this->viewsDir . $this->mainView . $this->viewSuffix;
+				$this->engineRender($viewPath, true, true);
 			}
-		} catch (\Exception $e) {
-			$this->finish();
-			throw $e;
+
+		}
+	}
+
+	/**
+	 * Checks whether view exists on registered extensions and render it
+	 * @param string $viewPath
+	 * @param bool $silence
+	 * @param bool $mustClean
+	 * @param CacheInterface $cache
+	 * @throws \Exception
+	 */
+	protected function engineRender($viewPath, $silence = false, $mustClean = false, $cache = null)
+	{
+		// Clean output buffer
+		$mustClean === true && ob_clean();
+
+		if ($viewPath = stream_resolve_include_path($viewPath)) {
+			// Extract data to local variables
+			extract($this->viewVars, EXTR_REFS);
+
+			// @todo - eventsManager view:beforeRenderView
+
+			// Include the view
+			include $viewPath;
+
+			// Get contents of output buffer
+			$mustClean === true && $this->content = ob_get_contents();
+
+			// @todo - eventsManager view:afterRenderView
+		} elseif ($silence === false) {
+			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
 		}
 	}
 
