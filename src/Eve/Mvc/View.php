@@ -182,8 +182,9 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			case static::LEVEL_ACTION_VIEW:
 			case static::LEVEL_NO_RENDER:
 				$this->renderLevel = $level;
+				break;
 			default:
-				throw new \InvalidArgumentException('Invalid render level');
+				throw new \InvalidArgumentException('Invalid render level ' . $break);
 		}
 
 		return $this;
@@ -209,8 +210,9 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 				case static::LEVEL_ACTION_VIEW:
 				case static::LEVEL_NO_RENDER:
 					$this->disableLevel[$level] = true;
+					break;
 				default:
-					throw new \InvalidArgumentException('Invalid render level');
+					throw new \InvalidArgumentException('Invalid render level ' . $level);
 			}
 		}
 
