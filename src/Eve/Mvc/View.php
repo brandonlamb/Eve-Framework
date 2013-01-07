@@ -191,14 +191,16 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Disable one or more render levels
-	 * @param int|array $level
+	 * @param int|array $levels
 	 * @return View
 	 */
-	public function disableLevel($level)
+	public function disableLevel($levels)
 	{
-		if (is_numeric($level)) {
-			$level = (int) $level;
+		if (is_numeric($levels)) {
+			$levels = array($levels);
+		}
 
+		foreach ($levels as $level) {
 			switch ($level) {
 				case static::LEVEL_MAIN_LAYOUT:
 				case static::LEVEL_AFTER_TEMPLATE:
@@ -210,8 +212,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 				default:
 					throw new \InvalidArgumentException('Invalid render level');
 			}
-		} elseif (is_array($level)) {
-			$this->disableLevel = $level;
 		}
 
 		return $this;
