@@ -526,13 +526,13 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		// If render level is > 0
 		if ($this->renderLevel > 0) {
 			// LEVEL_ACTION_VIEW - Action view
-			if ($this->renderLevel <= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
+			if ($this->renderLevel >= static::LEVEL_ACTION_VIEW && !isset($this->disableLevel[static::LEVEL_ACTION_VIEW])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->actionName . $this->viewSuffix;
 				$this->engineRender($viewPath, true, true);
 			}
 
 			// LEVEL_BEFORE_TEMPLATE - Template before view
-			if ($this->renderLevel <= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
+			if ($this->renderLevel >= static::LEVEL_BEFORE_TEMPLATE && !isset($this->disableLevel[static::LEVEL_BEFORE_TEMPLATE])) {
 				$silence = false;
 				foreach ($this->templateBeforeView as $template) {
 					$viewPath = $this->viewsDir . $this->layoutsDir . $template . $this->viewSuffix;
@@ -542,13 +542,13 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_LAYOUT - Controller template view
-			if ($this->renderLevel <= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
+			if ($this->renderLevel >= static::LEVEL_LAYOUT && !isset($this->disableLevel[static::LEVEL_LAYOUT])) {
 				$viewPath = $this->viewsDir . $this->layoutsDir . $this->controllerName . $this->viewSuffix;
 				$this->engineRender($viewPath, true, true);
 			}
 
 			// LEVEL_AFTER_TEMPLATE - Template after view
-			if ($this->renderLevel <= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
+			if ($this->renderLevel >= static::LEVEL_AFTER_TEMPLATE && !isset($this->disableLevel[static::LEVEL_AFTER_TEMPLATE])) {
 				$silence = false;
 				foreach ($this->templateAfterView as $template) {
 					$viewPath = $this->viewsDir . $this->layoutsDir . $template . $this->viewSuffix;
@@ -558,11 +558,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			}
 
 			// LEVEL_MAIN_LAYOUT - Main view
-			if ($this->renderLevel <= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
+			if ($this->renderLevel >= static::LEVEL_MAIN_LAYOUT && !isset($this->disableLevel[static::LEVEL_MAIN_LAYOUT])) {
 				$viewPath = $this->viewsDir . $this->mainView . $this->viewSuffix;
 				$this->engineRender($viewPath, true, true);
 			}
-
 		}
 	}
 

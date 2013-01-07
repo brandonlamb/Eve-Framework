@@ -81,7 +81,7 @@ abstract class AbstractApplication
 		$dispatcher->dispatch();
 
 		// Parse the view
-		$view->render($dispatcher->getControllerName(), $dispatcher->getActionName());
+		$view->render($router->getControllerName(), $router->getActionName());
 		$view->finish();
 
 		// Set the response content from the view content
