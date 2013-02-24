@@ -243,6 +243,9 @@ class Loader
                 continue;
             }
 
+            // $resourcePaths should be array
+            !is_array($resourcePaths) && $resourcePaths = array((string) $resourcePaths);
+
             foreach ($resourcePaths as $resourcePath) {
                 if (($absolutePath = stream_resolve_include_path(rtrim($resourcePath, '/') . DIRECTORY_SEPARATOR . $relativePath)) !== false) {
                     return $absolutePath;
