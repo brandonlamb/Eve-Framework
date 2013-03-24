@@ -82,8 +82,17 @@ abstract class AbstractApplication
 		$dispatcher->dispatch();
 
 		// Parse the view
-		$view->render($router->getControllerName(), $router->getActionName());
-		$view->finish();
+		try {
+			$view->render($router->getControllerName(), $router->getActionName());
+			$view->finish();
+		} catch (\Exception $e) {
+			$view->finish();
+			$view->start();
+			$dispatcher->setParams(array($e->getMessage()));
+			$dispatcher->forward(array('controller' => 'error', 'action' => 'index'));
+			$view->render($router->getControllerName(), $router->getActionName());
+			$view->finish();
+		}
 
 		// Set the response content from the view content
 		$response->setBody($view->getContent());

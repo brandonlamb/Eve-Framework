@@ -487,6 +487,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		while (ob_get_level() > 1) {
 			ob_get_clean();
 		}
+		$this->renderStart = false;
 	}
 
 	/**
@@ -619,9 +620,10 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	/**
 	 * Render a partial view
 	 * @param string $partialPath, the partial view file
+	 * @param bool $silence
 	 * @return string
 	 */
-	public function partial($partialPath)
+	public function partial($partialPath, $silence = false)
 	{
 		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
 
@@ -638,7 +640,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			// Get contents of output buffer
 			return ob_get_clean();
 		} elseif ($silence === false) {
-			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
+			throw new \Exception('Partial view script ' . $partialPath . ' was not found in the views directory');
 		}
 	}
 }
