@@ -495,14 +495,14 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 *
 	 * Picks which view to render by passing a string with a format of controller/action
 	 * or just action. Example: pick('posts/add') or pick('add')
-	 * @param string
+	 * @param string $pickView
 	 * @return View
 	 */
 	public function pick($pickView)
 	{
 		if (is_array($pickView)) {
 			$this->pickView = $pickView;
-		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) === true) {
+		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) !== true) {
 			// Parse controller/action into array and assign
 			$this->pickView = explode('/', $pickView);
 		} else {
