@@ -512,15 +512,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		return $this;
 	}
 
-
-
-
-
-
-
-
-
-
 	/**
 	 * Executes render process from dispatching data
 	 *
@@ -604,8 +595,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	protected function engineRender($viewPath, $silence = false, $mustClean = false, $cache = null)
 	{
-error_log('engineRender: ' . $viewPath);
-
 		// Clean output buffer
 		$mustClean === true && ob_clean();
 
@@ -635,7 +624,6 @@ error_log('engineRender: ' . $viewPath);
 	public function partial($partialPath)
 	{
 		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
-error_log('Partial: ' . $viewPath);
 
 		// Start new output buffer
 		ob_start();

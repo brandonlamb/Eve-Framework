@@ -26,7 +26,7 @@ trait InjectableTrait
 		} else if ($di->has($key)) {
 			return $di->get($key);
 		}
-		throw new \InvalidArgument($key . ' is not a valid property');
+		throw new \InvalidArgumentException($key . ' is not a valid property');
 	}
 
 	/**
