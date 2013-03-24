@@ -501,7 +501,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	{
 		if (is_array($pickView)) {
 			$this->pickView = $pickView;
-		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) !== true) {
+		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) !== false) {
 			// Parse controller/action into array and assign
 			$this->pickView = explode('/', $pickView);
 		} else {

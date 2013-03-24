@@ -362,6 +362,9 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		// Set the new action if passed
 		isset($forward['action']) && $this->setActionName($forward['action']);
 
+		// If controller and action are passed, pick the controller/action view
+		isset($forward['controller'], $forward['action']) && $this->view->pick(array($forward['controller'], $forward['action']));
+
 		// Dispatch the new request
 		$this->dispatch();
 	}
