@@ -484,7 +484,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	{
 		// Assign output buffer from view to $content
 		$this->renderStart === true && $this->content = ob_get_clean();
-
 		while (ob_get_level() > 1) {
 			ob_get_clean();
 		}
@@ -637,7 +636,21 @@ error_log('engineRender: ' . $viewPath);
 	{
 		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
 error_log('Partial: ' . $viewPath);
-		$this->engineRender($viewPath, false, false);
-		return $this->content;
+
+		// Start new output buffer
+		ob_start();
+
+		if ($viewPath = stream_resolve_include_path($viewPath)) {
+			// Extract data to local variables
+			extract($this->viewVars, EXTR_REFS);
+
+			// Include the view
+			include $viewPath;
+
+			// Get contents of output buffer
+			return ob_get_clean();
+		} elseif ($silence === false) {
+			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
+		}
 	}
 }
