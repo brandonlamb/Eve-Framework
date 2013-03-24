@@ -45,7 +45,7 @@ class SessionWrapper
 	public function has($key)
 	{
 		$this->validate();
-		return !empty($_SESSION[$name]) ? true : false;
+		return !empty($_SESSION[$key]) ? true : false;
 	}
 
 	/**
@@ -57,7 +57,11 @@ class SessionWrapper
 	public function & get($key, $default = null)
 	{
 		$this->validate();
-		return $this->has($key) ? $_SESSION[$key] : $default;
+		if ($this->has($key)) {
+			return $_SESSION[$key];
+		} else {
+			return $default;
+		}
 	}
 
 	/**
@@ -73,7 +77,7 @@ class SessionWrapper
 		$value = ($encrypt === true) ? hash('sha512', $value) : $value;
 
 		if ($this->has($key) && $override === false) {
-			throw new \Exception('Cannot override session var ' . $name . '.');
+			throw new \Exception('Cannot override session var ' . $key . '.');
 		}
 
 		$_SESSION[$key] = $value;
@@ -86,7 +90,7 @@ class SessionWrapper
 	public function delete($key)
 	{
 		$this->validate();
-		if ($this->has($key) {
+		if ($this->has($key)) {
 			unset($_SESSION[$key]);
 		}
 	}
