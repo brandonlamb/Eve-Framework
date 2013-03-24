@@ -402,7 +402,9 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setVar($key, $value)
 	{
-		is_string($key) && $this->viewVars[$key] = $value;
+		if (is_string($key)) {
+			$this->viewVars[$key] = $value;
+		}
 		return $this;
 	}
 
@@ -427,7 +429,9 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function setContent($content)
 	{
-		is_string($content) && $this->content = (string) $content;
+		if (is_string($content)) {
+			$this->content = (string) $content;
+		}
 		return $this;
 	}
 
@@ -464,28 +468,25 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 
 	/**
 	 * Starts rendering process enabling the output buffer
-	 * @return View
 	 */
 	public function start()
 	{
-		$this->renderStart === false && $this->renderStart = true && ob_start();
-		return $this;
+		if ($this->renderStart === false) {
+			$this->renderStart = true;
+			ob_start();
+		}
 	}
 
 	/**
 	 * Finish rendering process disabling the output buffer
-	 * @return View
 	 */
 	public function finish()
 	{
 		// Assign output buffer from view to $content
 		$this->renderStart === true && $this->content = ob_get_clean();
-
 		while (ob_get_level() > 1) {
 			ob_get_clean();
 		}
-
-		return $this;
 	}
 
 	/**
@@ -493,14 +494,14 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 *
 	 * Picks which view to render by passing a string with a format of controller/action
 	 * or just action. Example: pick('posts/add') or pick('add')
-	 * @param string
+	 * @param string $pickView
 	 * @return View
 	 */
-	protected function pick($pickView)
+	public function pick($pickView)
 	{
 		if (is_array($pickView)) {
 			$this->pickView = $pickView;
-		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) === true) {
+		} elseif (strpos($pickView, DIRECTORY_SEPARATOR) !== true) {
 			// Parse controller/action into array and assign
 			$this->pickView = explode('/', $pickView);
 		} else {
@@ -585,19 +586,6 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	}
 
 	/**
-	 * Render a partial view
-	 * @param string $partialPath, the partial view file
-	 * @return string
-	 */
-	public function partial($partialPath)
-	{
-		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
-		$this->engineRender($viewPath, false, false);
-
-		return $this->content;
-	}
-
-	/**
 	 * Checks whether view exists on registered extensions and render it
 	 * @param string $viewPath
 	 * @param bool $silence
@@ -623,6 +611,32 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			$mustClean === true && $this->content = ob_get_contents();
 
 			// @todo - eventsManager view:afterRenderView
+		} elseif ($silence === false) {
+			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
+		}
+	}
+
+	/**
+	 * Render a partial view
+	 * @param string $partialPath, the partial view file
+	 * @return string
+	 */
+	public function partial($partialPath)
+	{
+		$viewPath = $this->viewsDir . $this->partialsDir . $partialPath . $this->viewSuffix;
+
+		// Start new output buffer
+		ob_start();
+
+		if ($viewPath = stream_resolve_include_path($viewPath)) {
+			// Extract data to local variables
+			extract($this->viewVars, EXTR_REFS);
+
+			// Include the view
+			include $viewPath;
+
+			// Get contents of output buffer
+			return ob_get_clean();
 		} elseif ($silence === false) {
 			throw new \Exception('View ' . $viewPath . ' was not found in the views directory');
 		}
