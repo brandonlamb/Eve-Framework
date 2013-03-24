@@ -13,6 +13,7 @@ class FactoryDefault extends \Eve\DI
         $this->set('response', '\\Eve\\Http\\Response');
         $this->set('request', '\\Eve\\Http\\Request');
         $this->set('router', '\\Eve\\Mvc\\Router');
+        $this->set('session', '\\Eve\\SessionWrapper');
         $this->set('view', '\\Eve\\Mvc\\View');
 
         $this->set('loader', function () {
