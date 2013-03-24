@@ -498,7 +498,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * @param string
 	 * @return View
 	 */
-	protected function pick($pickView)
+	public function pick($pickView)
 	{
 		if (is_array($pickView)) {
 			$this->pickView = $pickView;

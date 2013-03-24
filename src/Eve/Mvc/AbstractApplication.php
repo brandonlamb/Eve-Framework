@@ -56,6 +56,7 @@ abstract class AbstractApplication
 
 		// Check if we need to load a module
 		$routeTarget = $router->getRoute()->getTarget();
+
 		if (isset($routeTarget['path']) && ($modulePath = stream_resolve_include_path($routeTarget['path'])) !== false) {
 			include_once $modulePath;
 
