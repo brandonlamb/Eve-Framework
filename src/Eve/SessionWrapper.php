@@ -24,6 +24,27 @@ class SessionWrapper
 	}
 
 	/**
+	 * Magic getter
+	 * @param string $key
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function & __get($key)
+	{
+		return $this->get($key);
+	}
+
+	/**
+	 * Magic setter
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function __set($key, $value)
+	{
+		$this->set($key, $value);
+	}
+
+	/**
 	 * Return session id
 	 * @throws \Exception
 	 */
@@ -54,9 +75,14 @@ class SessionWrapper
 	 * @param mixed $default
 	 * @return mixed
 	 */
-	public function & get($key, $default = null)
+	public function & get($key = null, $default = null)
 	{
 		$this->validate();
+
+		if (null === $key) {
+			return $_SESSION;
+		}
+
 		if ($this->has($key)) {
 			return $_SESSION[$key];
 		} else {

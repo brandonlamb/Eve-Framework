@@ -454,19 +454,31 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 			// Call controller afterDispatch() method if it exists
 			$this->activeController->afterDispatch();
 		} catch (Dispatcher\Exception $e) {
-			// Caught an error, if no defined error controller then throw exception
-			if (!isset($config['error']['controller'], $config['error']['action'])) {
-				throw $e;
-			}
-
-			// Error controller defined, forward to the set error handler
-			$this->setParams(array($e->getMessage()));
-			$this->forward(array(
-				'controller'	=> $config['error']['controller'],
-				'action'		=> $config['error']['action'],
-			));
+			$this->catchException($config, $e);
+		} catch (\PDOException $e) {
+			$this->catchException($config, $e);
 		} catch (\Exception $e) {
+			$this->catchException($config, $e);
+		}
+	}
+
+	/**
+	 * Handle caught exceptions by redirecting to error controller
+	 * @param array $config
+	 * @param Exception $e
+	 */
+	protected function catchException($config, $e)
+	{
+		// Caught an error, if no defined error controller then throw exception
+		if (!isset($config['error']['controller'], $config['error']['action'])) {
 			throw $e;
 		}
+
+		// Error controller defined, forward to the set error handler
+		$this->setParams(array($e->getMessage()));
+		$this->forward(array(
+			'controller'	=> $config['error']['controller'],
+			'action'		=> $config['error']['action'],
+		));
 	}
 }

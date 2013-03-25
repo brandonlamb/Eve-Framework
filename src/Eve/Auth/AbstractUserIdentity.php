@@ -24,8 +24,7 @@
  */
 namespace Eve\Auth;
 
-// Namespace aliases
-use \Eve\Mvc;
+use Eve\Mvc;
 
 abstract class AbstractUserIdentity extends Mvc\Component implements UserIdentityInterface
 {

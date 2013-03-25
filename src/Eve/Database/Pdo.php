@@ -110,13 +110,23 @@ class Pdo extends \PDO
 	 *
 	 * @param  string         $query
 	 * @param  array          $parameters
-	 * @return PDO::Statement
+	 * @return PDOStatement
 	 */
 	protected function prepareExecute($query, $parameters = array())
 	{
 		$stmt = $this->prepare($query);
 		$stmt->execute($parameters);
-
 		return $stmt;
+	}
+
+	/**
+	 * Prepare an sql statement
+	 * @param string $sql
+	 * @param array $options
+	 * @return PDOStatement
+	 */
+	public function prepare($sql, $options = array())
+	{
+		return parent::prepare($sql, $options);
 	}
 }
