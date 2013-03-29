@@ -2,7 +2,7 @@
 
 <project name="Eve Framework" default="build" basedir=".">
 	<property name="build" location="${basedir}/build" />
-	<property name="framework" location="${basedir}/framework" />
+	<property name="framework" location="${basedir}/src/Eve" />
 
 	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcs-ci,phpcpd,phpdox,phpmd,phpmd-ci,phpunit,phpcb" />
 <!--	<target name="build" depends="prepare,lint,phploc,pdepend,phpcs,phpcpd,phpdox,phpunit,phpcb" />-->
