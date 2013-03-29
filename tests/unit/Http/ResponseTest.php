@@ -1,6 +1,6 @@
 <?php
 
-use Eve\Mvc;
+use Eve\Http;
 
 /**
  * @small
@@ -14,11 +14,11 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	 */
 	public function setUp()
 	{
-		$this->response = new Mvc\Response();
+		$this->response = new Http\Response();
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::getHeaders
+	 * @covers Eve\Http\Response::getHeaders
 	 */
 	public function testNoHeadersAreInitiallySet()
 	{
@@ -26,7 +26,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::getHeaders
+	 * @covers Eve\Http\Response::getHeaders
 	 */
 	public function testGetHeaders()
 	{
@@ -35,7 +35,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::setHeader
+	 * @covers Eve\Http\Response::setHeader
 	 */
 	public function testSetHeader()
 	{
@@ -44,7 +44,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::getHeader
+	 * @covers Eve\Http\Response::getHeader
 	 */
 	public function testGetHeader()
 	{
@@ -53,8 +53,8 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::getBody
-	 * @covers Eve\Mvc\Response::setBody
+	 * @covers Eve\Http\Response::getBody
+	 * @covers Eve\Http\Response::setBody
 	 */
 	public function testGetAndSetBody()
 	{
@@ -69,9 +69,9 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::setBody
-	 * @covers Eve\Mvc\Response::getBody
-	 * @covers Eve\Mvc\Response::clear
+	 * @covers Eve\Http\Response::setBody
+	 * @covers Eve\Http\Response::getBody
+	 * @covers Eve\Http\Response::clear
 	 */
 	public function testClearBody()
 	{
@@ -85,7 +85,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::setStatus
+	 * @covers Eve\Http\Response::setStatus
 	 */
 	public function testSetStatus()
 	{
@@ -95,7 +95,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::getStatus
+	 * @covers Eve\Http\Response::getStatus
 	 */
 	public function testGetStatus()
 	{
@@ -110,7 +110,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::isRedirect
+	 * @covers Eve\Http\Response::isRedirect
 	 */
 	public function testIsRedirect()
 	{
@@ -125,7 +125,7 @@ class ResponseTest extends PHPUnit_Framework_TestCase
 	}
 
 	/**
-	 * @covers Eve\Mvc\Response::__toString
+	 * @covers Eve\Http\Response::__toString
 	 */
 	public function testToString()
 	{
