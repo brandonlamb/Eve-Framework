@@ -45,10 +45,10 @@
 
 	<filter>
 		<whitelist addUncoveredFilesFromWhitelist="true">
-			<directory suffix=".php">framework</directory>
+			<directory suffix=".php">src/Eve</directory>
 			<exclude>
 				<group>exceptions</group>
-				<file>framework/autoload.php</file>
+				<file>src/Eve/autoload.php</file>
 			</exclude>
 		</whitelist>
 	</filter>

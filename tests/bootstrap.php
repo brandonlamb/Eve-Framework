@@ -30,5 +30,5 @@ try {
 }
 */
 
-require __DIR__ . '/../framework/autoload.php';
+require __DIR__ . '/../src/Eve/autoload.php';
 require __DIR__ . '/autoload.php';
