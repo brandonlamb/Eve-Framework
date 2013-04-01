@@ -4,266 +4,272 @@
  */
 namespace Eve;
 
-// Include phpmailer class which will then be extended
-#include_once 'Eve/Mail/phpmailer.php';
-
 #class Mail extends \PHPMailer
 class Mail
 {
-    /**
-     * Getter/setter for subject
-     * @param string $value
-     * @return string|$this
-     */
-    public function subject($value = null)
-    {
-        if (null !== $value) {
-            $this->Subject = $value;
+	/** @var PHPMailer */
+	protected $phpmailer;
 
-            return $this;
-        }
+	/**
+	 * @param \PHPMailer $phpmailer
+	 */
+	public function __construct($phpmailer = null)
+	{
+		if (null !== $phpmailer && $phpmailer instanceof \PHPMailer) {
+			$this->phpmailer = $phpmailer;
+		} else {
+			$this->phpmailer = new \PHPMailer();
+		}
+	}
 
-        return $this->Subject;
-    }
+	/**
+	 * Getter/setter for subject
+	 * @param string $value
+	 * @return string|$this
+	 */
+	public function subject($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->Subject = $value;
+			return $this;
+		}
 
-     /**
-      * Getter/setter for from address/name
-      * @param string $address
-      * @param string $name
-      * @return array|$this
-      */
-    public function from($address = null, $name = null, $auto = 1)
-    {
-        if (null !== $address) {
-            $this->SetFrom($address, $name, $auto);
+		return $this->phpmailer->Subject;
+	}
 
-            return $this;
-        }
+	 /**
+		* Getter/setter for from address/name
+		* @param string $address
+		* @param string $name
+		* @return array|$this
+		*/
+	public function from($address = null, $name = null, $auto = 1)
+	{
+		if (null !== $address) {
+			$this->phpmailer->SetFrom($address, $name, $auto);
+			return $this;
+		}
 
-        return array('email' => $this->From, 'name' => $this->FromName);
-    }
+		return array('email' => $this->phpmailer->From, 'name' => $this->phpmailer->FromName);
+	}
 
-     /**
-      * Getter/setter for reply to address/name
-      * @param string $address
-      * @param string $name
-      * @return array|$this
-      */
-    public function replyTo($address = null, $name = null)
-    {
-        if (null !== $address) {
-            $this->AddReplyTo($address, $name);
+	 /**
+		* Getter/setter for reply to address/name
+		* @param string $address
+		* @param string $name
+		* @return array|$this
+		*/
+	public function replyTo($address = null, $name = null)
+	{
+		if (null !== $address) {
+			$this->phpmailer->AddReplyTo($address, $name);
+			return $this;
+		}
 
-            return $this;
-        }
+		return $this->phpmailer->ReplyTo;
+	}
 
-        return $this->ReplyTo;
-    }
+	 /**
+		* Getter/setter for reply to address/name
+		* @param string $address
+		* @param string $name
+		* @return array|$this
+		*/
+	public function addTo($address = null, $name = null)
+	{
+		if (null !== $address) {
+			$this->phpmailer->AddAddress($address, $name);
+			return $this;
+		}
 
-     /**
-      * Getter/setter for reply to address/name
-      * @param string $address
-      * @param string $name
-      * @return array|$this
-      */
-    public function addTo($address = null, $name = null)
-    {
-        if (null !== $address) {
-            $this->AddAnAddress('to', $address, $name);
+		return $this->phpmailer->all_recipients;
+	}
 
-            return $this;
-        }
+	 /**
+		* Getter/setter for text body
+		* @param string $value
+		* @return string|$this
+		*/
+	public function bodyAlt($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->AltBody = $value;
+			return $this;
+		}
 
-        return $this->all_recipients;
-    }
+		return $this->phpmailer->AltBody;
+	}
 
-     /**
-      * Getter/setter for text body
-      * @param string $value
-      * @return string|$this
-      */
-    public function bodyAlt($value = null)
-    {
-        if (null !== $value) {
-            $this->AltBody = $value;
+	 /**
+		* Getter/setter for html body
+		* @param string $value
+		* @return string|$this
+		*/
+	public function bodyHtml($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->MsgHTML($value);
+			return $this;
+		}
 
-            return $this;
-        }
+		return $this->phpmailer->MsgHTML;
+	}
 
-        return $this->AltBody;
-    }
+	/**
+	 * Getter/setter for attachments
+	 * @param string $value
+	 */
+	public function attachment($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->AddAttachment($value);
+			return $this;
+		}
 
-     /**
-      * Getter/setter for html body
-      * @param string $value
-      * @return string|$this
-      */
-    public function bodyHtml($value = null)
-    {
-        if (null !== $value) {
-            $this->MsgHTML($value);
+		return $this->phpmailer->attachment;
+	}
 
-            return $this;
-        }
+	 /**
+		* Getter/setter for host
+		* @param string $value
+		* @return string|$this
+		*/
+	public function host($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->Host = $value;
+			return $this;
+		}
 
-        return $this->MsgHTML;
-    }
+		return $this->phpmailer->Host;
+	}
 
-    /**
-     * Getter/setter for attachments
-     * @param string $value
-     */
-    public function attachment($value = null)
-    {
-        if (null !== $value) {
-            $this->AddAttachment($value);
+	 /**
+		* Getter/setter for smtp auth
+		* @param string $value
+		* @return string|$this
+		*/
+	public function auth($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->SMTPAuth = (bool) $value;
+			return $this;
+		}
 
-            return $this;
-        }
+		return $this->phpmailer->SMTPAuth;
+	}
 
-        return $this->attachment;
-    }
+	 /**
+		* Getter/setter for smtp secure
+		* @param string $value
+		* @return string|$this
+		*/
+	public function secure($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->SMTPSecure = $value;
+			return $this;
+		}
 
-     /**
-      * Getter/setter for host
-      * @param string $value
-      * @return string|$this
-      */
-    public function host($value = null)
-    {
-        if (null !== $value) {
-            $this->Host = $value;
+		return $this->phpmailer->SMTPSecure;
+	}
 
-            return $this;
-        }
+	 /**
+		* Getter/setter for smtp debug
+		* @param string $value
+		* @return string|$this
+		*/
+	public function debug($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->SMTPDebug = $value;
+			return $this;
+		}
 
-        return $this->Host;
-    }
+		return $this->phpmailer->SMTPDebug;
+	}
 
-     /**
-      * Getter/setter for smtp auth
-      * @param string $value
-      * @return string|$this
-      */
-    public function auth($value = null)
-    {
-        if (null !== $value) {
-            $this->SMTPAuth = (bool) $value;
+	 /**
+		* Getter/setter for port
+		* @param string $value
+		* @return string|$this
+		*/
+	public function port($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->Port = (int) $value;
+			return $this;
+		}
 
-            return $this;
-        }
+		return $this->phpmailer->Port;
+	}
 
-        return $this->SMTPAuth;
-    }
+	 /**
+		* Getter/setter for username
+		* @param string $value
+		* @return string|$this
+		*/
+	public function username($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->Username = $value;
+			return $this;
+		}
 
-     /**
-      * Getter/setter for smtp secure
-      * @param string $value
-      * @return string|$this
-      */
-    public function secure($value = null)
-    {
-        if (null !== $value) {
-            $this->SMTPSecure = $value;
+		return $this->phpmailer->Username;
+	}
 
-            return $this;
-        }
+	 /**
+		* Getter/setter for password
+		* @param string $value
+		* @return string|$this
+		*/
+	public function password($value = null)
+	{
+		if (null !== $value) {
+			$this->phpmailer->Password = $value;
+			return $this;
+		}
 
-        return $this->SMTPSecure;
-    }
+		return $this->phpmailer->Password;
+	}
 
-     /**
-      * Getter/setter for smtp debug
-      * @param string $value
-      * @return string|$this
-      */
-    public function debug($value = null)
-    {
-        if (null !== $value) {
-            $this->SMTPDebug = $value;
+	 /**
+		* Set mode
+		* @param string $value
+		* @return $this
+		*/
+	public function mode($value)
+	{
+		switch (strtolower($value)) {
+			case 'sendmail':
+				$this->phpmailer->IsSendmail();
+				break;
+			case 'smtp':
+				$this->phpmailer->IsSMTP();
+				break;
+			case 'qmail':
+				$this->phpmailer->IsQmail();
+				break;
+			case 'gmail':
+				$this->phpmailer->IsSMTP();
+				$this->phpmailer->host('smtp.gmail.com');
+				$this->phpmailer->port(587);
+				$this->phpmailer->secure('tls');
+				break;
+			default:
+				$this->phpmailer->IsSendmail();
+				break;
+		}
 
-            return $this;
-        }
+		return $this;
+	}
 
-        return $this->SMTPDebug;
-    }
-
-     /**
-      * Getter/setter for port
-      * @param string $value
-      * @return string|$this
-      */
-    public function port($value = null)
-    {
-        if (null !== $value) {
-            $this->Port = (int) $value;
-
-            return $this;
-        }
-
-        return $this->Port;
-    }
-
-     /**
-      * Getter/setter for username
-      * @param string $value
-      * @return string|$this
-      */
-    public function username($value = null)
-    {
-        if (null !== $value) {
-            $this->Username = $value;
-
-            return $this;
-        }
-
-        return $this->Username;
-    }
-
-     /**
-      * Getter/setter for password
-      * @param string $value
-      * @return string|$this
-      */
-    public function password($value = null)
-    {
-        if (null !== $value) {
-            $this->Password = $value;
-
-            return $this;
-        }
-
-        return $this->Password;
-    }
-
-     /**
-      * Set mode
-      * @param string $value
-      * @return $this
-      */
-    public function mode($value)
-    {
-        switch (strtolower($value)) {
-            case 'sendmail':
-                $this->IsSendmail();
-                break;
-            case 'smtp':
-                $this->IsSMTP();
-                break;
-            case 'qmail':
-                $this->IsQmail();
-                break;
-            case 'gmail':
-                $this->IsSMTP();
-                $this->host('smtp.gmail.com');
-                $this->port(587);
-                $this->secure('tls');
-                break;
-            default:
-                $this->IsSendmail();
-                break;
-        }
-
-        return $this;
-    }
+	/**
+	 * Passthru to phpmailer
+	 */
+	public function __call($method, $args)
+	{
+		return call_user_func_array(array($this->phpmailer, $method), $args);
+	}
 }
