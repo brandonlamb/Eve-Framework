@@ -4,6 +4,8 @@ namespace Eve;
 
 class SessionWrapper
 {
+	const FLASH_KEY = 'SessionFlashes';
+
 	public $started = false;
 	private $ssid;
 	private $initime;
@@ -21,6 +23,8 @@ class SessionWrapper
 		$this->initime = time();
 		$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		$this->clientip = $_SERVER['REMOTE_ADDR'];
+
+		!isset($_SESSION[static::FLASH_KEY]) && $_SESSION[static::FLASH_KEY] = array();
 	}
 
 	/**
@@ -150,5 +154,67 @@ class SessionWrapper
 	{
 		$_SESSION = array();
 		session_destroy();
+	}
+
+	/**
+	 * Set a session flash
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function setFlash($key, $value = null)
+	{
+		$_SESSION[static::FLASH_KEY][$key] = $value;
+	}
+
+	/**
+	 * Get session flash, optionally clear the flash
+	 * @param string $key
+	 * @param bool $clear
+	 * @return mixed
+	 */
+	public function & getFlash($key, $clear = true)
+	{
+		$value = isset($_SESSION[static::FLASH_KEY][$key]) ? $_SESSION[static::FLASH_KEY][$key] : null;
+		$clear === true && $this->clearFlash($key);
+		return $value;
+	}
+
+	/**
+	 * Get all session flashes, optionally clear the flashes
+	 * @param bool $clear
+	 * @return array
+	 */
+	public function & getFlashes($clear = true)
+	{
+		$value = isset($_SESSION[static::FLASH_KEY]) ? $_SESSION[static::FLASH_KEY] : array();
+		$clear === true && $this->clearFlashes();
+		return $value;
+	}
+
+	/**
+	 * Clear a flash
+	 * @param string $key
+	 * @return bool
+	 */
+	public function clearFlash($key)
+	{
+		if (!isset($_SESSION[static::FLASH_KEY][$key])) {
+			return false;
+		}
+		unset($_SESSION[static::FLASH_KEY][$key]);
+		return true;
+	}
+
+	/**
+	 * Clear all flashes
+	 * @return bool
+	 */
+	public function clearFlashes()
+	{
+		if (!isset($_SESSION[static::FLASH_KEY]) {
+			return false;
+		}
+		$_SESSION[static::FLASH_KEY] = array();
+		return true;
 	}
 }

@@ -8,7 +8,7 @@ namespace Eve\Util;
 class Date extends \DateTime
 {
     // Helpful date/time formats
-    protected $_formats = array(
+    protected $formats = array(
         'datetime'	=> 'Y-m-d H:i:s',
         'date'		=> 'Y-m-d',
         'time'		=> 'g:i a',
@@ -67,8 +67,8 @@ class Date extends \DateTime
      */
     public function format($format = 'U')
     {
-        if (array_key_exists($format, $this->_formats)) {
-            $format = $this->_formats[$format];
+        if (array_key_exists($format, $this->formats)) {
+            $format = $this->formats[$format];
         }
 
         return parent::format($format);
@@ -83,7 +83,7 @@ class Date extends \DateTime
      */
     public static function get($format = 'U', $date = 'NOW')
     {
-        $date = new self($date);
+        $date = new static($date);
 
         return $date->format($format);
     }
