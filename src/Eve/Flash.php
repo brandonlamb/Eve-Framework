@@ -6,10 +6,9 @@
  */
 namespace Eve;
 
-// Namespace aliases
-use Eve\Mvc as Mvc;
+use Eve\Mvc\Component;
 
-class Flash extends Mvc\Component
+class Flash extends Component
 {
     const FLASH_KEY_PREFIX = 'Eve.flash.';
     const FLASH_COUNTERS = 'Eve.flashcounters';
@@ -25,7 +24,7 @@ class Flash extends Mvc\Component
      */
     public $autoUpdateFlash = true;
 
-    private $_keyPrefix;
+    private $keyPrefix;
 #	private $_access = array();
 
     /**
@@ -145,10 +144,10 @@ class Flash extends Mvc\Component
      */
     public function getStateKeyPrefix()
     {
-        if ($this->_keyPrefix !== null) {
-            return $this->_keyPrefix;
+        if ($this->keyPrefix !== null) {
+            return $this->keyPrefix;
         } else {
-            return $this->_keyPrefix = md5('Eve.' . get_class($this) . '.');
+            return $this->keyPrefix = md5('Eve.' . get_class($this) . '.');
         }
     }
 
@@ -157,7 +156,7 @@ class Flash extends Mvc\Component
      */
     public function setStateKeyPrefix($value)
     {
-        $this->_keyPrefix = $value;
+        $this->keyPrefix = $value;
     }
 
     /**
@@ -245,7 +244,7 @@ class Flash extends Mvc\Component
     public function getFlashes($delete = true)
     {
         $flashes = array();
-        $prefix = $this->getStateKeyPrefix() . self::FLASH_KEY_PREFIX;
+        $prefix = $this->getStateKeyPrefix() . static::FLASH_KEY_PREFIX;
         $keys = array_keys($_SESSION);
         $n = strlen($prefix);
         foreach ($keys as $key) {
@@ -258,7 +257,7 @@ class Flash extends Mvc\Component
         }
 
         if ($delete) {
-            $this->setState(self::FLASH_COUNTERS,array());
+            $this->setState(static::FLASH_COUNTERS,array());
         }
 
         return $flashes;
@@ -275,7 +274,7 @@ class Flash extends Mvc\Component
      */
     public function getFlash($key, $defaultValue = null, $delete = true)
     {
-        $value = $this->getState(self::FLASH_KEY_PREFIX . $key, $defaultValue);
+        $value = $this->getState(static::FLASH_KEY_PREFIX . $key, $defaultValue);
         if ($delete) {
             $this->setFlash($key,null);
         }
@@ -293,14 +292,14 @@ class Flash extends Mvc\Component
      */
     public function setFlash($key, $value, $defaultValue = null)
     {
-        $this->setState(self::FLASH_KEY_PREFIX . $key, $value, $defaultValue);
-        $counters = $this->getState(self::FLASH_COUNTERS, array());
+        $this->setState(static::FLASH_KEY_PREFIX . $key, $value, $defaultValue);
+        $counters = $this->getState(static::FLASH_COUNTERS, array());
         if ($value === $defaultValue) {
             unset($counters[$key]);
         } else {
             $counters[$key] = 0;
         }
-        $this->setState(self::FLASH_COUNTERS, $counters, array());
+        $this->setState(static::FLASH_COUNTERS, $counters, array());
     }
 
     /**
@@ -319,7 +318,7 @@ class Flash extends Mvc\Component
     protected function saveIdentityStates()
     {
         $states = array();
-        foreach ($this->getState(self::STATES_VAR, array()) as $name => $dummy) {
+        foreach ($this->getState(static::STATES_VAR, array()) as $name => $dummy) {
             $states[$name]=$this->getState($name);
         }
 
@@ -339,7 +338,7 @@ class Flash extends Mvc\Component
                 $names[$name] = true;
             }
         }
-        $this->setState(self::STATES_VAR, $names);
+        $this->setState(static::STATES_VAR, $names);
     }
 
     /**
@@ -349,18 +348,18 @@ class Flash extends Mvc\Component
      */
     protected function updateFlash()
     {
-        $counters=$this->getState(self::FLASH_COUNTERS);
+        $counters=$this->getState(static::FLASH_COUNTERS);
         if (!is_array($counters)) {
             return;
         }
         foreach ($counters as $key => $count) {
             if ($count) {
                 unset($counters[$key]);
-                $this->setState(self::FLASH_KEY_PREFIX . $key, null);
+                $this->setState(static::FLASH_KEY_PREFIX . $key, null);
             } else {
                 $counters[$key]++;
             }
         }
-        $this->setState(self::FLASH_COUNTERS, $counters, array());
+        $this->setState(static::FLASH_COUNTERS, $counters, array());
     }
 }
