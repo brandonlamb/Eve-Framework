@@ -1,6 +1,6 @@
 <?php
 
-namespace Eve;
+namespace Eve\Session;
 
 class SessionWrapper
 {
