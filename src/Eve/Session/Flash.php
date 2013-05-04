@@ -4,7 +4,7 @@
  *
  * @todo Fix short variable names like $n
  */
-namespace Eve;
+namespace Eve\Session;
 
 use Eve\Mvc\Component;
 
