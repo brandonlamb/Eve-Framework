@@ -25,7 +25,7 @@ class Flash extends Component
     public $autoUpdateFlash = true;
 
     private $keyPrefix;
-#	private $_access = array();
+#	private $_access = [];
 
     /**
      * PHP magic method.
@@ -243,7 +243,7 @@ class Flash extends Component
      */
     public function getFlashes($delete = true)
     {
-        $flashes = array();
+        $flashes = [];
         $prefix = $this->getStateKeyPrefix() . static::FLASH_KEY_PREFIX;
         $keys = array_keys($_SESSION);
         $n = strlen($prefix);
@@ -257,7 +257,7 @@ class Flash extends Component
         }
 
         if ($delete) {
-            $this->setState(static::FLASH_COUNTERS,array());
+            $this->setState(static::FLASH_COUNTERS,[]);
         }
 
         return $flashes;
@@ -293,13 +293,13 @@ class Flash extends Component
     public function setFlash($key, $value, $defaultValue = null)
     {
         $this->setState(static::FLASH_KEY_PREFIX . $key, $value, $defaultValue);
-        $counters = $this->getState(static::FLASH_COUNTERS, array());
+        $counters = $this->getState(static::FLASH_COUNTERS, []);
         if ($value === $defaultValue) {
             unset($counters[$key]);
         } else {
             $counters[$key] = 0;
         }
-        $this->setState(static::FLASH_COUNTERS, $counters, array());
+        $this->setState(static::FLASH_COUNTERS, $counters, []);
     }
 
     /**
@@ -317,8 +317,8 @@ class Flash extends Component
      */
     protected function saveIdentityStates()
     {
-        $states = array();
-        foreach ($this->getState(static::STATES_VAR, array()) as $name => $dummy) {
+        $states = [];
+        foreach ($this->getState(static::STATES_VAR, []) as $name => $dummy) {
             $states[$name]=$this->getState($name);
         }
 
@@ -331,7 +331,7 @@ class Flash extends Component
      */
     protected function loadIdentityStates($states)
     {
-        $names = array();
+        $names = [];
         if (is_array($states)) {
             foreach ($states as $name => $value) {
                 $this->setState($name, $value);
@@ -360,6 +360,6 @@ class Flash extends Component
                 $counters[$key]++;
             }
         }
-        $this->setState(static::FLASH_COUNTERS, $counters, array());
+        $this->setState(static::FLASH_COUNTERS, $counters, []);
     }
 }

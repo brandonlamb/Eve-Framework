@@ -24,7 +24,7 @@ class SessionWrapper
 		$this->useragent = $_SERVER['HTTP_USER_AGENT'];
 		$this->clientip = $_SERVER['REMOTE_ADDR'];
 
-		!isset($_SESSION[static::FLASH_KEY]) && $_SESSION[static::FLASH_KEY] = array();
+		!isset($_SESSION[static::FLASH_KEY]) && $_SESSION[static::FLASH_KEY] = [];
 	}
 
 	/**
@@ -152,7 +152,7 @@ class SessionWrapper
 	 */
 	public function destroy()
 	{
-		$_SESSION = array();
+		$_SESSION = [];
 		session_destroy();
 	}
 }
