@@ -2,7 +2,7 @@
 
 namespace Eve\Session;
 
-class SessionWrapper
+class Wrapper
 {
 	const FLASH_KEY = 'SessionFlashes';
 

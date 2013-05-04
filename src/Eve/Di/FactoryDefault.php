@@ -15,7 +15,7 @@ class FactoryDefault extends Container
         $this->set('response', '\\Eve\\Http\\Response');
         $this->set('request', '\\Eve\\Http\\Request');
         $this->set('router', '\\Eve\\Mvc\\Router');
-        $this->set('session', '\\Eve\\Session\\SessionWrapper');
+        $this->set('session', '\\Eve\\Session\\Wrapper');
         $this->set('view', '\\Eve\\Mvc\\View');
 
         $this->set('loader', function () {
