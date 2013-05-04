@@ -1,7 +1,9 @@
 <?php
-namespace Eve\DI;
+namespace Eve\Di;
 
-class FactoryDefault extends \Eve\DI
+use Eve\Di\Container;
+
+class FactoryDefault extends Container
 {
     public function __construct($config = null)
     {

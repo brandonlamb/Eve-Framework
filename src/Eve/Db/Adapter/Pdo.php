@@ -1,22 +1,22 @@
 <?php
-namespace Eve\Database;
+namespace Eve\Db\Adapter;
 
 class Pdo extends \PDO
 {
 	/**
 	 * Constructor
 	 *
-	 * @param  string $type
-	 * @param  string $dsn
-	 * @param  string $username
-	 * @param  string $password
-	 * @param  bool   $noerrors
+	 * @param string $type
+	 * @param string $dsn
+	 * @param string $username
+	 * @param string $password
+	 * @param array $options
 	 * @return void
 	 */
-	public function __construct($dsn, $username, $password, array $options = array())
+	public function __construct($dsn, $username, $password, array $options = [])
 	{
 		try {
-			parent::__construct($dsn, $username, $password);
+			parent::__construct($dsn, $username, $password, $options);
 			$this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		} catch (\PDOException $e) {
 			throw new \RuntimeException($e->getMessage());
@@ -30,18 +30,13 @@ class Pdo extends \PDO
 	 * @param  array  $parameters
 	 * @return array
 	 */
-	public function fetchAll($query, array $parameters = array())
+	public function fetchAll($query, array $parameters = [], $mode = \PDO::FETCH_ASSOC)
 	{
 		$stmt = $this->prepareExecute($query, $parameters);
-
-		// Fetch rows as associative array
-		$rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-		// Close cursor and delete $stmt variable
+		$rows = $stmt->fetchAll($mode);
 		$stmt->closeCursor();
 		unset($stmt);
 
-		// Return rows array
 		return $rows;
 	}
 
@@ -52,21 +47,16 @@ class Pdo extends \PDO
 	 * @param  array      $parameters
 	 * @return array|bool
 	 */
-	public function fetchOne($query, array $parameters = array())
+	public function fetchOne($query, array $parameters = [], $mode = \PDO::FETCH_ASSOC)
 	{
 		$stmt = $this->prepareExecute($query, $parameters);
-
-		// Fetch rows as associative array
-		$row = $stmt->fetch(\PDO::FETCH_ASSOC);
+		$row = $stmt->fetch($mode);
 		if (!is_array($row)) {
 			$row = false;
 		}
-
-		// Close cursor and delete $stmt variable
 		$stmt->closeCursor();
 		unset($stmt);
 
-		// Return rows array
 		return $row;
 	}
 
@@ -78,13 +68,11 @@ class Pdo extends \PDO
 	 * @param  int    $column
 	 * @return mixed
 	 */
-	public function fetchColumn($query, array $parameters = array(), $column = 0)
+	public function fetchColumn($query, array $parameters = [], $column = 0)
 	{
 		$column = abs((int) $column);
-
 		$stmt = $this->prepareExecute($query, $parameters);
 		$fetchedColumn = $stmt->fetchColumn($column);
-
 		$stmt->closeCursor();
 		unset($stmt);
 
@@ -98,10 +86,9 @@ class Pdo extends \PDO
 	 * @param  array  $parameters
 	 * @return int
 	 */
-	public function modify($query, array $parameters = array())
+	public function modify($query, array $parameters = [])
 	{
 		$stmt = $this->prepareExecute($query, $parameters);
-
 		return $stmt->rowCount();
 	}
 
@@ -112,21 +99,10 @@ class Pdo extends \PDO
 	 * @param  array          $parameters
 	 * @return PDOStatement
 	 */
-	protected function prepareExecute($query, $parameters = array())
+	protected function prepareExecute($query, array $parameters = [])
 	{
 		$stmt = $this->prepare($query);
 		$stmt->execute($parameters);
 		return $stmt;
-	}
-
-	/**
-	 * Prepare an sql statement
-	 * @param string $sql
-	 * @param array $options
-	 * @return PDOStatement
-	 */
-	public function prepare($sql, $options = array())
-	{
-		return parent::prepare($sql, $options);
 	}
 }

@@ -1,5 +1,7 @@
 <?php
-namespace Eve\DI;
+namespace Eve\Di;
+
+use Eve\Di\DiInterface;
 
 trait InjectableTrait
 {    /**
@@ -35,7 +37,7 @@ trait InjectableTrait
 	 * @param  Eve\DiInterface $di
 	 * @return Injectable
 	 */
-	public final function setDI(\Eve\DiInterface $di)
+	public final function setDI(DiInterface $di)
 	{
 		$this->di = $di;
 		return $this;

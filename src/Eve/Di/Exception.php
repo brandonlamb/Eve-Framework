@@ -1,3 +1,3 @@
 <?php
-namespace Eve\DI;
+namespace Eve\Di;
 class Exception extends \Exception {}

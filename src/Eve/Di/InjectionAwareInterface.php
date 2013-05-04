@@ -1,6 +1,7 @@
 <?php
-namespace Eve\DI;
-use Eve\DiInterface as DiInterface;
+namespace Eve\Di;
+
+use Eve\Di\DiInterface as DiInterface;
 
 interface InjectionAwareInterface
 {

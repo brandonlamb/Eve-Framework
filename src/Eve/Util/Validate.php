@@ -1,5 +1,5 @@
 <?php
-namespace Eve;
+namespace Eve\Validation;
 
 class Validate
 {
