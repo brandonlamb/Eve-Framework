@@ -1,20 +1,17 @@
 <?php
-namespace Eve;
+namespace Eve\Logger;
 
-// Namespace aliases
-use Eve\Mvc as Mvc;
-
-class Logger extends Mvc\Component
+class Logger
 {
     /**
      * @var int Log level
      */
-    protected $_log = 0;
+    protected $level = 0;
 
     /**
      * @var array Log levels
      */
-    protected $_levels = array(
+    protected $levels = array(
         0 => 'FATAL',
         1 => 'ERROR',
         2 => 'WARN',
@@ -25,7 +22,7 @@ class Logger extends Mvc\Component
     /**
      * @var string Absolute path to log directory with trailing slash
      */
-    protected $_directory;
+    protected $directory;
 
     /**
      * Constructor
@@ -47,7 +44,7 @@ class Logger extends Mvc\Component
      */
     public function setDirectory($directory)
     {
-        $this->_directory = ($directory) ? realpath(rtrim($directory, '/') . '/') : false;
+        $this->directory = ($directory) ? realpath(rtrim($directory, '/') . '/') : false;
     }
 
     /**
@@ -57,7 +54,7 @@ class Logger extends Mvc\Component
      */
     public function getDirectory()
     {
-        return $this->_directory;
+        return (string) $this->directory;
     }
 
     /**
@@ -71,9 +68,9 @@ class Logger extends Mvc\Component
     {
         $level = (int) $level;
         if ($level >= 0 && $level <= 4) {
-            $this->_level = $level;
+            $this->level = $level;
         } else {
-            throw new InvalidArgumentException('Invalid Log Level. Must be one of: 0, 1, 2, 3, 4.');
+            throw new \InvalidArgumentException('Invalid Log Level. Must be one of: 0, 1, 2, 3, 4.');
         }
     }
 
@@ -84,7 +81,7 @@ class Logger extends Mvc\Component
      */
     public function getLevel()
     {
-        return (int) $this->_level;
+        return (int) $this->level;
     }
 
     /**
@@ -95,7 +92,7 @@ class Logger extends Mvc\Component
      */
     public function debug($data)
     {
-        $this->_log($data, 4);
+        $this->log($data, 4);
     }
 
     /**
@@ -106,7 +103,7 @@ class Logger extends Mvc\Component
      */
     public function info($data)
     {
-        $this->_log($data, 3);
+        $this->log($data, 3);
     }
 
     /**
@@ -117,7 +114,7 @@ class Logger extends Mvc\Component
      */
     public function warn($data)
     {
-        $this->_log($data, 2);
+        $this->log($data, 2);
     }
 
     /**
@@ -128,7 +125,7 @@ class Logger extends Mvc\Component
      */
     public function error($data)
     {
-        $this->_log($data, 1);
+        $this->log($data, 1);
     }
 
     /**
@@ -139,7 +136,7 @@ class Logger extends Mvc\Component
      */
     public function fatal($data)
     {
-        $this->_log($data, 0);
+        $this->log($data, 0);
     }
 
     /**
@@ -160,19 +157,19 @@ class Logger extends Mvc\Component
      * @return void
      * @throws RuntimeException If log directory not found or not writable
      */
-    protected function _log($data, $level)
+    protected function log($data, $level)
     {
         $dir = $this->getDirectory();
         if ($dir == false || !is_dir($dir)) {
-            throw new RuntimeException("Log directory '$dir' invalid.");
+            throw new \RuntimeException("Log directory '$dir' invalid.");
         }
 
         if (!is_writable($dir)) {
-            throw new RuntimeException("Log directory '$dir' not writable.");
+            throw new \RuntimeException("Log directory '$dir' not writable.");
         }
 
         if ($level <= $this->getLevel()) {
-            $this->_write(sprintf("[%s] %s - %s\r\n", $this->_levels[$level], date('c'), (string) $data));
+            $this->write(sprintf("[%s] %s - %s\r\n", $this->levels[$level], date('c'), (string) $data));
         }
     }
 
@@ -182,8 +179,8 @@ class Logger extends Mvc\Component
      * @param string Log message
      * @return void
      */
-    protected function _write($data)
+    protected function write($data)
     {
-        @file_put_contents($this->getFile(), $data, FILE_APPEND | LOCK_EX);
+        @file_put_contents($this->getFile(), $data, \FILE_APPEND | \LOCK_EX);
     }
 }
