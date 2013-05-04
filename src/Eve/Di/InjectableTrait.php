@@ -1,7 +1,9 @@
 <?php
 namespace Eve\Di;
 
-use Eve\Di\DiInterface;
+use Eve\Di\DiInterface,
+	Eve\Di\Container as DiContainer,
+	Eve\Events\Manager as EventsManager;
 
 trait InjectableTrait
 {    /**
@@ -51,7 +53,7 @@ trait InjectableTrait
 	public final function getDI()
 	{
 		if (null === $this->di) {
-			$this->di = \Eve\DI::getDefault();
+			$this->di = DiContainer::getDefault();
 		}
 		return $this->di;
 	}
@@ -59,10 +61,10 @@ trait InjectableTrait
 	/**
 	 * Set the events manager
 	 *
-	 * @param Events\Manager $eventsManager
+	 * @param Eve\Events\Manager $eventsManager
 	 * @return Injectable
 	 */
-	public final function setEventsManager(\Eve\Events\Manager $eventsManager)
+	public final function setEventsManager(EventsManager $eventsManager)
 	{
 		$this->eventsManager = $eventsManager;
 		return $this;

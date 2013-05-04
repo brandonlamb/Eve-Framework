@@ -4,7 +4,7 @@ namespace Eve\Di;
 class Container implements DiInterface
 {
 	/**
-	 * @var DI
+	 * @var Di
 	 */
 	protected static $defaultInstance;
 
@@ -30,7 +30,7 @@ class Container implements DiInterface
 	 * @param array $container
 	 * @param array $sharedContainer
 	 * @param array $paramContainer
-	 * @return DI
+	 * @return Di
 	 */
 	public function __construct($container = null, $sharedContainer = null, $paramContainer = null)
 	{
@@ -70,14 +70,14 @@ class Container implements DiInterface
 	 *
 	 * @param string $alias
 	 * @param mixed $config
-	 * @throws DI\Exception
+	 * @throws Di\Exception
 	 * @return DiInterface
 	 */
 	public function set($alias, $config)
 	{
 		// If config is an array, verify it has a required className key
 		if (is_array($config) && !isset($config['className'])) {
-			throw new DI\Exception('Must contain a className key.');
+			throw new Exception('Must contain a className key.');
 		}
 
 		$this->container[$alias] = $config;
@@ -90,14 +90,14 @@ class Container implements DiInterface
 	 *
 	 * @param string $alias
 	 * @param mixed $config
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return DiInterface
 	 */
 	public function setShared($alias, $config)
 	{
 		// If config is an array, verify it has a required className key
 		if (is_array($config) && !isset($config['className'])) {
-			throw new DI\Exception('Must contain a className key.');
+			throw new Exception('Must contain a className key.');
 		}
 
 		$this->sharedContainer[$alias] = $config;
@@ -121,13 +121,13 @@ class Container implements DiInterface
 	 * Get an object from the container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function get($alias)
 	{
 		if (!isset($this->container[$alias])) {
-			throw new DI\Exception($alias . ' is not defined.');
+			throw new Exception($alias . ' is not defined.');
 		}
 
 		// If the object is a string, return new object using the value as the class name
@@ -137,12 +137,12 @@ class Container implements DiInterface
 
 		// If the object is an array, return a new object using the defined class name
 		// and pass in the object as the constructor parameter. If the class is an instance
-		// of a DI\InjectionAwareInterface then set the DI container for the object
+		// of a InjectionAwareInterface then set the Di container for the object
 		if (is_array($this->container[$alias])) {
 			$className = $this->container[$alias]['className'];
 			$instance = new $className($this->container[$alias]);
-			if ($instance instanceof DI\InjectionAwareInterface) {
-				$instance->setDI($this);
+			if ($instance instanceof InjectionAwareInterface) {
+				$instance->setDi($this);
 			}
 
 			return $instance;
@@ -180,13 +180,13 @@ class Container implements DiInterface
 	 * Get an object from the param container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function getParam($alias)
 	{
 		if (!isset($this->paramContainer[$alias])) {
-			throw new DI\Exception('Parameter not set: ' . $alias);
+			throw new Exception('Parameter not set: ' . $alias);
 		}
 
 		// Return the parameter
@@ -197,13 +197,13 @@ class Container implements DiInterface
 	 * Remove an object from the container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return DiInterface
 	 */
 	public function remove($alias)
 	{
 		if (!isset($this->container[$alias])) {
-			throw new DI\Exception($alias . ' is not defined.');
+			throw new Exception($alias . ' is not defined.');
 		}
 
 		unset($this->container[$alias]);
@@ -212,7 +212,7 @@ class Container implements DiInterface
 	}
 
 	/**
-	 * Set the default DI container to return by getDefault()
+	 * Set the default Di container to return by getDefault()
 	 *
 	 * @param DiInterface $di
 	 * @return DiInterface
@@ -224,7 +224,7 @@ class Container implements DiInterface
 	}
 
 	/**
-	 * Returns the default DI container instance, or if one was not created
+	 * Returns the default Di container instance, or if one was not created
 	 * then created a new instance and set the default
 	 *
 	 * @return DiInterface

@@ -9,12 +9,14 @@
  * @version 0.1.0
  */
 namespace Eve\Mvc;
-use Eve\DI\InjectionAwareInterface;
-use Eve\Events\EventsAwareInterface;
+
+use Eve\Di\InjectionAwareInterface,
+	Eve\Di\InjectableTrait,
+	Eve\Events\EventsAwareInterface;
 
 class View implements InjectionAwareInterface, EventsAwareInterface
 {
-	use \Eve\DI\InjectableTrait;
+	use InjectableTrait;
 
 	const LEVEL_NO_RENDER		= 0;
 	const LEVEL_ACTION_VIEW		= 1;

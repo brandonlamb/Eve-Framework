@@ -1,10 +1,13 @@
 <?php
 namespace Eve\Mvc;
 
+use Eve\Di\DiInterface,
+	Eve\Di\FactoryDefault;
+
 abstract class AbstractApplication
 {
 	/**
-	 * @var Eve\DI
+	 * @var Eve\Di
 	 */
 	private $di;
 
@@ -14,7 +17,7 @@ abstract class AbstractApplication
 	 * @param  Eve\DiInterface      $di
 	 * @return Application
 	 */
-	final public function setDI(\Eve\DiInterface $di)
+	final public function setDI(DiInterface $di)
 	{
 		$this->di = $di;
 
@@ -24,12 +27,12 @@ abstract class AbstractApplication
 	/**
 	 * Get the DI container object or create a new instance if one is not set
 	 *
-	 * @return \Eve\DiInterface
+	 * @return DiInterface
 	 */
 	final public function getDI()
 	{
 		if (null === $this->di) {
-			$this->di = new \Eve\DI\FactoryDefault();
+			$this->di = new FactoryDefault();
 		}
 
 		return $this->di;

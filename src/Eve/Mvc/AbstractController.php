@@ -1,11 +1,13 @@
 <?php
 namespace Eve\Mvc;
-use Eve\DI\InjectionAwareInterface;
-use Eve\Events\EventsAwareInterface;
+
+use Eve\Di\InjectionAwareInterface,
+	Eve\Di\InjectableTrait,
+	Eve\Events\EventsAwareInterface;
 
 abstract class AbstractController implements ControllerInterface, InjectionAwareInterface, EventsAwareInterface
 {
-	use \Eve\DI\InjectableTrait;
+	use InjectableTrait;
 
     public function init() {}
     public function beforeDispatch() {}

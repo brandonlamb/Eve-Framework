@@ -5,12 +5,14 @@
  * @package Eve
  */
 namespace Eve\Mvc;
-use Eve\DI\InjectionAwareInterface;
-use Eve\Events\EventsAwareInterface;
+
+use Eve\Di\InjectionAwareInterface,
+	Eve\Di\InjectableTrait,
+	Eve\Events\EventsAwareInterface;
 
 class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 {
-	use \Eve\DI\InjectableTrait;
+	use InjectableTrait;
 
 	const MAX_DISPATCH_LOOPS = 5;
 

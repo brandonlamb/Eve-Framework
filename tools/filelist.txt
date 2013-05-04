@@ -1,9 +1,9 @@
 ../src/Eve/Loader.php
-../src/Eve/DI.php
-../src/Eve/DI/FactoryDefault.php
-../src/Eve/DI/InjectableTrait.php
-../src/Eve/DI/InjectionAwareInterface.php
-../src/Eve/DiInterface.php
+../src/Eve/Di/Container.php
+../src/Eve/Di/FactoryDefault.php
+../src/Eve/Di/InjectableTrait.php
+../src/Eve/Di/InjectionAwareInterface.php
+../src/Eve/Di/DiInterface.php
 ../src/Eve/Events/EventsAwareInterface.php
 ../src/Eve/Http/Request.php
 ../src/Eve/Http/Response.php

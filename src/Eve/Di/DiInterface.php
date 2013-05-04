@@ -1,5 +1,5 @@
 <?php
-namespace Eve;
+namespace Eve\Di;
 
 interface DiInterface
 {
@@ -8,7 +8,7 @@ interface DiInterface
 	 *
 	 * @param string $alias
 	 * @param mixed $config
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return DiInterface
 	 */
 	public function set($alias, $config);
@@ -18,7 +18,7 @@ interface DiInterface
 	 *
 	 * @param string $alias
 	 * @param mixed $config
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return DiInterface
 	 */
 	public function setShared($alias, $config);
@@ -36,7 +36,7 @@ interface DiInterface
 	 * Get an object from the container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function get($alias);
@@ -53,7 +53,7 @@ interface DiInterface
 	 * Get an object from the param container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function getParam($alias);
@@ -62,7 +62,7 @@ interface DiInterface
 	 * Remove an object from the container
 	 *
 	 * @param string $alias
-	 * @throws DI\Exception
+	 * @throws Exception
 	 * @return DiInterface
 	 */
 	public function remove($alias);
