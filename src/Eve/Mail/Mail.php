@@ -2,7 +2,7 @@
 /**
  * @group exceptions
  */
-namespace Eve;
+namespace Eve\Mail;
 
 #class Mail extends \PHPMailer
 class Mail
