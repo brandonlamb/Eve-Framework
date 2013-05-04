@@ -1,5 +1,5 @@
 <?php
-namespace Eve;
+namespace Eve\Autoload;
 
 class Loader
 {
@@ -25,29 +25,24 @@ class Loader
     const MODE_DEBUG = 2;
 
     /**
-     * @var string
-     */
-    protected $fileExtension = '.php';
-
-    /**
-     * @var boolean
+     * @var bool
      */
     protected $includePathLookup = false;
 
     /**
      * @var array Class => Path entries
      */
-    protected $classPaths = array();
+    protected $classPaths = [];
 
     /**
      * @var array Namespace => Path entries
      */
-    protected $namespacePaths = array();
+    protected $namespacePaths = [];
 
     /**
      * @var array Extra directories to search for not found classes
      */
-    protected $dirPaths = array();
+    protected $dirPaths = [];
 
     /**
      * @var integer
@@ -57,121 +52,137 @@ class Loader
     /**
      * Define the autoloader work mode.
      *
-     * @param  integer       $mode Autoloader work mode.
-     * @return SplAutoLoader
+     * @param integer $mode Autoloader work mode.
+     * @return Loader
      */
     public function setMode($mode)
     {
+        $mode = (int) $mode;
         if ($mode & self::MODE_SILENT && $mode & self::MODE_NORMAL) {
             throw new \InvalidArgumentException(
                 sprintf('Cannot have %s working normally and silently at the same time!', __CLASS__)
             );
         }
         $this->mode = $mode;
-
         return $this;
-    }
-
-    /**
-     * Define the file extension of resource files in the path of this class loader.
-     *
-     * @param  string         $fileExtension
-     * @return SplClassLoader
-     */
-    public function setFileExtension($fileExtension)
-    {
-        $this->fileExtension = (string) $fileExtension;
-
-        return $this;
-    }
-
-    /**
-     * Retrieve the file extension of resource files in the path of this class loader.
-     *
-     * @return string
-     */
-    public function getFileExtension()
-    {
-        return $this->fileExtension;
     }
 
     /**
      * Turns on searching the include for class files. Allows easy loading installed PEAR packages.
      *
-     * @param  boolean        $includePathLookup
-     * @return SplClassLoader
+     * @param bool $includePathLookup
+     * @return Loader
      */
     public function setIncludePathLookup($includePathLookup)
     {
         $this->includePathLookup = (bool) $includePathLookup;
-
         return $this;
     }
 
     /**
      * Gets the base include path for all class files in the namespace of this class loader.
      *
-     * @return boolean
+     * @return bool
      */
     public function getIncludePathLookup()
     {
-        return $this->includePathLookup;
+        return (bool) $this->includePathLookup;
     }
 
     /**
      * Register this as an autoloader instance.
      *
-     * @param boolean Whether to prepend the autoloader or not in autoloader's list.
+     * @param bool Whether to prepend the autoloader or not in autoloader's list.
+     * @return Loader
      */
     public function register($prepend = false)
     {
-        spl_autoload_register(array($this, 'load'), true, $prepend);
+        spl_autoload_register([$this, 'load'], true, (bool) $prepend);
+        return $this;
     }
 
     /**
      * Unregister this autoloader instance.
+     * @return Loader
      */
     public function unregister()
     {
-        spl_autoload_unregister(array($this, 'load'));
+        spl_autoload_unregister([$this, 'load']);
+        return $this;
     }
 
     /**
-     * Register class paths
+     * Set all class paths
      *
-     * @param  array  $paths
+     * @param array $paths
      * @return Loader
      */
-    public function registerClasses(array $paths)
+    public function setClasses(array $paths)
     {
         $this->classPaths = $paths;
-
         return $this;
     }
 
     /**
-     * Register namespace paths
      *
-     * @param  array  $paths
+     * Adds file paths for class names to the existing exact mappings.
+     *
+     * @param array $paths An array of class-to-file mappings where the key
+     * is the class name and the value is the file path.
+     * @return Loader
+     *
+     */
+    public function addClasses(array $paths)
+    {
+        $this->classPaths = array_merge($this->classPaths, $paths);
+        return $this;
+    }
+
+    /**
+     * Set all namespace paths
+     *
+     * @param array $paths
      * @return Loader
      */
-    public function registerNamespaces(array $paths)
+    public function setNamespaces(array $paths)
+    {
+        $this->namespacePaths = $paths;
+        return $this;
+    }
+
+    /**
+     * Add namespace paths
+     *
+     * @param array $paths
+     * @return Loader
+     */
+    public function addNamespaces(array $paths)
     {
         $this->namespacePaths = array_merge($this->namespacePaths, $paths);
-
         return $this;
     }
 
     /**
-     * Register directory paths
+     * Set all directory paths
      *
-     * @param  array  $paths
+     * @param array $paths
      * @return Loader
      */
-    public function registerDirs(array $paths)
+    public function setDirs(array $paths)
+    {
+        $this->dirPaths = $paths;
+        return $this;
+    }
+
+    /**
+     * Add directory paths
+     *
+     * @param array $paths
+     * @return Loader
+     */
+    public function addDirs(array $paths)
     {
         $this->dirPaths = array_merge($this->dirPaths, $paths);
-
         return $this;
     }
 
@@ -223,14 +234,13 @@ class Loader
     /**
      * Transform resource name into its absolute resource path representation.
      *
-     * @param  string      $className
+     * @param string $className
      * @return string|bool Resource absolute path.
      */
     protected function getAbsolutePath($className)
     {
         // Check registered classes, if the path resolves then return it, otherwise reset relative path variable
         if (isset($this->classPaths[$className]) && ($absolutePath = stream_resolve_include_path($this->classPaths[$className])) !== false) {
-
             return $absolutePath;
         }
 
@@ -244,7 +254,7 @@ class Loader
             }
 
             // $resourcePaths should be array
-            !is_array($resourcePaths) && $resourcePaths = array((string) $resourcePaths);
+            !is_array($resourcePaths) && $resourcePaths = [(string) $resourcePaths];
 
             foreach ($resourcePaths as $resourcePath) {
                 if (($absolutePath = stream_resolve_include_path(rtrim($resourcePath, '/') . DIRECTORY_SEPARATOR . $relativePath)) !== false) {
@@ -290,14 +300,14 @@ class Loader
             $className = substr($className, $lastNamespacePosition + 1);
         }
 
-        return str_replace(array('\\', '_'), DIRECTORY_SEPARATOR, $className) . $this->fileExtension;
+        return str_replace(['\\', '_'], DIRECTORY_SEPARATOR, $className) . '.php';
     }
 
     /**
      * Check if resource is declared in user space.
      *
-     * @param  string  $className
-     * @return boolean
+     * @param string $className
+     * @return bool
      */
     protected function isResourceDeclared($className)
     {
