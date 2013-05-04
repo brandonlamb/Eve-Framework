@@ -15,7 +15,7 @@ class Error extends Component
     /**
      * @var array, Error codes (PHP errors)
      */
-    protected $codes = array(
+    protected $codes = [
         \E_ERROR             => 'PHP Error',
         \E_WARNING           => 'PHP Warning',
         \E_PARSE             => 'PHP Parse Error',
@@ -31,17 +31,17 @@ class Error extends Component
         \E_RECOVERABLE_ERROR => 'PHP Recoverable Error',
         \E_DEPRECATED        => 'PHP Deprecated',
         \E_USER_DEPRECATED   => 'PHP User Deprecated'
-    );
+    ];
 
     /**
      * @var array, Error codes that should be treated as fatal errors
      */
-    protected $fatal = array(
+    protected $fatal = [
         \E_ERROR,
         \E_CORE_ERROR,
         \E_COMPILE_ERROR,
         \E_USER_ERROR
-    );
+    ];
 
     /**
      * @var bool, display errors
@@ -66,7 +66,7 @@ class Error extends Component
     /**
      * @var array, the error log
      */
-    protected $log = array();
+    protected $log = [];
 
     /**
      * @var string, error code for exception
@@ -157,8 +157,8 @@ class Error extends Component
      */
     public function register()
     {
-        set_error_handler(array($this, 'errorHandler'), E_ALL);
-        set_exception_handler(array($this, 'exceptionHandler'));
+        set_error_handler([$this, 'errorHandler'], E_ALL);
+        set_exception_handler([$this, 'exceptionHandler']);
     }
 
     /**
@@ -274,14 +274,14 @@ class Error extends Component
      */
     public function logError($level, $code, $message, $file, $line, $trace = null)
     {
-        $this->log[] = array(
+        $this->log[] = [
             self::LOG_LEVEL	=> $level,
             self::LOG_CODE	=> $code,
             self::LOG_MSG	=> $message,
             self::LOG_FILE	=> $file,
             self::LOG_LINE	=> $line,
             self::LOG_TRACE	=> $trace
-        );
+        ];
         $this->errors = true;
     }
 
@@ -386,16 +386,16 @@ class Error extends Component
         $log = array_reverse($this->log);
         if ($this->display) {
             return json_encode(
-                array(
+                [
                     'error'   => $log[0][self::LOG_CODE],
                     'message' => $log[0][self::LOG_MSG]
-                )
+                ]
             );
         } else {
             return json_encode(
-                array(
+                [
                     'error' => $log[0][self::LOG_CODE]
-                )
+                ]
             );
         }
     }

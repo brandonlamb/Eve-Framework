@@ -39,7 +39,7 @@ class Config implements \Countable
             $this->file = $file;
             $this->data = require $resourceAbsolutePath;
         } else {
-            $this->data = array();
+            $this->data = [];
         }
     }
 

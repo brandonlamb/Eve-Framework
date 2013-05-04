@@ -41,7 +41,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Disabled render levels
 	 * @var array
 	 */
-	protected $disableLevel = array();
+	protected $disableLevel = [];
 
 	/**
 	 * Views directory
@@ -73,7 +73,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Rendered before the action view
 	 * @var array
 	 */
-	protected $templateBeforeView = array();
+	protected $templateBeforeView = [];
 
 	/**
 	 * Template after view
@@ -81,13 +81,13 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * Rendered after the action view
 	 * @var array
 	 */
-	protected $templateAfterView = array();
+	protected $templateAfterView = [];
 
 	/**
 	 * View variables
 	 * @var array
 	 */
-	protected $viewVars = array();
+	protected $viewVars = [];
 
 	/**
 	 * Rendered view content
@@ -156,12 +156,12 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	public function reset()
 	{
 		$this->renderLevel 		= 1;
-		$this->disableLevel 	= array();
+		$this->disableLevel 	= [];
 		$this->viewsDir 		= null;
 		$this->layoutsDir		= null;
 		$this->partialsDir		= null;
 		$this->mainView 		= null;
-		$this->viewVars			= array();
+		$this->viewVars			= [];
 		$this->content 			= null;
 
 		return $this;
@@ -200,7 +200,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	public function disableLevel($levels)
 	{
 		if (is_numeric($levels)) {
-			$levels = array($levels);
+			$levels = [$levels];
 		}
 
 		foreach ($levels as $level) {
@@ -327,7 +327,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		if (is_array($templateBeforeView)) {
 			$this->templateBeforeView = $templateBeforeView;
 		} else {
-			$this->templateBeforeView = array($templateBeforeView);
+			$this->templateBeforeView = [$templateBeforeView];
 		}
 		return $this;
 	}
@@ -361,7 +361,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 		if (is_array($templateAfterView)) {
 			$this->templateAfterView = $templateAfterView;
 		} else {
-			$this->templateAfterView = array($templateAfterView);
+			$this->templateAfterView = [$templateAfterView];
 		}
 		return $this;
 	}
@@ -381,7 +381,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 */
 	public function cleanTemplateAfter()
 	{
-		$this->templateAfterView = array();
+		$this->templateAfterView = [];
 		return $this;
 	}
 
@@ -508,7 +508,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 			// Parse controller/action into array and assign
 			$this->pickView = explode('/', $pickView);
 		} else {
-			null === $this->pickView && $this->pickView = array();
+			null === $this->pickView && $this->pickView = [];
 			$this->pickView[1] = $pickView;
 		}
 
@@ -523,7 +523,7 @@ class View implements InjectionAwareInterface, EventsAwareInterface
 	 * @param array $params
 	 * @SuppressWarnings(PHPMD.UnusedLocalVariable)
 	 */
-	public function render($controllerName, $actionName, array $params = array())
+	public function render($controllerName, $actionName, array $params = [])
 	{
 		// Dont render if level is set to no render or we have not started rendering
 		if ($this->renderLevel === static::LEVEL_NO_RENDER || $this->renderStart === false) {

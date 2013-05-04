@@ -91,8 +91,8 @@ abstract class AbstractApplication
 		} catch (\Exception $e) {
 			$view->finish();
 			$view->start();
-			$dispatcher->setParams(array($e->getMessage()));
-			$dispatcher->forward(array('controller' => 'error', 'action' => 'index'));
+			$dispatcher->setParams([$e->getMessage()]);
+			$dispatcher->forward(['controller' => 'error', 'action' => 'index']);
 			$view->render($router->getControllerName(), $router->getActionName());
 			$view->finish();
 		}
@@ -112,17 +112,17 @@ abstract class AbstractApplication
 	public function addDefaultRoutes(\Eve\Mvc\Router $router)
 	{
 		// route: /indexController/indexAction/blah1/blah2
-		$router->map('/:controller/:action/:params', array('module' => ''), array(
-			'filters' => array(
+		$router->map('/:controller/:action/:params', ['module' => ''], [
+			'filters' => [
 				'params' => '?(.*)?',
-			)
-		));
+			]
+		]);
 
 		// route: /indexController
-		$router->map('/:controller', array('module' => '', 'action' => 'index'), array(
-			'filters' => array(
+		$router->map('/:controller', ['module' => '', 'action' => 'index'], [
+			'filters' => [
 				'controller' => '?([\w-]+)/?',
-			)
-		));
+			]
+		]);
 	}
 }

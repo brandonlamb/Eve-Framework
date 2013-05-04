@@ -6,12 +6,12 @@ class Router
 	/**
 	 * @var array Holds all Route objects
 	 */
-	protected $routes = array();
+	protected $routes = [];
 
 	/**
 	 * @var array Named routes, used for reverse routing.
 	 */
-	protected $namedRoutes = array();
+	protected $namedRoutes = [];
 
 	/**
 	 * @var Route, the matched route
@@ -73,7 +73,7 @@ class Router
 	 * @param array $args Array of optional arguments.
 	 * @return Router
 	 */
-	public function map($routeUrl, $target = null, array $args = array())
+	public function map($routeUrl, $target = null, array $args = [])
 	{
 		$route = new Route();
 		$route->setUrl($this->basePath . $routeUrl)->setTarget($target);
@@ -105,7 +105,7 @@ class Router
 	public function matchCurrentRequest()
 	{
 		$requestMethod = (isset($_POST['_method']) && ($method = strtoupper($_POST['_method'])) &&
-			in_array($method, array('PUT', 'DELETE'))) ? $method : $_SERVER['REQUEST_METHOD'];
+			in_array($method, ['PUT', 'DELETE'])) ? $method : $_SERVER['REQUEST_METHOD'];
 		$requestUrl = $_SERVER['REQUEST_URI'];
 
 		// strip GET variables from URL
@@ -137,7 +137,7 @@ class Router
 				continue;
 			}
 
-			$params = array();
+			$params = [];
 
 			if (preg_match_all('/:([\w-]+)/', $route->getUrl(), $argumentKeys)) {
 				// grab array with matches
@@ -167,7 +167,7 @@ class Router
 	 * @throws Router\Exception
 	 * @return string The url to the route
 	 */
-	public function generate($routeName, array $params = array())
+	public function generate($routeName, array $params = [])
 	{
 		// Check if route exists
 		if (!isset($this->namedRoutes[$routeName])) {

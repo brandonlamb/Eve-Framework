@@ -38,9 +38,9 @@ class Container implements DiInterface
 			self::$defaultInstance = $this;
 		}
 
-		$this->container = is_array($container) ? $container : array();
-		$this->sharedContainer = is_array($sharedContainer) ? $sharedContainer : array();
-		$this->paramContainer = is_array($paramContainer) ? $paramContainer : array();
+		$this->container = is_array($container) ? $container : [];
+		$this->sharedContainer = is_array($sharedContainer) ? $sharedContainer : [];
+		$this->paramContainer = is_array($paramContainer) ? $paramContainer : [];
 	}
 
 	/**

@@ -28,12 +28,12 @@ class Response implements InjectionAwareInterface, EventsAwareInterface
     /**
      * @var array, The response headers
      */
-    protected $headers = array();
+    protected $headers = [];
 
     /**
      * @var array, HTTP status codes
      */
-    protected static $statuses = array(
+    protected static $statuses = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         200 => 'OK',
@@ -80,7 +80,7 @@ class Response implements InjectionAwareInterface, EventsAwareInterface
         505 => 'HTTP Version Not Supported',
         507 => 'Insufficient Storage',
         509 => 'Bandwidth Limit Exceeded'
-    );
+    ];
 
     /**
      * Setter for response content body
@@ -173,7 +173,7 @@ class Response implements InjectionAwareInterface, EventsAwareInterface
         if ($replace === true) {
             $this->headers[$key] = $value;
         } else {
-            $this->headers[] = array($key, $value);
+            $this->headers[] = [$key, $value];
         }
 
         return $this;
@@ -186,7 +186,7 @@ class Response implements InjectionAwareInterface, EventsAwareInterface
      */
     public function resetHeaders()
     {
-        $this->headers = array();
+        $this->headers = [];
         return $this;
     }
 

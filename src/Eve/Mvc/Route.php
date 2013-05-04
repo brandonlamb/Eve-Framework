@@ -11,7 +11,7 @@ class Route
 	/**
 	 * @var array Accepted HTTP methods for this route
 	 */
-	protected $methods = array('GET', 'POST', 'PUT', 'DELETE');
+	protected $methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
 	/**
 	 * @var mixed target for this route, can be anything
@@ -26,12 +26,12 @@ class Route
 	/**
 	 * @var array Custom parameter filters for this route
 	 */
-	protected $filters = array();
+	protected $filters = [];
 
 	/**
 	 * @var array Array containing parameters passed through request URL
 	 */
-	protected $parameters = array();
+	protected $parameters = [];
 
 	/**
 	 * Get the url for this route
@@ -140,7 +140,7 @@ class Route
 	 */
 	public function getRegex()
 	{
-		return preg_replace_callback('/:(\w+)/', array(&$this, 'substituteFilter'), $this->url);
+		return preg_replace_callback('/:(\w+)/', [&$this, 'substituteFilter'], $this->url);
 	}
 
 	/**

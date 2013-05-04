@@ -305,7 +305,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 	 * @param array $params
 	 * @return Dispatcher
 	 */
-	public function setParams(array $params = array())
+	public function setParams(array $params = [])
 	{
 		$this->params = $params;
 		return $this;
@@ -365,7 +365,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		isset($forward['action']) && $this->setActionName($forward['action']);
 
 		// If controller and action are passed, pick the controller/action view
-		isset($forward['controller'], $forward['action']) && $this->view->pick(array($forward['controller'], $forward['action']));
+		isset($forward['controller'], $forward['action']) && $this->view->pick([$forward['controller'], $forward['action']]);
 
 		// Dispatch the new request
 		$this->dispatch();
@@ -450,7 +450,7 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 			if (count($this->params) === 0) {
 				$this->activeController->{$this->actionName}();
 			} else {
-				call_user_func_array(array($this->activeController, $this->actionName), $this->params);
+				call_user_func_array([$this->activeController, $this->actionName], $this->params);
 			}
 
 			// Call controller afterDispatch() method if it exists
@@ -477,10 +477,10 @@ class Dispatcher implements InjectionAwareInterface, EventsAwareInterface
 		}
 
 		// Error controller defined, forward to the set error handler
-		$this->setParams(array($e->getMessage()));
-		$this->forward(array(
+		$this->setParams([$e->getMessage()]);
+		$this->forward([
 			'controller'	=> $config['error']['controller'],
 			'action'		=> $config['error']['action'],
-		));
+		]);
 	}
 }

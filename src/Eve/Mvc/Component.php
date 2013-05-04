@@ -27,10 +27,10 @@ abstract class Component
      * @param  array $config
      * @return void
      */
-    public function __construct(array $config = array())
+    public function __construct(array $config = [])
     {
         $this->config = $config;
-        $this->data = array();
+        $this->data = [];
     }
 
     /**
